@@ -2026,6 +2026,72 @@ export default function App() {
                       </p>
                     </div>
                   )}
+
+                  {/* IFRA Regulatory Compliance Section */}
+                  {selectedFragrance.ifraAssessment && (
+                    <div className="mt-8 pt-6 border-t border-[#2D3139] space-y-4">
+                      <div className="flex items-center justify-between border-b border-[#2D3139]/40 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Scale className="w-4 h-4 text-[#F59E0B]" />
+                          <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                            IFRA Material Compliance Matrix
+                          </h4>
+                        </div>
+                        <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded border uppercase ${
+                          selectedFragrance.ifraAssessment.status === 'Compliant'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        }`}>
+                          STATUS: {selectedFragrance.ifraAssessment.status}
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left font-mono text-[10px] border border-[#2D3139]/40 min-w-[600px]">
+                          <thead>
+                            <tr className="bg-[#0A0B0E] border-b border-[#2D3139]/60 text-[#6A7180]">
+                              <th className="p-2.5 font-bold uppercase">Restricted Chemical / Fraction</th>
+                              <th className="p-2.5 font-bold uppercase text-right">IFRA Threshold Limit</th>
+                              <th className="p-2.5 font-bold uppercase text-right">Actual Scent Mass</th>
+                              <th className="p-2.5 font-bold uppercase pl-4">Formulation/Safety Impact</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#2D3139]/30 text-[#8C93A3]">
+                            {selectedFragrance.ifraAssessment.criticalRestrictedMaterials.map((material, idx) => (
+                              <tr key={idx} className="hover:bg-[#0A0B0E]/50 transition-colors">
+                                <td className="p-2.5 font-bold text-[#E0E2E6]">{material.name}</td>
+                                <td className="p-2.5 text-right font-medium text-amber-400">{material.limitPercent === 0 ? "BANNED (0.00%)" : `≤ ${material.limitPercent}%`}</td>
+                                <td className="p-2.5 text-right font-semibold text-white">{material.actualPercent}%</td>
+                                <td className="p-2.5 pl-4 text-[11px] font-sans text-[#8C93A3] leading-relaxed">{material.impact}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Chemist's Takeaway Callout Box */}
+                      <div className="bg-[#0A0B0E] border border-amber-500/15 p-4 rounded-sm flex gap-3 relative overflow-hidden group">
+                        <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none transition-transform duration-300 group-hover:scale-110">
+                          <Beaker className="w-24 h-24 text-amber-400" />
+                        </div>
+                        <div className="shrink-0">
+                          <Beaker className="w-5 h-5 text-amber-400 mt-0.5" />
+                        </div>
+                        <div className="space-y-2">
+                          <h5 className="font-mono text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                            The Chemist's Takeaway: Cumulative Aggregate Burden
+                          </h5>
+                          <p className="text-[11px] text-[#A6ADB5] font-sans leading-relaxed text-justify">
+                            When checking a formula, you have to look for hidden totals. If an extraction matrix contains three different natural essential oils (like Geranium, Rose, and Ylang-Ylang) that all contain natural fractions of Geraniol, you must calculate the cumulative mass of Geraniol across all ingredients combined. If the total breaches the aggregate threshold, the perfume fails compliance testing.
+                          </p>
+                          <p className="text-[11px] text-[#E0E2E6] font-sans leading-relaxed border-t border-[#2D3139]/40 pt-2 text-justify">
+                            <span className="font-mono text-[9px] text-amber-400 font-bold uppercase mr-1.5">[SPECIMEN ANALYSIS]</span>
+                            {selectedFragrance.ifraAssessment.chemistsTakeaway}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}

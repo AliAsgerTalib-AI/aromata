@@ -86,6 +86,14 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
       lowVolatilityEffect: "Low diffusion, extreme tenacity. The liquid behaves like a thick oil on the skin, evaporating incredibly slowly, lasting over 12+ hours, and smelling deep, dark, and textured."
     },
     strategicTakeaway: "Dior’s execution of the Sauvage timeline is considered the gold standard of modern brand management. By launching a loud, mass-appeal weapon in 2015 (EdT), they captured the global youth market. They then systematically rolled out richer, denser, and more complex variations over the next six years, keeping the consumer hooked on the same brand name while adapting the liquid to fit every season, age bracket, and social environment on Earth.",
+    ifraAssessment: {
+      status: "Reformulated",
+      criticalRestrictedMaterials: [
+        { name: "Butylphenyl Methylpropional (Lilial)", limitPercent: 0.0, actualPercent: 0.0, impact: "Completely banned by IFRA in 2022 due to reproductive toxicity hazard; replaced with synthetic fresh-floral Hedione/fresh booster matrices." },
+        { name: "Geraniol", limitPercent: 5.0, actualPercent: 0.85, impact: "Regulated allergen requiring exact labelling; aggregated here from French Lavender oil, Geranium oil, and Rose fractions." }
+      ],
+      chemistsTakeaway: "For Christian Dior Sauvage, raw botanical elements like French Lavender oil and Geranium oil contain natural fractions of Geraniol. The formulation team must continuously compute and aggregate the sum of these hidden co-fractions across all raw crop batches. This guarantees that the cumulative presence of Geraniol does not breach the strict 5.0% threshold, ensuring complete protection against skin sensitization."
+    },
     notes: {
       top: ["Calabrian Bergamot", "Sichuan Pepper", "Elemi Resin"],
       heart: ["Lavender", "Pink Pepper", "Vetiver", "Patchouli Fraction", "Geranium"],
@@ -174,6 +182,14 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
       lowVolatilityEffect: "A highly grounded, rich, metallic caramelized finish. The scent shifts from an airy, transparent sugar-shroud into a dense, long-lasting, marzipan-like skin affinity that anchors stubbornly."
     },
     strategicTakeaway: "Francis Kurkdjian's genius with Baccarat Rouge lies in total abstraction. By abandoning heavy natural botanicals in favor of pure, hyper-diffusive synthetic isolates, he created a completely new olfactory texture that acts as an invisible, high-contrast cloud. Expanding the line into the Extrait concentration allowed the house to naturally catch the peak of the global luxury boom, maintaining astronomical boutique margins through sheer ingredient scarcity and cult storytelling.",
+    ifraAssessment: {
+      status: "Compliant",
+      criticalRestrictedMaterials: [
+        { name: "Oakmoss extracts (Evernyl / Veramoss)", limitPercent: 1.0, actualPercent: 0.1, impact: "IFRA limits natural Oakmoss to prevent contact dermatitis. Kurkdjian avoids the issue entirely by using Evernyl, a localized synthetic isolate that is highly safe and bypasses moss limits." },
+        { name: "Saffron matrix (Safranal)", limitPercent: 0.05, actualPercent: 0.02, impact: "Highly restricted due to skin sensitization potential; kept perfectly stabilized at extremely low levels while maintaining radiant warmth." }
+      ],
+      chemistsTakeaway: "MFK Baccarat Rouge 540 brilliantly sidesteps this aggregate threat entirely by relying on a highly abstract, ultra-minimalist synthetic chemical suite (comprising Hedione, Evernyl, and Ethyl Maltol). Because there are no rich natural botanical extracts—and thus no hidden natural co-fractions of Geraniol or Citral present—the formula bypasses cumulative safety calculation thresholds altogether."
+    },
     notes: {
       top: ["Jasmine Flowers (Scent Fraction)", "Saffron Extract"],
       heart: ["Amberwood Accord", "Ambergris Salt (Synthesized)"],
@@ -264,6 +280,14 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
       lowVolatilityEffect: "A dry, aristocratic leather-smoke and cedarwood drydown. Vintage batches retained a dense industrial campfire depth, while modern batches settle into a clean, sporty laundry-musk profile."
     },
     strategicTakeaway: "Aventus established the modern woody-fruity masculine paradigm, perfectly timed with the rise of online grooming groups and collector subcultures. By engineering batch-to-batch variation (whether accidental or intentional), Creed turned a simple consumer product into an active hobby, generating multi-million-euro hype structures that culminated in a historic €3.5 billion acquisition by fashion titan Kering.",
+    ifraAssessment: {
+      status: "Reformulated",
+      criticalRestrictedMaterials: [
+        { name: "Birch Tar extract (Pyrogenated)", limitPercent: 0.1, actualPercent: 0.0, impact: "IFRA Annex II heavily banned/restricted pyrogenated Birch Tar vanwege polycyclic aromatic hydrocarbons (PAH) carcinogens. Replaced with clean synthetic Leather wood isolates, removing the famous oily fireplace smoke." },
+        { name: "Oakmoss extracts (Atrarem)", limitPercent: 0.1, actualPercent: 0.08, impact: "Heavily limited due to chloroatranol/atranol skin allergens. Forced the brand to use high-purity low-atranol oakmoss extracts padded with Evernyl." }
+      ],
+      chemistsTakeaway: "For Creed Aventus, early vintage batches suffered because complex botanical extracts (such as Rose oils, Patchouli fractions, and Oakmoss) each contributed hidden trace allergens. When aggregated, the total concentration of these overlapping sensitizers breached historical safety limits, giving the house no option but to perform its sweeping, controversial ingredient purges."
+    },
     notes: {
       top: ["Pineapple", "Bergamot", "Blackcurrant", "Apple"],
       heart: ["Birch Wood (Dry Smoke)", "Patchouli Fraction", "Moroccan Jasmine", "Rose"],
@@ -353,6 +377,14 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
       lowVolatilityEffect: "A dry, continuous, minimalist cedarwood-mineral glow. Rather than dropping into sweet musks, it maintains a completely non-sweet, earthy, hot-granite dryness on the skin."
     },
     strategicTakeaway: "Terre d’Hermès is the ultimate masterwork of mineral-dry minimalism. By intentionally restricting sweet vanilla or powdery musk notes to let Iso E Super battle sulfurous citruses, Jean-Claude Ellena created an intellectual, high-contrast signature. Hermès' transition of the collection to Christine Nagel's icy Citron architectures (Eau Givrée) confirms their long-term dedication to keeping the line fresh and innovative while adhering to safety restrictions.",
+    ifraAssessment: {
+      status: "Compliant",
+      criticalRestrictedMaterials: [
+        { name: "Iso E Super", limitPercent: 20.0, actualPercent: 12.5, impact: "IFRA amended limit for skin-sensitization; Terre d'Hermes keeps the concentration fine-tuned inside the safe zone while preserving total sillage diffusion." },
+        { name: "Citral", limitPercent: 0.6, actualPercent: 0.15, impact: "Regulated allergen aggregated from organic lemon, bergamot, and sweet orange essential oil extracts." }
+      ],
+      chemistsTakeaway: "For Terre d'Hermès, the precise thresholds of Citral, Geraniol, and Limonene inside its heavy load of raw sweet orange and grapefruit essential oils must be mapped and aggregated. In-house chemists rely on high-precision gas chromatography to verify that seasonal changes in natural harvest batches do not elevate the cumulative allergen sum above Amendment 51 parameters."
+    },
     notes: {
       top: ["Orange", "Grapefruit (Methyl Pamplemousse Isolate)"],
       heart: ["Chert/Flint Dust Accord", "Black Pepper", "Pink Peppercorn", "Geranium Leaves"],

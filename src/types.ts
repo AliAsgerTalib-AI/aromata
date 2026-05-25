@@ -100,6 +100,16 @@ export interface FragranceData {
     lowVolatilityEffect: string;
   };
   strategicTakeaway?: string;
+  ifraAssessment?: {
+    status: 'Compliant' | 'Reformulated' | 'Restricted' | string;
+    criticalRestrictedMaterials: {
+      name: string;
+      limitPercent: number;
+      actualPercent: number;
+      impact: string;
+    }[];
+    chemistsTakeaway: string;
+  };
   notes?: {
     top: string[];
     heart: string[];

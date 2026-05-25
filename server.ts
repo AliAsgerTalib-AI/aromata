@@ -66,7 +66,8 @@ Fragrance Name: ${name}`;
 8. Provide an evocative, artistic narrative story of the fragrance, capturing its inspiration or general vibe, and list its classic hierarchical olfactory notes pyramid (top, heart, and base notes).
 9. Create a chronological history timeline of 3-6 key historical milestones of the fragrance, its flankers, or its brand heritage house in the historicalTimeline array. Be brutally honest and accurate. Do not make up fake events or awards. If there is gossip, controversy, or corporate disputes around it, capture that as a timeline event of classification 'Gossip' and start its description with the prefix 'GOSSIP:'. Format titles with sleek, descriptive design monikers like 'The Heritage Ancestor', 'The Modern Pillar', 'The Smooth Evolution', 'The Depth Upgrade', 'The Masterpiece Revision' or similar where applicable. Include interesting chemical or industry tidbits for each milestone.
 10. Populate the molecularBlueprintShift object: providing custom details of the molecular blueprint transition (e.g., from original EDT to high-concentration Extrait/Parfum), showcasing how the physical formula matrix shifts its focus from a high-volatility engine/effect to a low-volatility engine/effect.
-11. Set the strategicTakeaway field as a brutally honest summary of how the brand/house executed this timeline and formulation strategy over the years to manage margins, capture demographics, or navigate IFRA regulatory restrictions.`;
+11. Set the strategicTakeaway field as a brutally honest summary of how the brand/house executed this timeline and formulation strategy over the years to manage margins, capture demographics, or navigate IFRA regulatory restrictions.
+12. Populate the ifraAssessment object: status (e.g., 'Compliant', 'Reformulated', 'Restricted'), a list of criticalRestrictedMaterials (each with name, limitPercent, actualPercent, and impact), and chemistsTakeaway (each describing custom details of how the specific perfume's natural oils and synthetics are evaluated for allergen aggregation). Do not repeat or prepend the general explanation of 'Cumulative Aggregate Burden' — focus strictly on the specific molecules/materials in this exact tested fragrance.`;
 
     const response = await ai.models.generateContent({
       model: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
@@ -86,7 +87,7 @@ Do not output raw conversational text or markdown wrappers. Return purely valid 
             "accords", "tempRangeMinCelsius", "tempRangeMaxCelsius", "humidityTolerance",
             "settingScoring", "avgRetailPrice", "pricePerMl", "valueRating",
             "alternatives", "formulationHeritage", "laymanChemistryExplanation", "story", "notes",
-            "molecularBlueprintShift", "strategicTakeaway"
+            "molecularBlueprintShift", "strategicTakeaway", "ifraAssessment"
           ],
           properties: {
             brand: { type: Type.STRING },
@@ -262,7 +263,28 @@ Do not output raw conversational text or markdown wrappers. Return purely valid 
                 lowVolatilityEffect: { type: Type.STRING }
               }
             },
-            strategicTakeaway: { type: Type.STRING }
+            strategicTakeaway: { type: Type.STRING },
+            ifraAssessment: {
+              type: Type.OBJECT,
+              required: ["status", "criticalRestrictedMaterials", "chemistsTakeaway"],
+              properties: {
+                status: { type: Type.STRING },
+                criticalRestrictedMaterials: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.OBJECT,
+                    required: ["name", "limitPercent", "actualPercent", "impact"],
+                    properties: {
+                      name: { type: Type.STRING },
+                      limitPercent: { type: Type.NUMBER },
+                      actualPercent: { type: Type.NUMBER },
+                      impact: { type: Type.STRING }
+                    }
+                  }
+                },
+                chemistsTakeaway: { type: Type.STRING }
+              }
+            }
           }
         }
       }
