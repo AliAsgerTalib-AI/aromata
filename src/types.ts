@@ -45,6 +45,13 @@ export interface ParsedBatchCode {
   explanation?: string;
 }
 
+export interface HistoricalMilestone {
+  year: string;
+  title: string;
+  description: string;
+  classification: 'Origin' | 'Flanker Release' | 'Reformulation' | 'Milestone' | 'Award' | 'House Event' | string;
+}
+
 export interface FragranceData {
   brand: string;
   name: string;
@@ -52,6 +59,7 @@ export interface FragranceData {
   nose: string;
   releaseYear: number;
   batchLineage: string;
+  historicalTimeline?: HistoricalMilestone[];
   
   // chemical/molecular
   aromaChemicalMatrix: AromaChemical[];
@@ -84,6 +92,14 @@ export interface FragranceData {
   formulationHeritage: string; // e.g. batch-to-batch changes / IFRA regulation impact
   laymanChemistryExplanation?: string; // layman explanation of how the perfume actually works chemically
   story?: string; // Evocative artistic narrative story
+  molecularBlueprintShift?: {
+    title: string;
+    highVolatilityEngine: string;
+    highVolatilityEffect: string;
+    lowVolatilityEngine: string;
+    lowVolatilityEffect: string;
+  };
+  strategicTakeaway?: string;
   notes?: {
     top: string[];
     heart: string[];

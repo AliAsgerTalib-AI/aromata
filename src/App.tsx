@@ -67,6 +67,7 @@ import { MASTER_HOUSES_DATABASE } from './housesDatabase';
 import { INDEPENDENT_NICHE_DATABASE } from './nicheDatabase';
 import { PERFUME_SYNTHETICS_DATABASE } from './syntheticsDatabase';
 import { TECHNICAL_SYNTHETICS_DATABASE } from './technicalSyntheticsDatabase';
+import { TIMELINE_DATABASE } from './timelineDatabase';
 
 const getInterpolatedSillageRadius = (fragrance: FragranceData, hour: number): number => {
   const curve = fragrance.sillageProjectionRadiusCurve;
@@ -199,6 +200,7 @@ const getPreCalculatedMoodboard = (frag: FragranceData) => {
 
 export default function App() {
   const [selectedFragrance, setSelectedFragrance] = useState<FragranceData>(PREDEFINED_FRAGRANCES[0]);
+  const [timelineFilter, setTimelineFilter] = useState<'all' | 'Origin' | 'Flanker Release' | 'Reformulation' | 'Milestone' | 'Award' | 'House Event'>('all');
   const [searchBrand, setSearchBrand] = useState('');
   const [searchName, setSearchName] = useState('');
   const [batchCodeInput, setBatchCodeInput] = useState('');
@@ -213,7 +215,7 @@ export default function App() {
   const [batchError, setBatchError] = useState<string | null>(null);
 
   // Active View Tab State
-  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix'>('dossier');
+  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
 
   // Compounding Bench state parameters
   const [compoundingName, setCompoundingName] = useState('My Custom Blend');
@@ -532,6 +534,8 @@ export default function App() {
   const [selectedSyntheticsCategory, setSelectedSyntheticsCategory] = useState<string | null>(null);
   const [searchMatrixQuery, setSearchMatrixQuery] = useState('');
   const [selectedMatrixCategory, setSelectedMatrixCategory] = useState<string | null>(null);
+  const [searchTimelineQuery, setSearchTimelineQuery] = useState('');
+  const [selectedTimelineCategory, setSelectedTimelineCategory] = useState<string | null>(null);
 
   // Instantly sync dynamic moodboard overlay on fragrance change to prevent any latency gaps
   useEffect(() => {
@@ -953,6 +957,18 @@ export default function App() {
           >
             <FileSpreadsheet className="w-4 h-4 text-[#10B981]" />
             Technical Matrix
+          </button>
+
+          <button
+            onClick={() => setActiveTab('timeline')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'timeline'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Calendar className="w-4 h-4 text-[#F59E0B]" />
+            Genre Timeline
           </button>
         </div>
 
@@ -1797,6 +1813,222 @@ export default function App() {
               </div>
 
             </div>
+
+            {/* CHRONOLOGICAL HISTORICAL TIMELINE & FLANKER LINEAGE */}
+            {(() => {
+              const timelineEvents = selectedFragrance.historicalTimeline || [
+                { year: String(selectedFragrance.releaseYear), title: `${selectedFragrance.name} Launch`, description: `First released in ${selectedFragrance.releaseYear} under the creative nose of ${selectedFragrance.nose}, establishing the initial ${selectedFragrance.olfactoryFamily} composition blueprint.`, classification: "Origin" },
+                { year: String(selectedFragrance.releaseYear + 2), title: "Global Market Ascent", description: `Reaches peak worldwide distribution and acclaim, praised for its unique blend containing raw percentages of aromachemicals.`, classification: "Milestone" },
+                { year: String(selectedFragrance.releaseYear + 5), title: "IFRA Safety Standardization", description: `The formulation adapts gracefully to meet international cosmetic safety standards (IFRA), revising botanical load counts slightly while maintaining active projection sillage.`, classification: "Reformulation" }
+              ];
+
+              return (
+                <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 relative overflow-hidden" id="historical-heritage-timeline">
+                  <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-5 pointer-events-none">
+                    <Calendar className="w-36 h-36 text-white/5" />
+                  </div>
+
+                  <div className="border-b border-[#2D3139] pb-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-display text-xs font-bold text-white tracking-widest uppercase flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-[#F59E0B]" />
+                        Historical Heritage & Flanker Lineage
+                      </h3>
+                      <p className="text-[11px] text-[#6A7180] mt-1 font-sans">
+                        Browse key chemical milestones, prestigious design awards, reformulations, and notable flankers inside the <span className="text-white">{selectedFragrance.brand}</span> universe.
+                      </p>
+                    </div>
+
+                    {/* Filtering Buttons */}
+                    <div className="flex flex-wrap gap-1.5 font-mono text-[9px]">
+                      {['all', 'Origin', 'Flanker Release', 'Reformulation', 'Milestone', 'Award', 'House Event', 'Gossip'].map((category) => {
+                        const count = category === 'all' 
+                          ? timelineEvents.length 
+                          : timelineEvents.filter(e => e.classification === category).length;
+                        if (category !== 'all' && count === 0) return null; // hide empty categories to stay neat
+
+                        return (
+                          <button
+                            key={category}
+                            onClick={() => setTimelineFilter(category as any)}
+                            className={`px-2.5 py-1 rounded transition-all uppercase border cursor-pointer font-bold ${
+                              timelineFilter === category
+                                ? category === 'Gossip'
+                                  ? 'bg-[#EF4444]/15 border-[#EF4444] text-[#F87171]'
+                                  : 'bg-[#F59E0B]/15 border-[#F59E0B] text-[#F59E0B]'
+                                : 'bg-[#0A0B0E] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-[#E0E2E6]'
+                            }`}
+                          >
+                            {category === 'all' ? 'All Milestones' : category} ({count})
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Active Timeline List/Vertical Grid */}
+                  <div className="relative border-l border-[#2D3139]/50 ml-4 pl-6 space-y-4">
+                    {(() => {
+                      const filteredEvents = timelineFilter === 'all' 
+                        ? timelineEvents 
+                        : timelineEvents.filter(e => e.classification === timelineFilter);
+
+                      // Sort chronological by year
+                      const sortedEvents = [...filteredEvents].sort((a, b) => Number(a.year) - Number(b.year));
+
+                      if (sortedEvents.length === 0) {
+                        return (
+                          <p className="text-xs text-[#6A7180] font-mono italic">
+                            No milestones found for this filter criteria in the specimen records.
+                          </p>
+                        );
+                      }
+
+                      return sortedEvents.map((event, idx) => {
+                        // Tag Styles and Color based on Classification
+                        let colorClass = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+                        let dotClass = 'bg-blue-500 ring-blue-500/20';
+                        let isGossip = event.classification === 'Gossip' || event.classification.toLowerCase() === 'gossip' || event.description.startsWith('GOSSIP:');
+
+                        if (event.classification === 'Origin') {
+                          colorClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                          dotClass = 'bg-emerald-500 ring-emerald-500/20';
+                        } else if (event.classification === 'Reformulation') {
+                          colorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                          dotClass = 'bg-amber-500 ring-amber-500/20';
+                        } else if (event.classification === 'Flanker Release') {
+                          colorClass = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+                          dotClass = 'bg-purple-500' ;
+                        } else if (event.classification === 'Award') {
+                          colorClass = 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+                          dotClass = 'bg-yellow-500';
+                        } else if (event.classification === 'House Event') {
+                          colorClass = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+                          dotClass = 'bg-indigo-500';
+                        } else if (isGossip) {
+                          colorClass = 'bg-rose-500/15 text-rose-400 border-rose-500/30';
+                          dotClass = 'bg-rose-500 ring-rose-500/30';
+                        }
+
+                        // Clean GOSSIP moniker if present to show custom layout
+                        let displayDesc = event.description;
+                        let hasGossipPrefix = displayDesc.startsWith('GOSSIP:');
+                        if (hasGossipPrefix) {
+                          displayDesc = displayDesc.substring(7).trim();
+                        }
+
+                        return (
+                          <motion.div 
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            className={`relative border p-4 rounded-sm transition-all duration-200 group flex flex-col md:flex-row md:items-start gap-4 ${
+                              isGossip 
+                                ? 'bg-gradient-to-r from-[#EF4444]/5 to-transparent border-rose-900/30 hover:border-rose-500/40' 
+                                : 'bg-[#0A0B0E] border-[#2D3139]/60 hover:border-[#F59E0B]/30'
+                            }`}
+                          >
+                            {/* Bullet dot indicator */}
+                            <div className={`absolute -left-[31px] top-5 w-2.5 h-2.5 rounded-full border-2 border-[#15181F] ${dotClass} transition-all duration-300 group-hover:scale-125`} />
+                            
+                            {/* Year Badge */}
+                            <div className="shrink-0 md:w-20 font-mono">
+                              <span className="text-[17px] font-bold text-white tracking-tight block leading-none">{event.year}</span>
+                              <span className={`inline-block border text-[8px] tracking-wider uppercase px-1.5 py-0.2 rounded font-bold mt-1.5 ${colorClass}`}>
+                                {isGossip ? 'GOSSIP LORE' : event.classification}
+                              </span>
+                            </div>
+
+                            {/* Content info */}
+                            <div className="flex-1 space-y-1.5">
+                              <h4 className={`font-mono text-xs font-bold transition-colors uppercase flex items-center gap-2 ${
+                                isGossip 
+                                  ? 'text-rose-400 group-hover:text-rose-300' 
+                                  : 'text-[#E0E2E6] group-hover:text-[#F59E0B]'
+                              }`}>
+                                {isGossip && <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse shrink-0" />}
+                                {event.title}
+                              </h4>
+                              
+                              <p className={`text-[11px] font-sans leading-relaxed text-justify ${
+                                isGossip ? 'text-rose-100/80' : 'text-[#8C93A3]'
+                              }`}>
+                                {isGossip && <span className="text-[9px] font-mono uppercase tracking-wider text-rose-400 border border-rose-500/30 px-1 py-0.2 rounded bg-rose-500/10 mr-1.5 shrink-0 inline-block font-bold">GOSSIP</span>}
+                                {displayDesc}
+                              </p>
+                            </div>
+                          </motion.div>
+                        );
+                      });
+                    })()}
+                  </div>
+
+                  {/* Molecular Blueprint Shift (Volatility Scaffolding) */}
+                  {selectedFragrance.molecularBlueprintShift && (
+                    <div className="mt-8 pt-6 border-t border-[#2D3139] space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Atom className="w-4 h-4 text-[#F59E0B]" />
+                        <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                          {selectedFragrance.molecularBlueprintShift.title || "The Molecular Blueprint Shift"}
+                        </h4>
+                      </div>
+                      <p className="text-[11px] text-[#8C93A3] leading-relaxed">
+                        To understand how a house morphs a single fragrance across a timeline, examine how the physical formula matrix shifts its weight from the top of the volatility clock to the base:
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        {/* High Volatility Card */}
+                        <div className="bg-[#0A0B0E] border border-[#2D3139]/60 hover:border-[#F59E0B]/30 p-4 rounded-sm transition-all duration-200">
+                          <div className="flex items-center gap-2 mb-2 text-[#F59E0B]">
+                            <Wind className="w-4 h-4 text-[#F59E0B] animate-pulse" />
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-wider">High Volatility Scaffolding (Radiative Focus)</span>
+                          </div>
+                          <div className="space-y-2 text-[11px]">
+                            <div>
+                              <span className="font-mono text-[9px] text-[#6A7180] uppercase block">Molecular Engine:</span>
+                              <p className="text-[#E0E2E6] font-sans leading-relaxed">{selectedFragrance.molecularBlueprintShift.highVolatilityEngine}</p>
+                            </div>
+                            <div>
+                              <span className="font-mono text-[9px] text-[#6A7180] uppercase block">Diffusion Effect:</span>
+                              <p className="text-[#8C93A3] font-sans leading-relaxed">{selectedFragrance.molecularBlueprintShift.highVolatilityEffect}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Low Volatility Card */}
+                        <div className="bg-[#0A0B0E] border border-[#2D3139]/60 hover:border-purple-500/30 p-4 rounded-sm transition-all duration-200">
+                          <div className="flex items-center gap-2 mb-2 text-purple-400">
+                            <Layers className="w-4 h-4 text-purple-400 animate-pulse" />
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Low Volatility Scaffolding (Density Focus)</span>
+                          </div>
+                          <div className="space-y-2 text-[11px]">
+                            <div>
+                              <span className="font-mono text-[9px] text-[#6A7180] uppercase block">Molecular Engine:</span>
+                              <p className="text-[#E0E2E6] font-sans leading-relaxed">{selectedFragrance.molecularBlueprintShift.lowVolatilityEngine}</p>
+                            </div>
+                            <div>
+                              <span className="font-mono text-[9px] text-[#6A7180] uppercase block">Tenacity Effect:</span>
+                              <p className="text-[#8C93A3] font-sans leading-relaxed">{selectedFragrance.molecularBlueprintShift.lowVolatilityEffect}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Strategic Takeaway Section */}
+                  {selectedFragrance.strategicTakeaway && (
+                    <div className="mt-6 p-4 bg-gradient-to-r from-[#F59E0B]/5 to-transparent border-l-2 border-[#F59E0B] rounded-r-xs">
+                      <span className="font-mono text-[9px] text-[#F59E0B] uppercase font-bold tracking-wider block mb-1">Strategic Portfolio Takeaway:</span>
+                      <p className="text-[11px] text-[#E0E2E6] font-sans leading-relaxed text-justify">
+                        {selectedFragrance.strategicTakeaway}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* ROW 1.5: THE INTEGRATED MATRICES (ART & SCIENCE) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" id="art-and-science-deck">
@@ -6510,6 +6742,348 @@ export default function App() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'timeline' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Master Timeline Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <Calendar className="w-48 h-48 text-[#F59E0B]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#F59E0B] flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-[#F59E0B]" /> Olfactory Chronogenics
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              The Master Timeline of Olfactory Genre Breakdowns
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify">
+              FINE FRAGRANCE IS A SPECTRUM OF HISTORICAL ACCIDENTS IN HIGH-CONTRAST JUXTAPOSITION. Explore the monumental epochs in formulation history, where the isolation and synthesis of raw molecular agents permanently altered human scent memory. Click any reference specimen&apos;s name in the timeline milestones to instantly load it into the <strong>Dossier Analyst</strong>.
+            </p>
+
+            {/* Custom Search & Era Filtering */}
+            <div className="mt-6 space-y-4">
+              <div className="relative max-w-md">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-[#6A7180]" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search genres, years, benchmark creations, molecules, or masters..."
+                  value={searchTimelineQuery}
+                  onChange={(e) => setSearchTimelineQuery(e.target.value)}
+                  className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  id="timeline-search-input"
+                />
+                {searchTimelineQuery && (
+                  <button
+                    onClick={() => setSearchTimelineQuery('')}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn shadow-none bg-transparent hover:bg-transparent border-0"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Epoch Selectors */}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#2D3139]/40">
+                <button
+                  onClick={() => setSelectedTimelineCategory(null)}
+                  className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                    selectedTimelineCategory === null 
+                      ? 'bg-[#F59E0B]/15 border-[#F59E0B] text-white font-bold' 
+                      : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                  }`}
+                >
+                  All Epochs
+                </button>
+                {[
+                  "The Belle Époque (1880–1919)",
+                  "Post-War Avant-Garde (1920–1959)",
+                  "Powerhouses & Fuel (1960–1989)",
+                  "Modernism & Marine (1990–Present)"
+                ].map((epoch, eIdx) => (
+                  <button
+                    key={`epoch-tab-${eIdx}`}
+                    onClick={() => setSelectedTimelineCategory(epoch)}
+                    className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                      selectedTimelineCategory === epoch 
+                        ? 'bg-[#F59E0B]/15 border-[#F59E0B] text-white font-bold' 
+                        : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                    }`}
+                  >
+                    {epoch}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Olfactory Evolution Matrix Chart Card */}
+          <div className="bg-[#11141A] border border-[#2D3139] p-6 rounded-sm space-y-4">
+            <h4 className="text-xs font-mono uppercase tracking-wider text-[#3B82F6] flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></span>
+              Olfactory Evolution Matrix
+            </h4>
+            <p className="text-[11.5px] text-[#c0c6d4] leading-relaxed max-w-2xl font-sans text-justify">
+              Whenever you experience a contemporary perfume family, you are interacting with an engineered chemical lineage. Traditional pre-1880s linear botanical floral blends were permanently split into abstract geometric genres by the advent of custom synthesized isolates:
+            </p>
+            
+            {/* Interactive Grid/Map for Evolution Matrix */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
+              {[
+                {
+                  year: "1882",
+                  isolate: "+ Coumarin",
+                  genre: "[ FOUGÈRE GENRE ]",
+                  desc: "Manicured barbershop grooming blueprint.",
+                  color: "border-[#10B981]/30 hover:border-[#10B981]",
+                  text: "text-[#10B981]",
+                  bg: "bg-[#10B981]/5"
+                },
+                {
+                  year: "1889",
+                  isolate: "+ Vanillin",
+                  genre: "[ AMBRE GENRE ]",
+                  desc: "Rich, abstract, non-linear resin opulence.",
+                  color: "border-[#ECD154]/30 hover:border-[#ECD154]",
+                  text: "text-[#ECD154]",
+                  bg: "bg-[#ECD154]/5"
+                },
+                {
+                  year: "1921",
+                  isolate: "+ Aldehydes (C-10/C-11/C-12)",
+                  genre: "[ ALDEHYDIC ]",
+                  desc: "Freezing waxy soaps & computerized clean floral lift.",
+                  color: "border-[#3B82F6]/30 hover:border-[#3B82F6]",
+                  text: "text-[#3B82F6]",
+                  bg: "bg-[#3B82F6]/5"
+                },
+                {
+                  year: "1992",
+                  isolate: "+ Calone 1951",
+                  genre: "[ AQUATIC GENRE ]",
+                  desc: "Weightless, watermelon/sea-breeze minimalist ozone.",
+                  color: "border-[#06B6D4]/30 hover:border-[#06B6D4]",
+                  text: "text-[#06B6D4]",
+                  bg: "bg-[#06B6D4]/5"
+                },
+                {
+                  year: "1992",
+                  isolate: "+ Ethyl Maltol",
+                  genre: "[ GOURMAND ]",
+                  desc: "Burnt sugar confectionery with dense dark patchouli.",
+                  color: "border-[#A855F7]/30 hover:border-[#A855F7]",
+                  text: "text-[#A855F7]",
+                  bg: "bg-[#A855F7]/5"
+                }
+              ].map((matrixItem, matrixIdx) => (
+                <div 
+                  key={`matrix-node-${matrixIdx}`}
+                  className={`border ${matrixItem.color} ${matrixItem.bg} p-4 rounded-sm hover:-translate-y-1 transition-all duration-350 flex flex-col justify-between`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px] text-[#6A7180] font-mono">
+                      <span>{matrixItem.year}</span>
+                      <span className="font-bold">{matrixItem.isolate}</span>
+                    </div>
+                    <div className={`font-mono font-bold text-xs ${matrixItem.text} tracking-wider pt-2`}>
+                      {matrixItem.genre}
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-sans leading-relaxed pt-1.5">
+                      {matrixItem.desc}
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-[#2D3139]/40 mt-3">
+                    <button
+                      onClick={() => {
+                        setSearchTimelineQuery(matrixItem.year);
+                      }}
+                      className="text-[9.5px] font-mono text-[#F59E0B] hover:underline hover:text-white transition-colors cursor-pointer w-full text-left bg-transparent border-0 p-0 font-bold"
+                    >
+                      Filter Timeline →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-[#0A0B0E] border border-[#2D3139]/60 p-3.5 rounded-sm relative overflow-hidden">
+              <span className="absolute top-0 right-0 text-[10px] font-mono text-[#F59E0B]/10 pointer-events-none p-1.5">LINEAGE CONCEPT</span>
+              <p className="text-[11px] text-[#8C93A3] leading-relaxed font-sans text-justify italic">
+                &ldquo;Whenever you spray a perfume from a specific family, you are not interacting with an organic accident. You are stepping inside a carefully engineered lineage of chemical history—where an isolated synthetic molecule was deployed by a master artist to permanently alter the boundaries of human scent memory.&rdquo;
+              </p>
+            </div>
+          </div>
+
+          {/* MASTER VISUAL TIMELINE COMPONENT */}
+          <div className="relative font-mono text-left">
+            {/* Left line on desktop/mobile running behind milestones */}
+            <div className="absolute left-6 md:left-[50%] top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#F59E0B]/70 via-[#3B82F6]/30 to-[#10B981]/50 pointer-events-none transform md:-translate-x-[50%]"></div>
+
+            {(() => {
+              const query = searchTimelineQuery.toLowerCase().trim();
+              const getCategoryForYear = (year: number) => {
+                if (year >= 1880 && year <= 1919) return "The Belle Époque (1880–1919)";
+                if (year >= 1920 && year <= 1959) return "Post-War Avant-Garde (1920–1959)";
+                if (year >= 1960 && year <= 1989) return "Powerhouses & Fuel (1960–1989)";
+                return "Modernism & Marine (1990–Present)";
+              };
+
+              const filtered = TIMELINE_DATABASE.filter(item => {
+                const category = getCategoryForYear(item.year);
+                if (selectedTimelineCategory && category !== selectedTimelineCategory) return false;
+
+                if (!query) return true;
+                return String(item.year).includes(query) ||
+                  item.genre.toLowerCase().includes(query) ||
+                  item.pillarFragrance.toLowerCase().includes(query) ||
+                  item.brand.toLowerCase().includes(query) ||
+                  item.masterNose.toLowerCase().includes(query) ||
+                  item.breakthroughMolecule.toLowerCase().includes(query) ||
+                  item.skeleton.toLowerCase().includes(query) ||
+                  item.innovation.toLowerCase().includes(query);
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="bg-[#15181F] border border-[#2D3139] p-12 text-center rounded-sm space-y-3 relative z-10">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No timeline milestones matched</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try widening your search terms or picking &quot;All Epochs&quot; above.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-12 relative z-10">
+                  {filtered.map((item, idx) => {
+                    const isEven = idx % 2 === 0;
+                    const blockCategory = getCategoryForYear(item.year);
+
+                    return (
+                      <div 
+                        key={`timeline-milestone-${idx}`}
+                        className={`flex flex-col md:flex-row items-stretch ${
+                          isEven ? 'md:flex-row' : 'md:flex-row-reverse'
+                        } relative min-h-[220px]`}
+                      >
+                        {/* Connecting Dot with Year hover */}
+                        <div className="absolute left-6 md:left-[50%] top-6 transform -translate-x-[50%] flex items-center justify-center z-20">
+                          <div className="w-10 h-10 rounded-full bg-[#0A0B0E] border-2 border-[#F59E0B] shadow-[0_0_12px_rgba(245,158,11,0.25)] flex items-center justify-center text-xs text-[#F59E0B] font-bold tracking-tight">
+                            {item.year}
+                          </div>
+                        </div>
+
+                        {/* Left Side spacer on Desktop / details card on mobile */}
+                        <div className="w-full md:w-[46%] hidden md:block"></div>
+
+                        {/* Details Card */}
+                        <div className="w-full md:w-[46%] pl-14 md:pl-0">
+                          <div className="bg-[#15181F] border border-[#2D3139] hover:border-[#F59E0B]/30 p-6 rounded-sm space-y-4 transition-all relative">
+                            {/* Accent Glow for active card */}
+                            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#F59E0B]/80 to-transparent"></div>
+
+                            {/* Header Metadata block */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2D3139]/40 pb-2.5">
+                              <div>
+                                <span className="text-[8px] font-mono bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/15 px-2 py-0.5 rounded-sm uppercase tracking-wider font-semibold">
+                                  {blockCategory}
+                                </span>
+                                <h4 className="text-base font-display font-bold text-white tracking-wide mt-1.5">
+                                  {item.genre}
+                                </h4>
+                              </div>
+                              <span className="text-xl font-display font-light text-[#F59E0B]">
+                                {item.year}
+                              </span>
+                            </div>
+
+                            {/* Essential Details Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] bg-[#0A0B0E] p-3 border border-[#2D3139]/40 rounded-sm">
+                              <div>
+                                <span className="text-[#6A7180] uppercase tracking-wider font-semibold text-[8px] block">Pillar Fragrance</span>
+                                <button
+                                  onClick={() => {
+                                    setSearchBrand(item.brand);
+                                    setSearchName(item.pillarFragrance);
+                                    setActiveTab('dossier');
+                                    setShelfNotification(`Loaded "${item.brand} ${item.pillarFragrance}" Reference Specimen. Click Initiate to trigger GC-MS assays.`);
+                                    setTimeout(() => setShelfNotification(null), 5000);
+                                  }}
+                                  className="text-white hover:text-[#F59E0B] font-bold text-left outline-none hover:underline focus:underline cursor-pointer bg-transparent border-0 p-0 block mt-0.5"
+                                >
+                                  {item.pillarFragrance} ({item.brand})
+                                </button>
+                              </div>
+                              <div>
+                                <span className="text-[#6A7180] uppercase tracking-wider font-semibold text-[8px] block">The Master Nose</span>
+                                <span className="text-slate-350 block mt-0.5 font-sans font-medium text-slate-300">
+                                  {item.masterNose}
+                                </span>
+                              </div>
+                              <div className="sm:col-span-2 pt-1 border-t border-[#2D3139]/30 mt-1">
+                                <span className="text-[#6A7180] uppercase tracking-wider font-semibold text-[8px] block">Molecular Breakthrough</span>
+                                <span className="text-[#A855F7] font-semibold block mt-0.5 font-sans">
+                                  {item.breakthroughMolecule}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Structural Skeleton Component */}
+                            <div className="space-y-1.5">
+                              <span className="text-[#6A7180] uppercase tracking-wider font-semibold text-[8px] block">The Structural Skeleton</span>
+                              <div className="bg-[#0D0E12] border border-[#23272F] px-3.5 py-2.5 rounded-sm flex items-center gap-1.5 text-[9.5px] font-mono text-[#10B981] overflow-x-auto whitespace-nowrap whitespace-normal">
+                                <div className="flex flex-wrap items-center gap-2 font-mono font-semibold">
+                                  {item.skeleton.split(' → ').map((node, nodeIdx, arr) => (
+                                    <div key={`node-${nodeIdx}`} className="flex items-center gap-2">
+                                      <span className="bg-[#11141A] border border-[#2D3139] px-2 py-1 rounded text-slate-200">
+                                        {node}
+                                      </span>
+                                      {nodeIdx < arr.length - 1 && (
+                                        <span className="text-[#F59E0B] font-bold">→</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Architectural Innovation Description text */}
+                            <div className="space-y-1">
+                              <span className="text-[#F59E0B] uppercase tracking-wider font-semibold text-[8px] block">Architectural Innovation</span>
+                              <p className="text-xs text-[#c0c6d4] font-sans leading-relaxed text-justify text-left">
+                                {item.innovation}
+                              </p>
+                            </div>
+
+                            {/* Manual Integration Trigger button */}
+                            <div className="pt-2 border-t border-[#2D3139]/35 flex justify-end">
+                              <button
+                                onClick={() => {
+                                  setSearchBrand(item.brand);
+                                  setSearchName(item.pillarFragrance);
+                                  setActiveTab('dossier');
+                                  setShelfNotification(`Loaded reference legacy specimen "${item.brand} ${item.pillarFragrance}" successfully.`);
+                                  setTimeout(() => setShelfNotification(null), 5000);
+                                }}
+                                className="bg-[#0A0B0E] hover:bg-[#F59E0B]/10 border border-[#2D3139] hover:border-[#F59E0B]/50 hover:text-[#F59E0B] text-white text-[10px] font-mono px-3 py-1.5 rounded cursor-pointer transition-all flex items-center gap-1.5 outline-none font-bold"
+                              >
+                                <Beaker className="w-3 h-3 text-[#F59E0B]" /> Parse Benchmark in Dossier
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })()}

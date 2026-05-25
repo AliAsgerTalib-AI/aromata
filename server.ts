@@ -63,7 +63,10 @@ Fragrance Name: ${name}`;
 5. Detail olfactory classification, tactile textures (accords), thermal window (min/max Celsius), sillage-based occasion scoring, average retail price, alternatives, and heritage.
 6. ${batchCode ? "Decode the batch code provided based on known commercial batch parsing patterns for this brand. Detail manufacture date, factory code, stability, and shelf-life." : "Set the parsedBatchCode block to a structure where isValid is false, and explain that no batch code was provided."}
 7. Provide a detailed, engaging explanation of how the perfume actually works chemically and physically in layman's terms. Explain how the solvent carrier (usually denatured alcohol) acts as a high-volatility dispersal medium, how specific key aromachemical isolates or natural fractions inside this fragrance behave, and how body heat/humidity affects their rate of release. Label this layman's explanation very thoroughly in a couple of paragraphs.
-8. Provide an evocative, artistic narrative story of the fragrance, capturing its inspiration or general vibe, and list its classic hierarchical olfactory notes pyramid (top, heart, and base notes).`;
+8. Provide an evocative, artistic narrative story of the fragrance, capturing its inspiration or general vibe, and list its classic hierarchical olfactory notes pyramid (top, heart, and base notes).
+9. Create a chronological history timeline of 3-6 key historical milestones of the fragrance, its flankers, or its brand heritage house in the historicalTimeline array. Be brutally honest and accurate. Do not make up fake events or awards. If there is gossip, controversy, or corporate disputes around it, capture that as a timeline event of classification 'Gossip' and start its description with the prefix 'GOSSIP:'. Format titles with sleek, descriptive design monikers like 'The Heritage Ancestor', 'The Modern Pillar', 'The Smooth Evolution', 'The Depth Upgrade', 'The Masterpiece Revision' or similar where applicable. Include interesting chemical or industry tidbits for each milestone.
+10. Populate the molecularBlueprintShift object: providing custom details of the molecular blueprint transition (e.g., from original EDT to high-concentration Extrait/Parfum), showcasing how the physical formula matrix shifts its focus from a high-volatility engine/effect to a low-volatility engine/effect.
+11. Set the strategicTakeaway field as a brutally honest summary of how the brand/house executed this timeline and formulation strategy over the years to manage margins, capture demographics, or navigate IFRA regulatory restrictions.`;
 
     const response = await ai.models.generateContent({
       model: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
@@ -76,13 +79,14 @@ Do not output raw conversational text or markdown wrappers. Return purely valid 
         responseSchema: {
           type: Type.OBJECT,
           required: [
-            "brand", "name", "concentration", "nose", "releaseYear", "batchLineage",
+            "brand", "name", "concentration", "nose", "releaseYear", "batchLineage", "historicalTimeline",
             "aromaChemicalMatrix", "naturalToSyntheticRatio", "evaporationCurve",
             "skinLongevityIndex", "fabricPermanenceIndex", "sillageProjectionRadiusCurve",
             "olfactoryFatigueRisk", "olfactoryFatigueExplanation", "olfactoryFamily",
             "accords", "tempRangeMinCelsius", "tempRangeMaxCelsius", "humidityTolerance",
             "settingScoring", "avgRetailPrice", "pricePerMl", "valueRating",
-            "alternatives", "formulationHeritage", "laymanChemistryExplanation", "story", "notes"
+            "alternatives", "formulationHeritage", "laymanChemistryExplanation", "story", "notes",
+            "molecularBlueprintShift", "strategicTakeaway"
           ],
           properties: {
             brand: { type: Type.STRING },
@@ -219,6 +223,20 @@ Do not output raw conversational text or markdown wrappers. Return purely valid 
                 }
               }
             },
+            historicalTimeline: {
+              type: Type.ARRAY,
+              description: "Chronological history timeline events (awards, flankers, reformulations, house events). Provide 3-6 milestones.",
+              items: {
+                type: Type.OBJECT,
+                required: ["year", "title", "description", "classification"],
+                properties: {
+                  year: { type: Type.STRING },
+                  title: { type: Type.STRING },
+                  description: { type: Type.STRING },
+                  classification: { type: Type.STRING, description: "e.g., 'Origin', 'Flanker Release', 'Reformulation', 'Milestone', 'Award', 'House Event'" }
+                }
+              }
+            },
             parsedBatchCode: {
               type: Type.OBJECT,
               required: ["code", "isValid"],
@@ -232,7 +250,19 @@ Do not output raw conversational text or markdown wrappers. Return purely valid 
                 activeIngredientsStability: { type: Type.STRING },
                 explanation: { type: Type.STRING }
               }
-            }
+            },
+            molecularBlueprintShift: {
+              type: Type.OBJECT,
+              required: ["title", "highVolatilityEngine", "highVolatilityEffect", "lowVolatilityEngine", "lowVolatilityEffect"],
+              properties: {
+                title: { type: Type.STRING },
+                highVolatilityEngine: { type: Type.STRING },
+                highVolatilityEffect: { type: Type.STRING },
+                lowVolatilityEngine: { type: Type.STRING },
+                lowVolatilityEffect: { type: Type.STRING }
+              }
+            },
+            strategicTakeaway: { type: Type.STRING }
           }
         }
       }
