@@ -37,7 +37,9 @@ import {
   Bookmark,
   BookOpen,
   Scroll,
-  Sparkles
+  Sparkles,
+  Users,
+  Atom
 } from 'lucide-react';
 import { getDynamicSourceOriginData, KNOWN_ISOLATES_DATABASE } from './originDatabase';
 import { 
@@ -60,6 +62,11 @@ import {
 } from 'recharts';
 import { PREDEFINED_FRAGRANCES } from './data';
 import { FragranceData, ParsedBatchCode, AromaChemical } from './types';
+import { MASTER_NOSES_DATABASE } from './nosesDatabase';
+import { MASTER_HOUSES_DATABASE } from './housesDatabase';
+import { INDEPENDENT_NICHE_DATABASE } from './nicheDatabase';
+import { PERFUME_SYNTHETICS_DATABASE } from './syntheticsDatabase';
+import { TECHNICAL_SYNTHETICS_DATABASE } from './technicalSyntheticsDatabase';
 
 const getInterpolatedSillageRadius = (fragrance: FragranceData, hour: number): number => {
   const curve = fragrance.sillageProjectionRadiusCurve;
@@ -206,7 +213,7 @@ export default function App() {
   const [batchError, setBatchError] = useState<string | null>(null);
 
   // Active View Tab State
-  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary'>('dossier');
+  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix'>('dossier');
 
   // Compounding Bench state parameters
   const [compoundingName, setCompoundingName] = useState('My Custom Blend');
@@ -517,6 +524,14 @@ export default function App() {
   const [activeOriginIsolate, setActiveOriginIsolate] = useState<string | null>(null);
   const [searchOriginQuery, setSearchOriginQuery] = useState('');
   const [searchGlossaryQuery, setSearchGlossaryQuery] = useState('');
+  const [searchNosesQuery, setSearchNosesQuery] = useState('');
+  const [searchHousesQuery, setSearchHousesQuery] = useState('');
+  const [searchNicheQuery, setSearchNicheQuery] = useState('');
+  const [selectedNicheCategory, setSelectedNicheCategory] = useState<string | null>(null);
+  const [searchSyntheticsQuery, setSearchSyntheticsQuery] = useState('');
+  const [selectedSyntheticsCategory, setSelectedSyntheticsCategory] = useState<string | null>(null);
+  const [searchMatrixQuery, setSearchMatrixQuery] = useState('');
+  const [selectedMatrixCategory, setSelectedMatrixCategory] = useState<string | null>(null);
 
   // Instantly sync dynamic moodboard overlay on fragrance change to prevent any latency gaps
   useEffect(() => {
@@ -878,6 +893,66 @@ export default function App() {
           >
             <Info className="w-4 h-4" />
             Layman Glossary
+          </button>
+
+          <button
+            onClick={() => setActiveTab('noses')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'noses'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Master Noses
+          </button>
+
+          <button
+            onClick={() => setActiveTab('houses')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'houses'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Globe className="w-4 h-4" />
+            Master Houses
+          </button>
+
+          <button
+            onClick={() => setActiveTab('niche')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'niche'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-[#F59E0B]" />
+            Independent Niche
+          </button>
+
+          <button
+            onClick={() => setActiveTab('synthetics')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'synthetics'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Atom className="w-4 h-4 text-[#A855F7]" />
+            Synthetics Guide
+          </button>
+
+          <button
+            onClick={() => setActiveTab('matrix')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'matrix'
+                ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <FileSpreadsheet className="w-4 h-4 text-[#10B981]" />
+            Technical Matrix
           </button>
         </div>
 
@@ -5472,6 +5547,973 @@ export default function App() {
               </div>
             );
           })()}
+        </div>
+      )}
+
+      {activeTab === 'noses' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Noses Gallery Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <Users className="w-48 h-48 text-[#3B82F6]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#3B82F6] flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#3B82F6]" /> The Guild of Masters
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              Master Noses & Olfactory Styles
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify bg-gradient-to-r from-transparent to-transparent">
+              Explore the legendary creators who transformed synthetic chemistry and botanical extractions into high-end art. Every master operates under a signature structural blueprint—defining how they balance volatility, density, and skin chemistry. Select any seminal work below to load its profile instantly into the <strong className="text-[#3B82F6] hover:underline cursor-pointer" onClick={() => setActiveTab('dossier')}>Dossier Analyst</strong>.
+            </p>
+
+            {/* Custom Noses Search Box */}
+            <div className="relative max-w-md mt-6">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-[#6A7180]" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search master noses, signatures, or seminal creations..."
+                value={searchNosesQuery}
+                onChange={(e) => setSearchNosesQuery(e.target.value)}
+                className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
+                id="noses-search-input"
+              />
+              {searchNosesQuery && (
+                <button
+                  onClick={() => setSearchNosesQuery('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn"
+                >
+                  CLEAR
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* MASTERCLASS BANNER: PERFUME VS FRAGRANCE */}
+          <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 relative overflow-hidden" id="perfume-vs-fragrance-masterclass">
+            <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-5 pointer-events-none animate-pulse">
+              <BookOpen className="w-36 h-36 text-white/5" />
+            </div>
+
+            <h4 className="font-display text-xs font-bold text-white tracking-widest border-b border-[#2D3139] pb-3 mb-4 flex items-center justify-between uppercase">
+              <span className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#3B82F6]" />
+                Olfactory Distinction: Perfume vs. Fragrance
+              </span>
+              <span className="font-mono text-[9px] text-[#3B82F6] font-bold uppercase bg-[#3B82F6]/10 px-2.5 py-0.5 rounded-sm border border-[#3B82F6]/15">
+                Technical Education
+              </span>
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm font-sans mb-6">
+              <div className="space-y-2 text-justify">
+                <span className="text-white font-mono font-bold text-xs uppercase text-[#3B82F6] block">
+                  1. The Broad Concept: What is a "Fragrance"?
+                </span>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  A <strong>fragrance</strong> is a vast umbrella term denoting any composite aromatic profile or pleasant odor character. It describes the sensory experience itself or any substance engineered to emit a smell. This applies universally across industries—from ambient scented candles and laundry fabric softeners to functional soap surfactants, interior sprays, and cosmetic items. In essence, fragrance acts as the abstract olfactory formula or signature atmosphere.
+                </p>
+              </div>
+
+              <div className="space-y-2 text-justify">
+                <span className="text-white font-mono font-bold text-xs uppercase text-[#10B981] block">
+                  2. The Fine Object: What is a "Perfume"?
+                </span>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  A <strong>perfume</strong> (specifically matching the traditional French *parfum* or *extrait*) is a highly specific, high-end product form in fine perfumery. While the fragrance represents the sweet-or-smoky smell, the perfume represents the physical delivery system. It is a precise solution composed of highly pure aromatic raw materials—botanical oils, moss concretes, synthetic aroma-chemical isolates, and natural absolute fractions—precisely suspended in high-volatility denatured ethyl alcohol carrier, designed strategically for personal skin and textile application.
+                </p>
+              </div>
+            </div>
+
+            {/* Dynamic Concentration Hierarchy Visualizer */}
+            <div className="bg-[#0A0B0E] border border-[#2D3139]/70 rounded-sm p-4 mt-4">
+              <span className="text-slate-300 font-mono text-[10px] font-bold uppercase block mb-3 text-center tracking-widest">
+                Scientific Concentration & Release Spectrum
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 font-mono text-center">
+                <div className="bg-[#15181F] border border-[#2D3139]/60 rounded-sm p-3 flex flex-col justify-between">
+                  <div>
+                    <span className="block text-[#E0E2E6] text-[11px] font-bold uppercase">Parfum / Extrait</span>
+                    <span className="block text-[#3B82F6] text-xs font-black mt-1">20% – 40% Conc.</span>
+                  </div>
+                  <div className="border-t border-[#2D3139]/40 mt-3 pt-2">
+                    <span className="block text-[9.5px] text-[#6A7180] leading-snug font-sans">
+                      Durable, low-volatility anchors. Blends tightly with skin lipids, generating a lingering, close-to-skin aura lasting <strong>8 – 12h+</strong>.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-[#15181F] border border-[#2D3139]/60 rounded-sm p-3 flex flex-col justify-between">
+                  <div>
+                    <span className="block text-[#E0E2E6] text-[11px] font-bold uppercase">Eau de Parfum</span>
+                    <span className="block text-[#10B981] text-xs font-black mt-1">15% – 20% Conc.</span>
+                  </div>
+                  <div className="border-t border-[#2D3139]/40 mt-3 pt-2">
+                    <span className="block text-[9.5px] text-[#6A7180] leading-snug font-sans">
+                      The industry benchmark. Achieves balanced atomic diffusion with moderate citrus evaporation and rich mid-level sillage for <strong>6 – 8h</strong>.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-[#15181F] border border-[#2D3139]/60 rounded-sm p-3 flex flex-col justify-between">
+                  <div>
+                    <span className="block text-[#E0E2E6] text-[11px] font-bold uppercase">Eau de Toilette</span>
+                    <span className="block text-amber-500 text-xs font-black mt-1">5% – 15% Conc.</span>
+                  </div>
+                  <div className="border-t border-[#2D3139]/40 mt-3 pt-2">
+                    <span className="block text-[9.5px] text-[#6A7180] leading-snug font-sans">
+                      Focuses heavily on bright, sparkling top-notes and floral heart-spacers. Highly diffusive but evaporates quickly over <strong>3 – 4h</strong>.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-[#15181F] border border-[#2D3139]/60 rounded-sm p-3 flex flex-col justify-between">
+                  <div>
+                    <span className="block text-[#E0E2E6] text-[11px] font-bold uppercase">Eau de Cologne</span>
+                    <span className="block text-[#F87171] text-xs font-black mt-1">2% – 5% Conc.</span>
+                  </div>
+                  <div className="border-t border-[#2D3139]/40 mt-3 pt-2">
+                    <span className="block text-[9.5px] text-[#6A7180] leading-snug font-sans">
+                      High-volatility citrus, herbs, and aldehydes that boil off the skin within <strong>1 – 2h</strong>. Designed for instant refreshing clean bursts.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* NOSE CARDS GRID */}
+          <div className="space-y-6">
+            {(() => {
+              const query = searchNosesQuery.toLowerCase().trim();
+              const filtered = MASTER_NOSES_DATABASE.filter(item => {
+                if (!query) return true;
+                return item.name.toLowerCase().includes(query) ||
+                  item.category.toLowerCase().includes(query) ||
+                  item.blueprint.toLowerCase().includes(query) ||
+                  item.howHeWorked.toLowerCase().includes(query) ||
+                  item.experience.toLowerCase().includes(query) ||
+                  item.seminalWorksList.some(work => 
+                    work.name.toLowerCase().includes(query) || 
+                    work.brand.toLowerCase().includes(query)
+                  );
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="bg-[#15181F] border border-[#2D3139] p-12 text-center rounded-sm space-y-3">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No matching perfumers found</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try searching for famous names like "Jean-Claude", "Guerlain", "Kurkdjian" or creation names like "Terre d'Hermès" or "Shalimar".</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filtered.map((nose, noseIdx) => (
+                    <div 
+                      key={`nose-card-${noseIdx}`}
+                      className="bg-[#15181F] border border-[#2D3139] hover:border-[#3B82F6]/30 p-6 rounded-sm flex flex-col justify-between transition-all"
+                    >
+                      <div className="space-y-4">
+                        {/* Header metadata segment */}
+                        <div className="flex items-start justify-between border-b border-[#2D3139]/50 pb-3">
+                          <div>
+                            <span className="text-[8px] font-mono bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/15 px-2.5 py-0.5 rounded-sm uppercase tracking-wider block w-fit mb-1.5 font-bold">
+                              {nose.category}
+                            </span>
+                            <h4 className="font-display font-medium text-base text-white tracking-wide">
+                              {nose.name}
+                            </h4>
+                          </div>
+                          <Users className="w-5 h-5 text-[#6A7180]/40 shrink-0" />
+                        </div>
+
+                        {/* Visual Blueprint Row */}
+                        <div className="bg-[#0A0B0E] p-3 border border-[#2D3139]/40 rounded-sm">
+                          <span className="font-mono text-[8.5px] uppercase text-[#3B82F6] font-bold block mb-1">
+                            Aesthetic Blueprint
+                          </span>
+                          <p className="text-xs text-white/95 font-sans italic leading-relaxed">
+                            "{nose.blueprint}"
+                          </p>
+                        </div>
+
+                        {/* Working Methodology */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#6A7180] font-bold block">
+                            How They Worked (Scent Science & Strategy)
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-justify">
+                            {nose.howHeWorked}
+                          </p>
+                        </div>
+
+                        {/* Sensory Experience wear */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#10B981] font-bold block">
+                            The Scent Experience (The Wear Profile)
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-justify text-left">
+                            {nose.experience}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Seminal Creations pill grid selection */}
+                      <div className="border-t border-[#2D3139]/50 pt-4 mt-5">
+                        <span className="font-mono text-[8.5px] uppercase text-amber-500 font-bold block mb-2.5">
+                          Seminal Creations (Click to Analyze)
+                        </span>
+
+                        <div className="flex flex-wrap gap-2">
+                          {nose.seminalWorksList.map((work, workIdx) => (
+                            <button
+                              key={`work-${workIdx}`}
+                              onClick={() => {
+                                setSearchBrand(work.brand);
+                                setSearchName(work.name);
+                                setActiveTab('dossier');
+                                setShelfNotification(`Loaded "${work.brand} ${work.name}" into Dossier Analyst. Press Initiate to run GC-MS assay.`);
+                                setTimeout(() => setShelfNotification(null), 5000);
+                              }}
+                              className="bg-[#0A0B0E] hover:bg-[#3B82F6]/10 border border-[#2D3139] hover:border-[#3B82F6]/50 text-slate-200 hover:text-[#3B82F6] text-[10.5px] font-mono px-3 py-1.5 rounded cursor-pointer transition-all flex items-center gap-1.5 outline-none font-bold"
+                            >
+                              <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                              <span className="font-sans font-medium">{work.name}</span>
+                              <span className="text-[8px] text-[#6A7180] uppercase">({work.brand})</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'houses' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Houses Gallery Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <Globe className="w-48 h-48 text-[#3B82F6]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#3B82F6] flex items-center gap-2">
+              <Globe className="w-4 h-4 text-[#3B82F6]" /> The Great Perfume Houses
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              Master Houses & Olfactory Philosophies
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify">
+              Explore the iconic fragrance houses that shape global olfaction. From legendary historic dynasties preserving the ancestral royal courts to industrial avant-garde rebels redefining what &quot;smells good&quot; entirely. Every house is built upon a signature architectural style and a strict core mandate. Click any of their exquisite creations below to load it instantly into the <strong className="text-[#3B82F6] hover:underline cursor-pointer" onClick={() => setActiveTab('dossier')}>Dossier Analyst</strong>.
+            </p>
+
+            {/* Custom Houses Search Box */}
+            <div className="relative max-w-md mt-6">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-[#6A7180]" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search master houses, philosophies, scents, or creations..."
+                value={searchHousesQuery}
+                onChange={(e) => setSearchHousesQuery(e.target.value)}
+                className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
+                id="houses-search-input"
+              />
+              {searchHousesQuery && (
+                <button
+                  onClick={() => setSearchHousesQuery('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn"
+                >
+                  CLEAR
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* HOUSES CARDS GRID */}
+          <div className="space-y-6">
+            {(() => {
+              const query = searchHousesQuery.toLowerCase().trim();
+              const filtered = MASTER_HOUSES_DATABASE.filter(item => {
+                if (!query) return true;
+                return item.name.toLowerCase().includes(query) ||
+                  item.category.toLowerCase().includes(query) ||
+                  item.philosophy.toLowerCase().includes(query) ||
+                  item.scentProfile.toLowerCase().includes(query) ||
+                  item.coreMandate.toLowerCase().includes(query) ||
+                  item.creationsList.some(work => 
+                    work.name.toLowerCase().includes(query) || 
+                    work.brand.toLowerCase().includes(query)
+                  );
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="bg-[#15181F] border border-[#2D3139] p-12 text-center rounded-sm space-y-3">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No matching perfume houses found</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try searching for famous houses like &quot;Guerlain&quot;, &quot;Creed&quot;, &quot;Hermès&quot;, &quot;Le Labo&quot; or creation names like &quot;Aventus&quot;, &quot;Layton&quot; or &quot;Santal 33&quot;.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filtered.map((house, idx) => (
+                    <div 
+                      key={`house-card-${idx}`}
+                      className="bg-[#15181F] border border-[#2D3139] hover:border-[#3B82F6]/30 p-6 rounded-sm flex flex-col justify-between transition-all"
+                    >
+                      <div className="space-y-4">
+                        {/* Header metadata segment */}
+                        <div className="flex items-start justify-between border-b border-[#2D3139]/50 pb-3">
+                          <div>
+                            <span className="text-[8px] font-mono bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/15 px-2.5 py-0.5 rounded-sm uppercase tracking-wider block w-fit mb-1.5 font-bold">
+                              {house.category}
+                            </span>
+                            <h4 className="font-display font-medium text-base text-white tracking-wide flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]"></span>
+                              {house.name}
+                            </h4>
+                          </div>
+                          <Globe className="w-5 h-5 text-[#6A7180]/40 shrink-0" />
+                        </div>
+
+                        {/* Visual Philosophy Row */}
+                        <div className="bg-[#0A0B0E] p-3 border border-[#2D3139]/40 rounded-sm">
+                          <span className="font-mono text-[8.5px] uppercase text-[#3B82F6] font-bold block mb-1">
+                            The Philosophy
+                          </span>
+                          <p className="text-xs text-white/95 font-sans italic leading-relaxed">
+                            &quot;{house.philosophy}&quot;
+                          </p>
+                        </div>
+
+                        {/* Scent Profile */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#6A7180] font-bold block">
+                            The Scent Profile
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-[#c0c6d4] text-justify">
+                            {house.scentProfile}
+                          </p>
+                        </div>
+
+                        {/* Core Mandate */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#10B981] font-bold block">
+                            The Core Mandate
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-[#c0c6d4] text-justify">
+                            {house.coreMandate}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* House Creations click selection */}
+                      <div className="border-t border-[#2D3139]/50 pt-4 mt-5">
+                        <span className="font-mono text-[8.5px] uppercase text-amber-500 font-bold block mb-2.5">
+                          Seminal Creations (Click to Analyze & Load)
+                        </span>
+
+                        <div className="flex flex-wrap gap-2">
+                          {house.creationsList.map((create, cIdx) => (
+                            <button
+                              key={`create-${cIdx}`}
+                              onClick={() => {
+                                setSearchBrand(create.brand);
+                                setSearchName(create.name);
+                                setActiveTab('dossier');
+                                setShelfNotification(`Loaded "${create.brand} ${create.name}" into Dossier Analyst. Press Initiate to run GC-MS assay.`);
+                                setTimeout(() => setShelfNotification(null), 5000);
+                              }}
+                              className="bg-[#0A0B0E] hover:bg-[#3B82F6]/10 border border-[#2D3139] hover:border-[#3B82F6]/50 text-slate-200 hover:text-[#3B82F6] text-[10.5px] font-mono px-3 py-1.5 rounded cursor-pointer transition-all flex items-center gap-1.5 outline-none font-bold"
+                            >
+                              <Sparkles className="w-2.5 h-2.5 shrink-0 text-amber-500" />
+                              <span className="font-sans font-medium">{create.name}</span>
+                              <span className="text-[8px] text-[#6A7180] uppercase">({create.brand})</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'niche' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Niche Icons Gallery Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <Sparkles className="w-48 h-48 text-[#F59E0B]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#F59E0B] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#F59E0B]" /> Independent Niche &amp; Avant-Garde
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              Independent Niche Noses &amp; Houses
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify">
+              The landscape of independent perfumery has evolved into a highly intellectual, non-commercial battlefield. The following 25 exemplary niche houses and independent &quot;noses&quot; are distinguished by their refusal to rely on mass-market trends. They treat fragrance as an exercise in structural design, historical preservation, or raw molecular art—distinct from any creators previously analyzed. Click any of their exquisite creation names below to instantly load them and begin analysis on the home page.
+            </p>
+
+            {/* Custom Search & Filters Box */}
+            <div className="mt-6 space-y-4">
+              <div className="relative max-w-md">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-[#6A7180]" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search independent niche, philosophies, blueprints, or creations..."
+                  value={searchNicheQuery}
+                  onChange={(e) => setSearchNicheQuery(e.target.value)}
+                  className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
+                  id="niche-search-input"
+                />
+                {searchNicheQuery && (
+                  <button
+                    onClick={() => setSearchNicheQuery('')}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn shadow-none bg-transparent hover:bg-transparent border-0"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Interactivity: Category Filters */}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#2D3139]/40">
+                <button
+                  onClick={() => setSelectedNicheCategory(null)}
+                  className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                    selectedNicheCategory === null 
+                      ? 'bg-[#3B82F6]/15 border-[#3B82F6] text-white' 
+                      : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                  }`}
+                >
+                  All Categories
+                </button>
+                {[
+                  "The Avant-Garde Concept Architects",
+                  "The Landscape & Narrative Archivists",
+                  "The Botanical Purists & Terroir Masters",
+                  "The Modern Minimalists & Concept Rebels",
+                  "The Intellectual & Mythological Alchemists"
+                ].map((cat, catIdx) => (
+                  <button
+                    key={`niche-cat-tab-${catIdx}`}
+                    onClick={() => setSelectedNicheCategory(cat)}
+                    className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                      selectedNicheCategory === cat 
+                        ? 'bg-[#3B82F6]/15 border-[#3B82F6] text-white' 
+                        : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* GALLERY GRID */}
+          <div className="space-y-6">
+            {(() => {
+              const query = searchNicheQuery.toLowerCase().trim();
+              const filtered = INDEPENDENT_NICHE_DATABASE.filter(item => {
+                // Category Filter
+                if (selectedNicheCategory && item.category !== selectedNicheCategory) return false;
+
+                // Search Query Filter
+                if (!query) return true;
+                return item.name.toLowerCase().includes(query) ||
+                  item.category.toLowerCase().includes(query) ||
+                  item.origin.toLowerCase().includes(query) ||
+                  item.philosophy.toLowerCase().includes(query) ||
+                  item.blueprint.toLowerCase().includes(query) ||
+                  item.creations.some(c => 
+                    c.name.toLowerCase().includes(query) || 
+                    c.brand.toLowerCase().includes(query)
+                  );
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="bg-[#15181F] border border-[#2D3139] p-12 text-center rounded-sm space-y-3">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No matching independent niche houses found</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try modifying your search or choosing &quot;All Categories&quot; above.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filtered.map((nicheItem, idx) => (
+                    <div 
+                      key={`niche-card-${idx}`}
+                      className="bg-[#15181F] border border-[#2D3139] hover:border-[#F59E0B]/30 p-6 rounded-sm flex flex-col justify-between transition-all"
+                    >
+                      <div className="space-y-4">
+                        {/* Header metadata segment */}
+                        <div className="flex items-start justify-between border-b border-[#2D3139]/50 pb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1.5 font-bold">
+                              <span className="text-[8px] font-mono bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/15 px-2.5 py-0.5 rounded-sm uppercase tracking-wider font-bold">
+                                {nicheItem.category}
+                              </span>
+                              <span className="text-[9px] font-mono text-[#6A7180] font-semibold">
+                                #{String(nicheItem.id).padStart(2, '0')}
+                              </span>
+                            </div>
+                            <h4 className="font-display font-medium text-base text-white tracking-wide flex items-center gap-2">
+                              {nicheItem.name}
+                              <span className="text-[10px] font-mono text-[#6A7180] font-normal">
+                                ({nicheItem.origin})
+                              </span>
+                            </h4>
+                          </div>
+                          <Sparkles className="w-5 h-5 text-[#F59E0B]/40 shrink-0" />
+                        </div>
+
+                        {/* Design Philosophy Row */}
+                        <div className="bg-[#0A0B0E] p-3 border border-[#2D3139]/40 rounded-sm">
+                          <span className="font-mono text-[8.5px] uppercase text-[#F59E0B] font-bold block mb-1">
+                            Design Philosophy
+                          </span>
+                          <p className="text-xs text-white/95 font-sans italic leading-relaxed text-left text-justify">
+                            {nicheItem.philosophy}
+                          </p>
+                        </div>
+
+                        {/* Scent Science & Blueprint Mechanism */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#6A7180] font-bold block">
+                            Blueprint Mechanism &amp; Molecular Art
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-[#c0c6d4] text-justify text-left">
+                            {nicheItem.blueprint}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Fragrance Creations list of links */}
+                      <div className="border-t border-[#2D3139]/50 pt-4 mt-5 font-bold">
+                        <span className="font-mono text-[8.5px] uppercase text-amber-500 font-bold block mb-2.5">
+                          Seminal Creations (Click to load &amp; analyze)
+                        </span>
+
+                        <div className="flex flex-wrap gap-2">
+                          {nicheItem.creations.map((create, cIdx) => (
+                            <button
+                              key={`niche-create-${cIdx}`}
+                              onClick={() => {
+                                setSearchBrand(create.brand);
+                                setSearchName(create.name);
+                                setActiveTab('dossier');
+                                setShelfNotification(`Loaded "${create.brand} ${create.name}" into Fragrance Name &amp; Flanker field. Press Initiate to run GC-MS assay.`);
+                                setTimeout(() => setShelfNotification(null), 5000);
+                              }}
+                              className="bg-[#0A0B0E] hover:bg-[#F59E0B]/10 border border-[#2D3139] hover:border-[#F59E0B]/50 text-slate-200 hover:text-[#F59E0B] text-[10.5px] font-mono px-3 py-1.5 rounded cursor-pointer transition-all flex items-center gap-1.5 outline-none font-bold"
+                            >
+                              <Flame className="w-2.5 h-2.5 shrink-0 text-[#F59E0B]" />
+                              <span className="font-sans font-medium text-white group-hover:text-[#F59E0B]">{create.name}</span>
+                              <span className="text-[8px] text-[#6A7180] uppercase">({create.brand})</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'synthetics' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Synthetics Gallery Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <Atom className="w-48 h-48 text-[#A855F7]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#A855F7] flex items-center gap-2">
+              <Atom className="w-4 h-4 text-[#A855F7]" /> The Layman&apos;s Guide
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              Perfume Synthetics &amp; Molecular Building Blocks
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify">
+              Modern fine fragrance is an intricate tapestry of nature and advanced organic synthesis. Synthetics aren&apos;t &ldquo;cheap fillers&rdquo;&mdash;they are the incredible structural backbones, invisible radiators, and crisp special effects that make a perfume float, last, or turn into mouth-watering, delicious art. Click any of the iconic creations listed under the <strong>Where You&apos;ve Smelled It</strong> column to load it instantly into our <strong>Dossier Analyst</strong>.
+            </p>
+
+            {/* Custom Search & Filters Box */}
+            <div className="mt-6 space-y-4">
+              <div className="relative max-w-md">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-[#6A7180]" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search synthetics, scent profiles, magic tricks, or fragrances..."
+                  value={searchSyntheticsQuery}
+                  onChange={(e) => setSearchSyntheticsQuery(e.target.value)}
+                  className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
+                  id="synthetics-search-input"
+                />
+                {searchSyntheticsQuery && (
+                  <button
+                    onClick={() => setSearchSyntheticsQuery('')}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn shadow-none bg-transparent hover:bg-transparent border-0"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Category Filters */}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#2D3139]/40">
+                <button
+                  onClick={() => setSelectedSyntheticsCategory(null)}
+                  className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                    selectedSyntheticsCategory === null 
+                      ? 'bg-[#A855F7]/15 border-[#A855F7] text-white font-bold' 
+                      : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                  }`}
+                >
+                  All Molecules
+                </button>
+                {[
+                  "The Clean, Cozy, & \"Skin-Like\" Aromas",
+                  "The Invisible Radiance & Mineral Textures",
+                  "The Floral Illusions",
+                  "The Fresh, Green, & Aquatic \"Special Effects\"",
+                  "The Sweet, Delicious Gourmands"
+                ].map((cat, catIdx) => (
+                  <button
+                    key={`synthetic-cat-tab-${catIdx}`}
+                    onClick={() => setSelectedSyntheticsCategory(cat)}
+                    className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                      selectedSyntheticsCategory === cat 
+                        ? 'bg-[#A855F7]/15 border-[#A855F7] text-white font-bold' 
+                        : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                    }`}
+                  >
+                    {cat.replace(/"/g, '')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* SYNTHETICS LISTING */}
+          <div className="space-y-6">
+            {(() => {
+              const query = searchSyntheticsQuery.toLowerCase().trim();
+              const filtered = PERFUME_SYNTHETICS_DATABASE.filter(item => {
+                // Category Filter
+                if (selectedSyntheticsCategory && item.category !== selectedSyntheticsCategory) return false;
+
+                // Search Query Filter
+                if (!query) return true;
+                return item.name.toLowerCase().includes(query) ||
+                  item.category.toLowerCase().includes(query) ||
+                  item.smell.toLowerCase().includes(query) ||
+                  item.magicTrick.toLowerCase().includes(query) ||
+                  item.whereSmelledText.toLowerCase().includes(query) ||
+                  item.creations.some(c => 
+                    c.name.toLowerCase().includes(query) || 
+                    (c.brand && c.brand.toLowerCase().includes(query))
+                  );
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="bg-[#15181F] border border-[#2D3139] p-12 text-center rounded-sm space-y-3">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No matching synthetics found</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try searching for famous chemicals like &quot;Ambroxan&quot;, &quot;Iso E Super&quot;, &quot;Cashmeran&quot;, or &quot;Hedione&quot;.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filtered.map((item, idx) => (
+                    <div 
+                      key={`synthetic-card-${idx}`}
+                      className="bg-[#15181F] border border-[#2D3139] hover:border-[#A855F7]/40 p-6 rounded-sm flex flex-col justify-between transition-all"
+                    >
+                      <div className="space-y-4">
+                        {/* Header metadata segment */}
+                        <div className="flex items-start justify-between border-b border-[#2D3139]/50 pb-3">
+                          <div>
+                            <span className="text-[8px] font-mono bg-[#A855F7]/10 text-[#A855F7] border border-[#A855F7]/15 px-2.5 py-0.5 rounded-sm uppercase tracking-wider block w-fit mb-1.5 font-bold">
+                              {item.category}
+                            </span>
+                            <h4 className="font-display font-medium text-base text-white tracking-wide flex items-center gap-2">
+                              {item.name}
+                            </h4>
+                          </div>
+                          <Atom className="w-5 h-5 text-[#A855F7]/40 shrink-0" />
+                        </div>
+
+                        {/* What It Actually Smells Like Row */}
+                        <div className="bg-[#0A0B0E] p-3 border border-[#2D3139]/40 rounded-sm">
+                          <span className="font-mono text-[8.5px] uppercase text-[#A855F7] font-bold block mb-1">
+                            What It Actually Smells Like
+                          </span>
+                          <p className="text-xs text-white/95 font-sans italic leading-relaxed">
+                            &quot;{item.smell}&quot;
+                          </p>
+                        </div>
+
+                        {/* Direct Perfume Magic Trick Explanation */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#6A7180] font-bold block">
+                            The Perfume Magic Trick
+                          </span>
+                          <p className="text-xs text-slate-300 font-sans leading-relaxed text-[#c0c6d4] text-justify text-left">
+                            {item.magicTrick}
+                          </p>
+                        </div>
+
+                        {/* Where You've Smelled It Raw Text */}
+                        <div className="space-y-1">
+                          <span className="font-mono text-[8.5px] uppercase text-[#6A7180] font-bold block">
+                            Where You&apos;ve Smelled It
+                          </span>
+                          <p className="text-xs text-slate-400 font-sans italic text-left">
+                            {item.whereSmelledText}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Interactive creations click selection */}
+                      <div className="border-t border-[#2D3139]/50 pt-4 mt-5">
+                        <span className="font-mono text-[8.5px] uppercase text-[#A855F7] font-bold block mb-2.5">
+                          Analyze Famous References (Click to load &amp; analyze)
+                        </span>
+
+                        <div className="flex flex-wrap gap-2">
+                          {item.creations.map((create, cIdx) => (
+                            <button
+                              key={`synthetic-create-${cIdx}`}
+                              onClick={() => {
+                                setSearchBrand(create.brand || '');
+                                setSearchName(create.name);
+                                setActiveTab('dossier');
+                                setShelfNotification(`Loaded "${create.brand ? create.brand + ' ' : ''}${create.name}" into Fragrance Name &amp; Flanker field. Press Initiate to run GC-MS assay.`);
+                                setTimeout(() => setShelfNotification(null), 5000);
+                              }}
+                              className="bg-[#0A0B0E] hover:bg-[#A855F7]/10 border border-[#2D3139] hover:border-[#A855F7]/50 text-slate-200 hover:text-[#A855F7] text-[10.5px] font-mono px-3 py-1.5 rounded cursor-pointer transition-all flex items-center gap-1.5 outline-none font-bold"
+                            >
+                              <Atom className="w-2.5 h-2.5 shrink-0 text-[#A855F7]" />
+                              <span className="font-sans font-medium">{create.name}</span>
+                              {create.brand && <span className="text-[8px] text-[#6A7180] uppercase">({create.brand})</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'matrix' && (
+        <div className="space-y-6 animate-fadeIn pb-12">
+          {/* Master Matrix Header */}
+          <div className="bg-[#15181F] border border-[#2D3139] p-6 rounded-sm relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-5 pointer-events-none">
+              <FileSpreadsheet className="w-48 h-48 text-[#10B981]" />
+            </div>
+            
+            <h3 className="text-sm font-mono uppercase tracking-wider text-[#10B981] flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-[#10B981]" /> Formulation &amp; Regulatory Database
+            </h3>
+            <p className="text-2xl font-display font-bold text-white mt-1">
+              Master Inventory of Synthetics (Technical &amp; Regulatory Formulation Matrix)
+            </p>
+            <p className="text-xs text-[#6A7180] max-w-3xl mt-2 leading-relaxed font-sans text-justify">
+              This master technical registry exposes the thermodynamic properties, chemical identifiers, regulatory limits, and olfactory dynamics of key synthetic isolates. Filter by formulation category or search by material name, CAS number, or physical characteristics to inspect high-velocity volatiles, diffusive blenders, and linear fixative anchors.
+            </p>
+
+            {/* Custom Search & Filters Box */}
+            <div className="mt-6 space-y-4">
+              <div className="relative max-w-md">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-[#6A7180]" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by name, CAS, IUPAC identity, or scent profiles..."
+                  value={searchMatrixQuery}
+                  onChange={(e) => setSearchMatrixQuery(e.target.value)}
+                  className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
+                  id="matrix-search-input"
+                />
+                {searchMatrixQuery && (
+                  <button
+                    onClick={() => setSearchMatrixQuery('')}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6A7180] hover:text-white text-[9px] font-mono container-clear-btn shadow-none bg-transparent hover:bg-transparent border-0"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Category Filters */}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#2D3139]/40">
+                <button
+                  onClick={() => setSelectedMatrixCategory(null)}
+                  className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                    selectedMatrixCategory === null 
+                      ? 'bg-[#10B981]/15 border-[#10B981] text-white font-bold' 
+                      : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                  }`}
+                >
+                  All Classes
+                </button>
+                {[
+                  "Top Note Modifiers & High-Velocity Volatiles",
+                  "Heart-Note Core Architects & Diffusive Blenders",
+                  "Woody, Ambergris, & Macrocyclic Fixative Anchors",
+                  "Macrocyclic & Alicyclic Musks"
+                ].map((cat, catIdx) => (
+                  <button
+                    key={`matrix-cat-tab-${catIdx}`}
+                    onClick={() => setSelectedMatrixCategory(cat)}
+                    className={`text-[9.5px] font-mono px-3 py-1.5 rounded-sm border transition-all cursor-pointer ${
+                      selectedMatrixCategory === cat 
+                        ? 'bg-[#10B981]/15 border-[#10B981] text-white font-bold' 
+                        : 'bg-[#15181F] border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/40 hover:text-white'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Table Matrix */}
+          <div className="bg-[#11141A] border border-[#2D3139] rounded-sm overflow-hidden">
+            {(() => {
+              const query = searchMatrixQuery.toLowerCase().trim();
+              const filtered = TECHNICAL_SYNTHETICS_DATABASE.filter(item => {
+                // Category Filter
+                if (selectedMatrixCategory && item.category !== selectedMatrixCategory) return false;
+
+                // Search Query Filter
+                if (!query) return true;
+                return item.name.toLowerCase().includes(query) ||
+                  item.category.toLowerCase().includes(query) ||
+                  item.casIupac.toLowerCase().includes(query) ||
+                  item.profile.toLowerCase().includes(query) ||
+                  item.substantivity.toLowerCase().includes(query) ||
+                  item.ifraLimit.toLowerCase().includes(query) ||
+                  item.vaporPressure.toLowerCase().includes(query);
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="p-12 text-center space-y-3">
+                    <span className="text-xl font-mono block text-[#6A7180]">✕</span>
+                    <p className="font-mono text-xs text-[#6A7180] uppercase tracking-wider">No technical records found matching criteria</p>
+                    <p className="text-[10px] text-[#6A7180] font-sans">Try modifying your search or choosing &quot;All Classes&quot; above.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-[#15181F] border-b border-[#2D3139]/80 text-[#6A7180] font-mono uppercase text-[9.5px] tracking-wider">
+                        <th className="p-4 font-semibold w-[15%] min-w-[140px]">Material Name</th>
+                        <th className="p-4 font-semibold w-[22%] min-w-[200px]">CAS &amp; IUPAC Identity</th>
+                        <th className="p-4 font-semibold w-[25%] min-w-[240px]">Olfactory Profile &amp; Facets</th>
+                        <th className="p-4 font-semibold w-[10%] min-w-[100px]">Substantivity</th>
+                        <th className="p-4 font-semibold w-[15%] min-w-[160px]">IFRA Cat 4 Max / Regs</th>
+                        <th className="p-4 font-semibold w-[13%] min-w-[140px]">VP &amp; Threshold</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#2D3139]/40 font-mono text-[11px] text-[#c0c6d4]">
+                      {filtered.map((item, idx) => (
+                        <tr 
+                          key={`matrix-row-${idx}`}
+                          className="hover:bg-[#15181F]/40 transition-colors"
+                        >
+                          {/* Material Name & Category Tag */}
+                          <td className="p-4 align-top">
+                            <span className="text-white font-bold font-display text-sm tracking-wide block">
+                              {item.name}
+                            </span>
+                            <span className="text-[8px] font-mono text-[#10B981] uppercase font-semibold bg-[#10B981]/5 px-1.5 py-0.5 rounded border border-[#10B981]/10 mt-1.5 inline-block">
+                              {item.category.replace(/ \(.+\)/g, '')}
+                            </span>
+                          </td>
+                          
+                          {/* CAS & IUPAC Identity */}
+                          <td className="p-4 align-top text-slate-400 font-mono leading-relaxed break-all">
+                            {item.casIupac}
+                          </td>
+                          
+                          {/* Olfactory Profile */}
+                          <td className="p-4 align-top font-sans text-[#c0c6d4] leading-relaxed text-justify">
+                            {item.profile}
+                          </td>
+                          
+                          {/* Substantivity */}
+                          <td className="p-4 align-top text-[#ECD154] font-semibold">
+                            {item.substantivity}
+                          </td>
+                          
+                          {/* IFRA Limits / Regulation */}
+                          <td className="p-4 align-top text-xs leading-relaxed text-slate-300 font-sans">
+                            {item.ifraLimit}
+                          </td>
+                          
+                          {/* Vapor Pressure */}
+                          <td className="p-4 align-top text-xs leading-relaxed text-[#3B82F6] font-mono">
+                            {item.vaporPressure}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </div>
         </div>
       )}
 
