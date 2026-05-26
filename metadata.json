@@ -1,0 +1,6 @@
+{
+  "name": "Aromata",
+  "description": "An empirical molecular perfumery engine and simulation system, featuring interactive parts-per-thousand compounding benches, IFRA compliance audits, and evaporation vector analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
