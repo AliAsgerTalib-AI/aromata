@@ -5,6 +5,7 @@ import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, Fr
 import { IngredientDropdown } from './IngredientDropdown';
 import { ChartContainer } from './ChartContainer';
 import { TemplateSelector } from './TemplateSelector';
+import { ExportImportPanel } from './ExportImportPanel';
 import { usePhysicsSimulation } from '../hooks/usePhysicsSimulation';
 
 interface CompoundingBenchProps {
@@ -105,6 +106,12 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
       <div>
         {/* Template Selector */}
         <TemplateSelector onSelectTemplate={handleSelectTemplate} />
+
+        {/* Export / Import Panel */}
+        <ExportImportPanel
+          formula={formula}
+          onImportFormula={(imported) => setFormula(imported)}
+        />
 
         {/* Formula Metadata */}
         <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 mb-6">
