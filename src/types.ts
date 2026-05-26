@@ -402,6 +402,17 @@ export interface CompoundingFormula {
   dilutionRatio: number; // 0-100, percentage oil
 }
 
+export interface FormulaTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: 'Fresh' | 'Floral' | 'Woody' | 'Oriental';
+  ingredients: IngredientRow[];
+  carrierType: 'ethanol' | 'dpg' | 'ipm';
+  dilutionRatio: number;
+  notes: string;
+}
+
 export interface CompoundingEvaporationPoint {
   timeHours: number;
   volatilityPercent: number;

@@ -1,9 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData } from '../types';
+import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData, FormulaTemplate } from '../types';
 import { IngredientDropdown } from './IngredientDropdown';
 import { ChartContainer } from './ChartContainer';
+import { TemplateSelector } from './TemplateSelector';
 import { usePhysicsSimulation } from '../hooks/usePhysicsSimulation';
 
 interface CompoundingBenchProps {
@@ -80,10 +81,31 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     // Hook automatically debounces and simulates
   }, [updateFormula]);
 
+  // Handle template selection
+  const handleSelectTemplate = useCallback((template: FormulaTemplate) => {
+    // Create unique instance IDs for each ingredient
+    const ingredientsWithIds = template.ingredients.map(ing => ({
+      ...ing,
+      id: `${ing.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    }));
+
+    // Update formula with template values
+    setFormula({
+      blendName: template.name,
+      leadPerfumer: '',
+      ingredients: ingredientsWithIds,
+      carrierType: template.carrierType,
+      dilutionRatio: template.dilutionRatio
+    });
+  }, []);
+
   return (
     <div className="grid grid-cols-2 gap-8">
       {/* LEFT PANEL: Formula Editor */}
       <div>
+        {/* Template Selector */}
+        <TemplateSelector onSelectTemplate={handleSelectTemplate} />
+
         {/* Formula Metadata */}
         <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 mb-6">
           <h3 className="text-[#0F9] text-xs font-mono uppercase mb-4">Formula Metadata Registry</h3>
