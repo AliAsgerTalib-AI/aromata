@@ -341,3 +341,34 @@ export interface BalanceHint {
   compounds?: string[];
   suggestion?: string;
 }
+
+// Education Hub Types
+
+export interface CaseStudyUI {
+  id: string;
+  brand: string;
+  fragranceName: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  frameworks: string[];
+}
+
+export interface FrameworkUI {
+  id: string;
+  name: string;
+  methodology: string;
+  keyInsight: string;
+}
+
+export interface LessonProgressData {
+  pathId: string;
+  lessonId: string;
+  completed: boolean;
+  checkpointsPassed: boolean;
+}
+
+export interface UserEducationProgress {
+  userId: string;
+  completedPaths: string[];
+  currentPathId?: string;
+  lessonProgress: LessonProgressData[];
+}
