@@ -45,7 +45,8 @@ import {
   Check
 } from 'lucide-react';
 import { getDynamicSourceOriginData, KNOWN_ISOLATES_DATABASE } from './originDatabase';
-import { 
+import { BlendingStudio } from './components/BlendingStudio';
+import {
   ResponsiveContainer, 
   LineChart, 
   Line, 
@@ -319,7 +320,7 @@ ${layeringResult.applicationSequence}
   const [layeringError, setLayeringError] = useState<string | null>(null);
 
   // Active View Tab State
-  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
+  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'blending' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
 
   // Compounding Bench state parameters
   const [compoundingName, setCompoundingName] = useState('My Custom Blend');
@@ -680,7 +681,7 @@ ${layeringResult.applicationSequence}
         throw new Error('Aesthetic engine returned an empty model stream.');
       }
     } catch (e: any) {
-      console.error("Moodboard synthesis API error:", e);
+      if (process.env.NODE_ENV !== 'production') console.error("Moodboard synthesis API error:", e);
       setMoodboardError("AI Engine busy. Local high-parity molecular design values displayed successfully.");
       // Fallback is already established in state, keeping it safe
     } finally {
@@ -694,12 +695,17 @@ ${layeringResult.applicationSequence}
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.length > 0) {
-          setCabinet(parsed);
-          return;
+        // Validate it's an array of fragrance-like objects before trusting it
+        if (Array.isArray(parsed) && parsed.every(f => typeof f.brand === 'string' && typeof f.name === 'string')) {
+          if (parsed.length > 0) {
+            setCabinet(parsed);
+            return;
+          }
+        } else {
+          throw new Error('Invalid cabinet data');
         }
       } catch (e) {
-        console.error("Failed loading user cabinet registry shelf:", e);
+        if (process.env.NODE_ENV !== 'production') console.error("Failed loading user cabinet registry shelf:", e);
       }
     }
     // Baseline seed fallback
@@ -884,7 +890,7 @@ ${layeringResult.applicationSequence}
       setLayeringResult(data);
 
     } catch (err: any) {
-      console.error("Layering Compatibility error:", err);
+      if (process.env.NODE_ENV !== 'production') console.error("Layering Compatibility error:", err);
       setLayeringError(err?.message || "An unexpected error occurred during chemical evaluation.");
     } finally {
       setIsAnalyzingLayering(false);
@@ -938,7 +944,7 @@ ${layeringResult.applicationSequence}
       setSearchName('');
       setBatchCodeInput('');
     } catch (err: any) {
-      console.error(err);
+      if (process.env.NODE_ENV !== 'production') console.error(err);
       setErrorMessage(err.message || "A system-level connection fault occurred while hitting the molecular solver.");
     } finally {
       setIsAnalyzing(false);
@@ -981,7 +987,7 @@ ${layeringResult.applicationSequence}
         throw new Error("Specimen could not map batch keys; please retry.");
       }
     } catch (err: any) {
-      console.error(err);
+      if (process.env.NODE_ENV !== 'production') console.error(err);
       setBatchError(err.message || "Failed parsing the designated alphanumeric batch lineage check.");
     } finally {
       setIsVerifyingBatch(false);
@@ -1084,6 +1090,18 @@ ${layeringResult.applicationSequence}
           >
             <Droplet className="w-4 h-4 text-[#10B981]" />
             Compounding Bench
+          </button>
+
+          <button
+            onClick={() => setActiveTab('blending')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'blending'
+                ? 'bg-[#A855F7]/10 border-[#A855F7] text-[#A855F7] shadow-[0_0_12px_rgba(168,85,247,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <Shuffle className="w-4 h-4 text-[#A855F7]" />
+            Blending Studio
           </button>
 
           <button
@@ -6291,6 +6309,10 @@ ${layeringResult.applicationSequence}
           </div>
 
         </div>
+      )}
+
+      {activeTab === 'blending' && (
+        <BlendingStudio />
       )}
 
       {activeTab === 'glossary' && (
