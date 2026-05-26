@@ -9,6 +9,10 @@ import rateLimit from 'express-rate-limit';
 import { analysisCache } from './src/server/cache/analysisCache';
 import { buildAnalysisPrompt, buildAnalysisSchema } from './src/server/gemini/analysisPrompt';
 import { EnhancedFragranceAnalysis, AnalyzeResponse } from './src/server/types/analysisTypes';
+import { createBlendingRouter } from './src/server/blending/router';
+import { initializeDatabase } from './src/server/db/schema';
+import { TrialQueries } from './src/server/db/queries';
+import Database from 'better-sqlite3';
 
 dotenv.config();
 
@@ -36,6 +40,11 @@ const analysisLimit = rateLimit({
   max: 10,
   message: 'Too many analysis requests, please try again later.'
 });
+
+// Initialize database for Blending Studio
+const db = new Database(':memory:'); // or use a file: 'aromata.db'
+initializeDatabase(db);
+const trialQueries = new TrialQueries(db);
 
 // Input sanitization
 function sanitizeInput(value: unknown, maxLength = 500): string {
@@ -353,6 +362,9 @@ Avoid ANY markdown wraps or container brackets outside the pure JSON payload.`;
     });
   }
 });
+
+// Register blending router
+app.use('/api/blending', createBlendingRouter(trialQueries, getGeminiClient()));
 
 // 3. Mount Dev Sever / Static Serve Configuration
 async function startServer() {
