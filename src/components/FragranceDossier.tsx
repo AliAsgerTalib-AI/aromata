@@ -10,6 +10,7 @@ import { FragranceData } from '../types';
 import { getInterpolatedSillageRadius } from '../utils/sillagePredictions';
 import { getPreCalculatedMoodboard, getSeasonalWardrobeRecommendation } from '../utils/moodboardCalculations';
 import { getDominantAccord } from '../fragranceUtils';
+import { DensityShiftAnalyzer } from './DensityShiftAnalyzer';
 
 interface FragranceDossierProps {
   fragrance: FragranceData;
@@ -434,6 +435,11 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
           </div>
         </div>
       </div>
+
+      {/* ROW 3.5 — Density Shift Analysis */}
+      {fragrance.densityShiftAnalysis && (
+        <DensityShiftAnalyzer fragrance={fragrance} />
+      )}
 
       {/* ROW 4 — Accord & Setting Assessment */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
