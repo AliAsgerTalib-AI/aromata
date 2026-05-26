@@ -173,8 +173,20 @@ export interface EnhancedFragranceAnalysis {
   };
 }
 
+// Density Shift Analysis
+export interface DensityShiftAnalysis {
+  familyFocus: string;                    // "Gourmand", "Woody", "Floral", "Oriental", "Fresh", etc.
+  highVolatilityEngine: string;           // Key top-note compound names (extracted)
+  diffusionEffect: string;                // Gemini-generated narrative about immediate impact
+  lowVolatilityEngine: string;            // Key base compound names (extracted)
+  tenacityEffect: string;                 // Gemini-generated narrative about long-lasting wear
+  strategicPortfolioTakeaway: string;     // Gemini-generated strategic insight
+}
+
 // API Response wrapper
+import { FragranceData } from '../../types';
+
 export interface AnalyzeResponse {
-  analysis: EnhancedFragranceAnalysis;
+  analysis: FragranceData;
   error?: string;
 }
