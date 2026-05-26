@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData, FormulaTemplate } from '../types';
@@ -7,6 +7,8 @@ import { ChartContainer } from './ChartContainer';
 import { TemplateSelector } from './TemplateSelector';
 import { ExportImportPanel } from './ExportImportPanel';
 import { usePhysicsSimulation } from '../hooks/usePhysicsSimulation';
+import { useFormulaHistory } from '../hooks/useFormulaHistory';
+import { HistoryPanel } from './HistoryPanel';
 
 interface CompoundingBenchProps {
   availableFragrances?: FragranceData[];
@@ -23,8 +25,20 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     dilutionRatio: 20
   });
 
+  // Initialize history tracking
+  const { history, addVersion, rollback, clear } = useFormulaHistory(formula);
+
   // Use Physics Simulation Hook
   const { result: simulationResult, compliance: ifraCompliance, isLoading: isSimulating, error, retry: retrySimulation } = usePhysicsSimulation(formula);
+
+  // Track formula changes in history
+  useEffect(() => {
+    // Skip the initial version created by the hook
+    if (history.length > 1) {
+      // Formula changed, we don't need to do anything here
+      // The addVersion callback will be called from the update methods
+    }
+  }, [history]);
 
   // Calculate total PPT
   const totalPpt = useMemo(() => {
@@ -40,10 +54,15 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
   }, [formula.ingredients, totalPpt]);
 
 
-  // Update formula field
+  // Update formula field and track in history
   const updateFormula = useCallback((updates: Partial<CompoundingFormula>) => {
-    setFormula(prev => ({ ...prev, ...updates }));
-  }, []);
+    setFormula(prev => {
+      const newFormula = { ...prev, ...updates };
+      // Add to history after state is updated
+      setTimeout(() => addVersion(newFormula), 0);
+      return newFormula;
+    });
+  }, [addVersion]);
 
   // Add ingredient
   const addIngredient = useCallback((ingredient: IngredientRow) => {
@@ -91,14 +110,25 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     }));
 
     // Update formula with template values
-    setFormula({
+    const newFormula = {
       blendName: template.name,
       leadPerfumer: '',
       ingredients: ingredientsWithIds,
       carrierType: template.carrierType,
       dilutionRatio: template.dilutionRatio
-    });
-  }, []);
+    };
+    setFormula(newFormula);
+    // Add to history
+    setTimeout(() => addVersion(newFormula, `Template: ${template.name}`), 0);
+  }, [addVersion]);
+
+  // Handle rollback to a previous version
+  const handleRollback = useCallback((versionId: string) => {
+    const restoredFormula = rollback(versionId);
+    if (restoredFormula) {
+      setFormula(restoredFormula);
+    }
+  }, [rollback]);
 
   return (
     <div className="grid grid-cols-2 gap-8">
@@ -365,6 +395,13 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
             )}
           </div>
         )}
+
+        {/* History Panel */}
+        <HistoryPanel
+          history={history}
+          onRollback={handleRollback}
+          onClear={clear}
+        />
 
         {/* Register Formula Button */}
         {simulationResult && !isSimulating && ifraCompliance && (
