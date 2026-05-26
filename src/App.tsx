@@ -12,6 +12,7 @@ import { LayeringAnalyzer } from './components/LayeringAnalyzer';
 import { FragranceCabinet } from './components/FragranceCabinet';
 import { BlendingStudio } from './components/BlendingStudio';
 import { EducationHub } from './components/EducationHub';
+import { CompoundingBench } from './components/CompoundingBench';
 
 // Data
 import { PREDEFINED_FRAGRANCES } from './data';
@@ -175,9 +176,13 @@ export default function App() {
         )}
 
         {activeTab === 'compounding' && (
-          <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-8 text-center">
-            <p className="text-[#6A7180]">Compounding Bench - To be migrated from main App.tsx</p>
-          </div>
+          <CompoundingBench
+            availableFragrances={availableFragrances}
+            onRegisterFormula={(formula) => {
+              fragState.updateCabinet([formula, ...fragState.cabinet]);
+              setActiveTab('cabinet');
+            }}
+          />
         )}
 
         {activeTab === 'blending' && <BlendingStudio />}

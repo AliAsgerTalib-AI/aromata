@@ -1,11 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance } from '../types';
+import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData } from '../types';
 import { IngredientDropdown } from './IngredientDropdown';
 
 interface CompoundingBenchProps {
-  onRegisterFormula?: (formula: CompoundingFormula) => void;
+  availableFragrances?: FragranceData[];
+  onRegisterFormula?: (formula: FragranceData) => void;
 }
 
 export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
@@ -434,9 +435,83 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
         {/* Register Formula Button */}
         {simulationResult && !isSimulating && ifraCompliance && (
           <button
-            onClick={() => {
-              // Register formula - implementation in Task 7
-              console.log('Register formula clicked');
+            onClick={async () => {
+              try {
+                const newFragrance: FragranceData = {
+                  brand: 'Custom Blend',
+                  name: formula.blendName || 'Unnamed Formula',
+                  concentration: 'Parfum (EDP)' as any,
+                  nose: formula.leadPerfumer || 'Unknown',
+                  releaseYear: new Date().getFullYear(),
+                  batchLineage: '',
+
+                  // Chemical composition
+                  aromaChemicalMatrix: formula.ingredients.map(ing => ({
+                    name: ing.chemicalName,
+                    percentage: totalPpt > 0 ? (ing.ppt / totalPpt) * 100 : 0,
+                    category: ing.category as any,
+                    description: ing.description || ''
+                  })),
+                  naturalToSyntheticRatio: {
+                    natural: 0,
+                    synthetic: 100
+                  },
+
+                  // Performance
+                  evaporationCurve: simulationResult?.evaporationCurve || [],
+                  skinLongevityIndex: simulationResult?.longevityHours || 0,
+                  fabricPermanenceIndex: 0,
+                  sillageProjectionRadiusCurve: simulationResult?.sillageFeetProjection ? [
+                    { hour: 0, radiusFeet: simulationResult.sillageFeetProjection }
+                  ] : [],
+                  olfactoryFatigueRisk: 0,
+                  olfactoryFatigueExplanation: 'Custom blend - fatigue profile pending analysis',
+
+                  // Classification
+                  olfactoryFamily: 'Custom Blend',
+                  accords: [],
+                  tempRangeMinCelsius: 15,
+                  tempRangeMaxCelsius: 29,
+                  humidityTolerance: 'moderate',
+                  settingScoring: [],
+
+                  // Market
+                  avgRetailPrice: 0,
+                  pricePerMl: 0,
+                  valueRating: 'Fair',
+                  alternatives: [],
+                  formulationHeritage: 'Custom formula created in Compounding Bench',
+
+                  // Analysis
+                  notes: { top: [], heart: [], base: [] },
+                  historicalTimeline: [],
+                  laymanChemistryExplanation: '',
+                  story: `Custom formula created in the Compounding Bench. Carrier: ${formula.carrierType}, Dilution: ${formula.dilutionRatio}% oil.`,
+                  strategicTakeaway: 'Custom blend formulated for specific olfactory goals',
+                  ifraAssessment: {
+                    status: ifraCompliance?.isCompliant ? 'Compliant' : 'Restricted',
+                    criticalRestrictedMaterials: [],
+                    chemistsTakeaway: ifraCompliance?.overallWarning || 'Formula compliant with IFRA standards'
+                  }
+                };
+
+                if (onRegisterFormula) {
+                  onRegisterFormula(newFragrance);
+                }
+
+                // Reset form
+                setFormula({
+                  blendName: '',
+                  leadPerfumer: '',
+                  ingredients: [],
+                  carrierType: 'ethanol',
+                  dilutionRatio: 20
+                });
+                setSimulationResult(null);
+                setIfraCompliance(null);
+              } catch (err: any) {
+                setError('Failed to register formula: ' + err.message);
+              }
             }}
             className="w-full py-3 bg-[#0F9] text-black font-bold rounded-sm hover:bg-[#0F9]/80 transition"
           >
