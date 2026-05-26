@@ -873,34 +873,109 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
             </div>
           </div>
 
-          {/* Visualization */}
+          {/* Visualization - 2D Heatmap */}
           <div className="lg:col-span-8 space-y-4">
-            <div className="bg-[#0A0B0E] border border-[#2D3139] rounded-sm p-8 flex flex-col items-center justify-center min-h-64">
-              <div className="relative w-40 h-40">
-                {/* Room representation */}
-                <svg className="w-full h-full" viewBox="0 0 200 200">
-                  {/* Room background */}
-                  <rect x="20" y="20" width="160" height="160" fill="none" stroke="#2D3139" strokeWidth="2" />
+            <div className="bg-[#0A0B0E] border border-[#2D3139] rounded-sm p-6">
+              <p className="text-[#6A7180] text-xs uppercase font-mono mb-3 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-[#10B981] rounded-full animate-pulse" />
+                Vapor Modeling: Active Projection
+              </p>
 
-                  {/* Sillage radius circle */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r={Math.min(70, simulatedRadius * 15)}
-                    fill="#3B82F6"
-                    fillOpacity={0.2}
-                    stroke="#3B82F6"
-                    strokeWidth="2"
-                  />
+              <div className="bg-black rounded-sm p-4 mb-4">
+                <svg className="w-full" viewBox="0 0 400 300" style={{ aspectRatio: '4/3' }}>
+                  {/* Generate heatmap grid */}
+                  {Array.from({ length: 20 }).map((_, x) =>
+                    Array.from({ length: 15 }).map((_, y) => {
+                      const cellX = (x / 20) * 400;
+                      const cellY = (y / 15) * 300;
+                      const cellSize = 20;
 
-                  {/* Spray point */}
-                  <circle cx="100" cy="100" r="4" fill="#3B82F6" />
+                      // Calculate distance from center spray point
+                      const centerX = 200;
+                      const centerY = 150;
+                      const distance = Math.sqrt(
+                        Math.pow(cellX + cellSize/2 - centerX, 2) +
+                        Math.pow(cellY + cellSize/2 - centerY, 2)
+                      );
+
+                      // Base concentration calculation
+                      let concentration = Math.max(0, 1 - (distance / (simulatedRadius * 30)));
+
+                      // Apply ventilation decay
+                      const ventilationDecay = sillageVentilation === 'high' ? 0.6 : sillageVentilation === 'low' ? 0.85 : 1.0;
+                      concentration *= ventilationDecay;
+
+                      // Spray multiplier effect
+                      concentration *= (sillageSprays / 1);
+
+                      // Color gradient: blue (low) -> cyan -> yellow -> red (high)
+                      let color = '#0A0B0E';
+                      if (concentration > 0.8) color = '#DC2626'; // Red - critical
+                      else if (concentration > 0.6) color = '#F59E0B'; // Orange - high
+                      else if (concentration > 0.4) color = '#06B6D4'; // Cyan - medium
+                      else if (concentration > 0.2) color = '#3B82F6'; // Blue - low
+                      else if (concentration > 0.05) color = '#1E293B'; // Dark - minimal
+
+                      return (
+                        <rect
+                          key={`${x}-${y}`}
+                          x={cellX}
+                          y={cellY}
+                          width={cellSize}
+                          height={cellSize}
+                          fill={color}
+                          fillOpacity={Math.min(1, concentration + 0.1)}
+                          stroke="none"
+                        />
+                      );
+                    })
+                  )}
+
+                  {/* Room borders */}
+                  <rect x="0" y="0" width="400" height="300" fill="none" stroke="#2D3139" strokeWidth="2" />
+
+                  {/* Spray point indicator */}
+                  <circle cx="200" cy="150" r="6" fill="#10B981" stroke="#0FFF00" strokeWidth="2" />
+
+                  {/* Grid lines for room scale */}
+                  <line x1="0" y1="150" x2="400" y2="150" stroke="#2D3139" strokeWidth="1" opacity="0.3" strokeDasharray="4" />
+                  <line x1="200" y1="0" x2="200" y2="300" stroke="#2D3139" strokeWidth="1" opacity="0.3" strokeDasharray="4" />
                 </svg>
               </div>
 
-              <div className="mt-4 text-center space-y-1">
-                <p className="text-[#3B82F6] font-bold text-lg">{simulatedRadius.toFixed(1)} feet</p>
-                <p className="text-[#6A7180] text-xs">effective sillage radius</p>
+              {/* Legend */}
+              <div className="grid grid-cols-5 gap-2 text-center text-[9px]">
+                <div>
+                  <div className="w-full h-4 mb-1 bg-[#0A0B0E] border border-[#2D3139]" />
+                  <p className="text-[#6A7180]">None</p>
+                </div>
+                <div>
+                  <div className="w-full h-4 mb-1 bg-[#3B82F6]" />
+                  <p className="text-[#3B82F6]">Low</p>
+                </div>
+                <div>
+                  <div className="w-full h-4 mb-1 bg-[#06B6D4]" />
+                  <p className="text-[#06B6D4]">Medium</p>
+                </div>
+                <div>
+                  <div className="w-full h-4 mb-1 bg-[#F59E0B]" />
+                  <p className="text-[#F59E0B]">High</p>
+                </div>
+                <div>
+                  <div className="w-full h-4 mb-1 bg-[#DC2626]" />
+                  <p className="text-[#DC2626]">Critical</p>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-[#2D3139] space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-[#6A7180]">Peak Concentration:</span>
+                  <span className="text-[#3B82F6] font-mono font-bold">{(Math.min(100, simulatedRadius * sillageSprays * (sillageVentilation === 'high' ? 60 : sillageVentilation === 'low' ? 85 : 100))).toFixed(0)} µg/m³</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-[#6A7180]">Effective Radius:</span>
+                  <span className="text-[#10B981] font-mono font-bold">{simulatedRadius.toFixed(1)} feet</span>
+                </div>
               </div>
             </div>
 
