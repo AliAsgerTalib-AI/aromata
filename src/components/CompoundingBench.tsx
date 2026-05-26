@@ -228,8 +228,157 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
         </div>
       </div>
 
-      {/* RIGHT PANEL: Simulation & Compliance (Task 5) */}
-      <div>Right panel content will be added in Task 5</div>
+      {/* RIGHT PANEL: Carrier Dilution, Compliance & Simulation */}
+      <div className="space-y-6">
+        {/* Carrier Dilution Desk */}
+        <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
+          <h3 className="text-[#0F9] text-xs font-mono uppercase mb-4">Carrier Dilution Desk</h3>
+
+          {/* Carrier Type Selection */}
+          <div className="mb-6">
+            <label className="block text-[#6A7180] text-xs uppercase font-mono mb-3">Carrier Solvent Media Type</label>
+            <div className="flex gap-3">
+              {(['ethanol', 'dpg', 'ipm'] as const).map(carrier => {
+                const labels: Record<typeof carrier, string> = {
+                  ethanol: 'ETHANOL (98%)',
+                  dpg: 'DPG GLYCOL',
+                  ipm: 'IPM ESTER'
+                };
+                return (
+                  <button
+                    key={carrier}
+                    onClick={() => updateCarrier(carrier)}
+                    className={`px-4 py-2 rounded-sm text-xs font-mono uppercase transition ${
+                      formula.carrierType === carrier
+                        ? 'bg-[#3B82F6] text-white'
+                        : 'bg-[#2D3139] text-[#6A7180] hover:bg-[#3B82F6]/20'
+                    }`}
+                  >
+                    {labels[carrier]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dilution Slider */}
+          <div>
+            <label className="block text-[#6A7180] text-xs uppercase font-mono mb-3">Fragrance Oil Dilution Load</label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={formula.dilutionRatio}
+                onChange={e => updateDilution(parseInt(e.target.value))}
+                className="w-full h-2 bg-[#2D3139] rounded-lg appearance-none cursor-pointer accent-[#0F9]"
+              />
+              <div className="flex justify-between text-xs text-[#6A7180] font-mono">
+                <span>{formula.dilutionRatio}% Oil / {100 - formula.dilutionRatio}% Solvent</span>
+              </div>
+              <p className="text-xs text-[#6A7180] mt-2">
+                Higher oil concentration increases longevity and sillage; carrier solvent extends diffusion.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* IFRA Compliance Desk */}
+        {ifraCompliance && (
+          <div className={`bg-[#15181F] border rounded-sm p-6 ${ifraCompliance.isCompliant ? 'border-[#2D3139]' : 'border-red-500'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[#0F9] text-xs font-mono uppercase">IFRA Safety Compliance Desk</h3>
+              <span className={`px-3 py-1 rounded text-xs font-mono uppercase ${
+                ifraCompliance.isCompliant
+                  ? 'bg-[#0F9] text-black'
+                  : 'bg-red-500 text-white'
+              }`}>
+                {ifraCompliance.isCompliant ? '✓ Compliant' : '⚠ Non-Compliant'}
+              </span>
+            </div>
+
+            {ifraCompliance.overallWarning && (
+              <div className="bg-red-500/10 border border-red-500 rounded-sm px-3 py-2 mb-4 text-xs text-red-200">
+                {ifraCompliance.overallWarning}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {ifraCompliance.ingredientAssessments.map((assess, idx) => (
+                <div key={idx} className="border-b border-[#2D3139] pb-3 last:border-b-0">
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="font-mono text-[#E0E2E6] text-xs">
+                      {assess.status === 'compliant' ? '✓' : '⚠'} {assess.chemicalName}
+                    </div>
+                    <div className="text-[#0F9] font-mono text-xs">{assess.percentageInFormula.toFixed(3)}% IN FORMULA</div>
+                  </div>
+                  <div className={`text-xs ${assess.status === 'compliant' ? 'text-[#6A7180]' : 'text-red-400'}`}>
+                    {assess.message}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Physics Simulation */}
+        {isSimulating && (
+          <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 flex items-center justify-center min-h-[300px]">
+            <div className="text-center">
+              <div className="animate-spin mb-3">
+                <div className="w-8 h-8 border-2 border-[#3B82F6] border-t-[#0F9] rounded-full mx-auto" />
+              </div>
+              <p className="text-[#6A7180] text-sm">Calculating simulation...</p>
+            </div>
+          </div>
+        )}
+
+        {error && !isSimulating && (
+          <div className="bg-red-500/10 border border-red-500 rounded-sm p-4">
+            <p className="text-red-300 text-sm mb-3">{error}</p>
+            <button
+              onClick={() => triggerSimulation()}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-mono rounded-sm transition"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {simulationResult && !isSimulating && (
+          <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
+            <h3 className="text-[#0F9] text-xs font-mono uppercase mb-4">Live Predictive Physics Simulation</h3>
+
+            {/* Metrics */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-[#0A0B0E] border border-[#2D3139] rounded-sm p-4">
+                <div className="text-[#6A7180] text-xs uppercase font-mono mb-2">Active Skin Longevity</div>
+                <div className="text-[#0F9] font-bold text-xl">{simulationResult.longevityHours.toFixed(1)} hrs</div>
+              </div>
+              <div className="bg-[#0A0B0E] border border-[#2D3139] rounded-sm p-4">
+                <div className="text-[#6A7180] text-xs uppercase font-mono mb-2">Initial Sillage Bubble</div>
+                <div className="text-[#0F9] font-bold text-xl">{simulationResult.sillageFeetProjection.toFixed(1)} ft</div>
+              </div>
+            </div>
+
+            {/* Charts will be added in Task 6 */}
+            <p className="text-[#6A7180] text-xs text-center py-8">Charts will be rendered here (Task 6)</p>
+          </div>
+        )}
+
+        {/* Register Formula Button */}
+        {simulationResult && !isSimulating && ifraCompliance && (
+          <button
+            onClick={() => {
+              // Register formula - implementation in Task 7
+              console.log('Register formula clicked');
+            }}
+            className="w-full py-3 bg-[#0F9] text-black font-bold rounded-sm hover:bg-[#0F9]/80 transition"
+          >
+            + Register Formula Specimen On Cabinet Shelf
+          </button>
+        )}
+      </div>
     </div>
   );
 }
