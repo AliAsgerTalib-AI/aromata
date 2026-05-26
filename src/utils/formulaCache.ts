@@ -1,4 +1,4 @@
-import { SimulationResult, IFRACompliance } from '../types';
+import { SimulationResult, IFRACompliance, IngredientRow } from '../types';
 
 interface CacheEntry {
   result: SimulationResult;
@@ -12,12 +12,18 @@ const CACHE_MAX_SIZE = 20;
 export class FormulaCache {
   private cache = new Map<string, CacheEntry>();
 
-  async getFormulaHash(ingredients: any[], carrierType: string, dilutionRatio: number): Promise<string> {
-    const data = JSON.stringify({ ingredients, carrierType, dilutionRatio });
-    const encoded = new TextEncoder().encode(data);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  async getFormulaHash(ingredients: IngredientRow[], carrierType: string, dilutionRatio: number): Promise<string> {
+    try {
+      const data = JSON.stringify({ ingredients, carrierType, dilutionRatio });
+      const encoded = new TextEncoder().encode(data);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (err) {
+      // Fallback hash if crypto unavailable (rare edge case)
+      console.warn('Crypto digest failed, using fallback hash:', err);
+      return 'fallback-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    }
   }
 
   get(hash: string): CacheEntry | null {
