@@ -15,6 +15,7 @@ import { EducationHub } from './components/EducationHub';
 
 // Data
 import { PREDEFINED_FRAGRANCES } from './data';
+import { FragranceData } from './types';
 
 export default function App() {
   // Use extracted hooks for state management
@@ -61,9 +62,10 @@ export default function App() {
   const handleAnalyze = async (brand: string, name: string) => {
     try {
       const analysis = await apiState.analyzeFragrance(brand, name);
-      fragState.setSelectedFragrance(analysis as any);
-      if (!fragState.cabinet.find(f => f.brand === analysis.brand && f.name === analysis.name)) {
-        fragState.updateCabinet([analysis as any, ...fragState.cabinet]);
+      const fragranceData = analysis as any as FragranceData;
+      fragState.setSelectedFragrance(fragranceData);
+      if (!fragState.cabinet.find(f => f.brand === fragranceData.brand && f.name === fragranceData.name)) {
+        fragState.updateCabinet([fragranceData, ...fragState.cabinet]);
       }
       setSearchBrand('');
       setSearchName('');
