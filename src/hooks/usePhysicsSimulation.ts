@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { CompoundingFormula, SimulationResult, IFRACompliance } from '../types';
+import { formulaCache } from '../utils/formulaCache';
 
 interface UsePhysicsSimulationResult {
   result: SimulationResult | null;
@@ -27,16 +28,32 @@ export function usePhysicsSimulation(formula: CompoundingFormula): UsePhysicsSim
       return;
     }
 
-    // Cancel previous request if still in flight
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
     setIsLoading(true);
     setError(null);
 
     try {
+      // Check cache first
+      const formulaHash = await formulaCache.getFormulaHash(
+        formulaToSimulate.ingredients,
+        formulaToSimulate.carrierType,
+        formulaToSimulate.dilutionRatio
+      );
+
+      const cached = formulaCache.get(formulaHash);
+      if (cached) {
+        setResult(cached.result);
+        setCompliance(cached.compliance);
+        setIsLoading(false);
+        return; // Early return, skip API call
+      }
+
+      // Cancel previous request if still in flight
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      abortControllerRef.current = new AbortController();
+
       const response = await fetch('/api/physics-simulation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,6 +78,7 @@ export function usePhysicsSimulation(formula: CompoundingFormula): UsePhysicsSim
       }
 
       const data = await response.json();
+      formulaCache.set(formulaHash, data, data.ifraCompliance);
       setResult(data);
       setCompliance(data.ifraCompliance);
       setError(null);
