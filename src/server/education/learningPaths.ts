@@ -283,5 +283,345 @@ export const LEARNING_PATHS: Record<string, LearningPath> = {
       }
     ],
     estimatedTime: '60 minutes'
+  },
+
+  // INTERMEDIATE PATHS
+  'molecular-synthesis-advanced': {
+    id: 'molecular-synthesis-advanced',
+    name: 'Molecular Synthesis & Advanced Chemistry',
+    skillLevel: 'intermediate',
+    topic: 'Chemical Engineering',
+    description: 'Master compound families, synthesis mechanisms, and how to predict scent from chemical structure.',
+    lessons: [
+      {
+        id: 'msa-1',
+        order: 1,
+        title: 'Aromachemical Families & Their Characteristics',
+        objective: 'Understand aromachemical classification and behavior patterns',
+        framework: 'molecular-families-framework',
+        caseStudies: [],
+        content: 'Aromachemicals are organized into families: musks, ambroxans, iso E supers, aldehydes, esters, etc. Each family has predictable behavior—volatility, oxidation patterns, synergy profiles. Mastering families lets you predict how new compounds will behave in composition.',
+        exercise: {
+          type: 'multiple_choice',
+          instructions: 'Which family is known for depth and sensual character?'
+        },
+        checkpointQuestions: ['Can you categorize compounds by family?', 'What volatility patterns define each family?']
+      },
+      {
+        id: 'msa-2',
+        order: 2,
+        title: 'Molecular Modification: Side Chains & Functional Groups',
+        objective: 'Understand how chemical structure drives scent properties',
+        framework: 'molecular-structure-framework',
+        caseStudies: [],
+        content: 'A single compound modified with different side chains or functional groups creates completely different scents. Adding an ester linkage changes volatility. Changing molecular weight changes diffusion. This lesson teaches structure-to-scent prediction.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Explain how isomers create different olfactory effects.',
+          fragranceId: 'sauvage-dior'
+        },
+        checkpointQuestions: ['How does molecular weight affect diffusion?', 'What functional groups increase longevity?']
+      },
+      {
+        id: 'msa-3',
+        order: 3,
+        title: 'Synthesis & Sustainability: Natural vs. Synthetic',
+        objective: 'Understand extraction, synthesis, and environmental impact',
+        framework: '',
+        caseStudies: [],
+        content: 'Natural extraction is expensive and variable. Synthetic compounds enable consistency and scale. Modern perfumers balance natural (for prestige) with synthetic (for cost and consistency). Understanding synthesis explains reformulations and pricing.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Identify natural vs. synthetic compounds in a luxury fragrance.',
+          fragranceId: 'eau-de-gentillesse-hermes'
+        },
+        checkpointQuestions: ['Why are synthetics used in mass-market fragrances?', 'What\'s the cost difference?']
+      },
+      {
+        id: 'msa-4',
+        order: 4,
+        title: 'Advanced Case Study: Reformulation Analysis',
+        objective: 'Understand how perfumers modify formulas over time',
+        framework: '',
+        caseStudies: ['sauvage-reformulation-history'],
+        content: 'Fragrances are reformulated for cost, IFRA compliance, or performance reasons. Sauvage has been reformulated multiple times. Understanding reformulation teaches you to spot quality differences and appreciate the engineering behind consistency.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Compare original vs. reformulated versions of Sauvage.',
+          fragranceId: 'sauvage-dior'
+        },
+        checkpointQuestions: ['Why do fragrances get reformulated?', 'How do you spot reformulation?']
+      },
+      {
+        id: 'msa-5',
+        order: 5,
+        title: 'Design Your Own Accord',
+        objective: 'Create a simple accord from scratch using chemical principles',
+        framework: 'molecular-families-framework',
+        caseStudies: [],
+        content: 'You now understand families, structure, and synergy. Try designing a simple 3-compound accord: one top-note, one middle-note driver, one base anchor. Balance volatility. Predict synergies. Create your first fragrance concept.',
+        exercise: {
+          type: 'design_composition',
+          instructions: 'Create a simple 3-compound accord using the principles you learned.'
+        },
+        checkpointQuestions: ['Did your accord balance volatility?', 'What synergies emerge?']
+      }
+    ],
+    estimatedTime: '90 minutes'
+  },
+
+  'comparative-fragrance-analysis': {
+    id: 'comparative-fragrance-analysis',
+    name: 'Comparative Analysis: Building Frameworks',
+    skillLevel: 'intermediate',
+    topic: 'Analytical Techniques',
+    description: 'Learn to compare fragrances systematically and build decision frameworks for evaluation.',
+    lessons: [
+      {
+        id: 'cfa-1',
+        order: 1,
+        title: 'The Comparison Matrix: Structured Evaluation',
+        objective: 'Create a framework for comparing fragrances objectively',
+        framework: 'comparison-matrix-framework',
+        caseStudies: [],
+        content: 'Compare fragrances across dimensions: projection, longevity, sillage evolution, accord clarity, efficiency, value. A comparison matrix prevents bias and enables pattern recognition across fragrance families.',
+        exercise: {
+          type: 'compare_fragrances',
+          instructions: 'Create a comparison matrix for three fragrances.',
+          frag1Id: 'sauvage-dior',
+          frag2Id: 'lhomme-prada'
+        },
+        checkpointQuestions: ['What dimensions matter most?', 'How do you weight them?']
+      },
+      {
+        id: 'cfa-2',
+        order: 2,
+        title: 'Pattern Recognition: Spotting Design Philosophy',
+        objective: 'Identify recurring design patterns across brands and families',
+        framework: '',
+        caseStudies: ['sauvage-dior', 'lhomme-prada', 'eau-de-gentillesse-hermes'],
+        content: 'Brands have philosophies. Dior emphasizes projection. Prada emphasizes balance. Hermès emphasizes restraint. Recognizing philosophy predicts new releases and explains reformulations.',
+        exercise: {
+          type: 'multiple_choice',
+          instructions: 'Which brand philosophy emphasizes minimalism?'
+        },
+        checkpointQuestions: ['Can you identify brand philosophy from composition?', 'Does philosophy predict market success?']
+      },
+      {
+        id: 'cfa-3',
+        order: 3,
+        title: 'Price Justification Analysis',
+        objective: 'Understand whether fragrances are priced fairly based on chemistry',
+        framework: '',
+        caseStudies: [],
+        content: 'Is a luxury fragrance worth 3x a mass-market fragrance? Sometimes yes (rare materials, heritage, consistency), sometimes no (marketing inflates price). Learning cost drivers teaches you to buy wisely and spot overpricing.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Justify or critique the price of a luxury fragrance based on composition.',
+          fragranceId: 'eau-de-gentillesse-hermes'
+        },
+        checkpointQuestions: ['What justifies premium pricing?', 'When is a luxury fragrance overpriced?']
+      },
+      {
+        id: 'cfa-4',
+        order: 4,
+        title: 'Niche vs. Mass-Market Fragrance Strategy',
+        objective: 'Understand the strategic differences between market segments',
+        framework: '',
+        caseStudies: ['sauvage-dior', 'lhomme-prada'],
+        content: 'Mass-market fragrances (like Sauvage) prioritize broad appeal and projection. Niche fragrances prioritize artistic vision and rarity. Understanding this split explains composition choices, pricing, and market positioning.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Classify a fragrance as niche or mass-market and justify your answer.',
+          fragranceId: 'lhomme-prada'
+        },
+        checkpointQuestions: ['What makes a fragrance niche vs. mass-market?', 'Can niche compete with mass-market?']
+      },
+      {
+        id: 'cfa-5',
+        order: 5,
+        title: 'Build Your Own Evaluation Framework',
+        objective: 'Create a personal framework for evaluating any fragrance',
+        framework: '',
+        caseStudies: [],
+        content: 'You\'ve learned matrix evaluation, pattern recognition, and pricing analysis. Now synthesize into a personal framework. What dimensions matter most to you? How do you weight them? Build a framework that works for your taste.',
+        exercise: {
+          type: 'design_framework',
+          instructions: 'Create a personal evaluation framework for comparing fragrances.'
+        },
+        checkpointQuestions: ['Is your framework consistent?', 'Does it predict your own preferences?']
+      }
+    ],
+    estimatedTime: '75 minutes'
+  },
+
+  // ADVANCED PATHS
+  'niche-engineering-specialized': {
+    id: 'niche-engineering-specialized',
+    name: 'Niche Fragrance Engineering & Market Positioning',
+    skillLevel: 'advanced',
+    topic: 'Strategic Formulation',
+    description: 'Master the engineering required to create competitive niche fragrances and understand market differentiation.',
+    lessons: [
+      {
+        id: 'nes-1',
+        order: 1,
+        title: 'Market Gap Analysis: Identifying Opportunities',
+        objective: 'Learn to identify underserved fragrance markets',
+        framework: '',
+        caseStudies: [],
+        content: 'Successful niche fragrances fill gaps: "no fresh floral exists for minimalists," "no woody fragrance for gourmand lovers," "no aquatic that lasts 8+ hours." Gap analysis requires understanding current offerings, consumer feedback, and unfulfilled desires.',
+        exercise: {
+          type: 'multiple_choice',
+          instructions: 'What market gap did L\'Homme fill?'
+        },
+        checkpointQuestions: ['Can you identify emerging market gaps?', 'How do you validate that a gap exists?']
+      },
+      {
+        id: 'nes-2',
+        order: 2,
+        title: 'Competitive Formulation: Engineering Differentiation',
+        objective: 'Design formulas that outperform competitors without copying',
+        framework: 'competitive-engineering-framework',
+        caseStudies: [],
+        content: 'If 20 fragrances target "clean citrus for men," how do you differentiate? Superior longevity? Unique sillage profile? Lower price? Higher sophistication? This lesson teaches strategic differentiation through chemistry.',
+        exercise: {
+          type: 'design_composition',
+          instructions: 'Engineer a formula that out-performs three competitors in one specific dimension.'
+        },
+        checkpointQuestions: ['What dimension differentiates your formula?', 'Can you achieve it chemically?']
+      },
+      {
+        id: 'nes-3',
+        order: 3,
+        title: 'IFRA Compliance & Reformulation Strategy',
+        objective: 'Navigate regulatory constraints without sacrificing performance',
+        framework: '',
+        caseStudies: [],
+        content: 'IFRA (International Fragrance Association) restricts compound usage for safety. This creates reformulation challenges. Mastering compliance means: understanding restrictions, finding compliant alternatives, and predicting how restrictions will reshape the market.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Identify IFRA-restricted compounds and propose compliant alternatives.',
+          fragranceId: 'sauvage-dior'
+        },
+        checkpointQuestions: ['What restrictions apply to your fragrance?', 'What alternatives exist?']
+      },
+      {
+        id: 'nes-4',
+        order: 4,
+        title: 'Advanced Case Study: Niche Fragrance Deconstruction',
+        objective: 'Reverse-engineer a successful niche fragrance to understand strategic choices',
+        framework: '',
+        caseStudies: ['lhomme-prada'],
+        content: 'L\'Homme succeeded by being "the only fragrance for business that works casually." Every choice—simplic composition, balanced sillage, evolved character—supports this positioning. Deconstructing success teaches engineering wisdom.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Explain how L\'Homme\'s formula supports its market position.',
+          fragranceId: 'lhomme-prada'
+        },
+        checkpointQuestions: ['How does the formula support the positioning?', 'What would you change?']
+      },
+      {
+        id: 'nes-5',
+        order: 5,
+        title: 'Design a Niche Fragrance Brief',
+        objective: 'Create a complete niche fragrance concept with engineering specifications',
+        framework: '',
+        caseStudies: [],
+        content: 'Pull together market analysis, positioning, differentiation, and engineering. Create a fragrance brief: target consumer, market gap, competitive advantage, regulatory constraints, composition targets, and projected longevity/sillage. Design a real fragrance.',
+        exercise: {
+          type: 'design_niche_brief',
+          instructions: 'Create a complete brief for a niche fragrance including positioning and estimated formula.'
+        },
+        checkpointQuestions: ['Is your positioning clear?', 'Is your formula realistic and compliant?', 'Does it differentiate?']
+      }
+    ],
+    estimatedTime: '120 minutes'
+  },
+
+  'sensory-evaluation-expert': {
+    id: 'sensory-evaluation-expert',
+    name: 'Expert Sensory Evaluation & Olfactory Judgment',
+    skillLevel: 'advanced',
+    topic: 'Evaluation Mastery',
+    description: 'Develop expert-level sensory evaluation skills and train your palate to detect subtle chemical shifts.',
+    lessons: [
+      {
+        id: 'see-1',
+        order: 1,
+        title: 'Olfactory Physiology: How Your Nose Works',
+        objective: 'Understand the biological basis of smell and its limitations',
+        framework: '',
+        caseStudies: [],
+        content: 'Your olfactory epithelium has ~400 receptor types. Each receptor recognizes multiple compounds. Combinations activate patterns. Adaptation (anosmia) makes you "nose-blind" after 20 minutes. Understanding physiology explains evaluation limitations and trains better sensory practices.',
+        exercise: {
+          type: 'multiple_choice',
+          instructions: 'Which phenomenon explains why you stop smelling your own fragrance?'
+        },
+        checkpointQuestions: ['How do olfactory receptors work?', 'What is olfactory adaptation?']
+      },
+      {
+        id: 'see-2',
+        order: 2,
+        title: 'Evaluation Protocol: Standardized Sensory Assessment',
+        objective: 'Learn professional fragrance evaluation methodology',
+        framework: 'sensory-protocol-framework',
+        caseStudies: [],
+        content: 'Professional evaluators use standardized protocols: controlled temperature/humidity, consistent application method, timed measurements (0min, 5min, 30min, 2hr, 4hr, 8hr), blinded comparisons. This removes bias and enables reproducibility.',
+        exercise: {
+          type: 'analyze_fragrance',
+          instructions: 'Evaluate a fragrance using a full sensory protocol.',
+          fragranceId: 'sauvage-dior'
+        },
+        checkpointQuestions: ['Can you follow the protocol consistently?', 'Are your measurements reproducible?']
+      },
+      {
+        id: 'see-3',
+        order: 3,
+        title: 'Detecting Reformulation: Micro-Changes in Familiar Fragrances',
+        objective: 'Train your palate to detect subtle chemical modifications',
+        framework: '',
+        caseStudies: ['sauvage-reformulation-history'],
+        content: 'Reformulations are often subtle. A 5% compound change might shift longevity or sillage by 10%. Expert evaluators detect these shifts through repeated comparison. This lesson trains sensory precision.',
+        exercise: {
+          type: 'compare_fragrances',
+          instructions: 'Compare two versions of the same fragrance and identify subtle differences.',
+          frag1Id: 'sauvage-dior',
+          frag2Id: 'sauvage-reformulation-history'
+        },
+        checkpointQuestions: ['Did you detect differences?', 'Can you attribute them to specific compounds?']
+      },
+      {
+        id: 'see-4',
+        order: 4,
+        title: 'Advanced Case Study: Blind Evaluation vs. Biased Evaluation',
+        objective: 'Understand how bias shapes fragrance perception',
+        framework: '',
+        caseStudies: [],
+        content: 'When you know a fragrance costs $300, you perceive it differently than a $50 alternative—even if they\'re identical. This is price bias. Expert evaluators use blind testing to eliminate bias. Learning bias teaches intellectual honesty.',
+        exercise: {
+          type: 'compare_fragrances',
+          instructions: 'Evaluate two fragrances without knowing price, then compare your evaluation to price-aware evaluation.',
+          frag1Id: 'lhomme-prada',
+          frag2Id: 'eau-de-gentillesse-hermes'
+        },
+        checkpointQuestions: ['Did bias influence your evaluation?', 'How do you eliminate it?']
+      },
+      {
+        id: 'see-5',
+        order: 5,
+        title: 'Build Your Expert Sensory Framework',
+        objective: 'Create a personal expert evaluation system and train your palate',
+        framework: '',
+        caseStudies: [],
+        content: 'Combine physiology knowledge, standardized protocols, reformulation detection, and bias awareness. Create a personal evaluation system. Then practice: evaluate 20 fragrances systematically. Train your palate to expert level.',
+        exercise: {
+          type: 'design_sensory_protocol',
+          instructions: 'Create a personal expert sensory evaluation protocol and commit to training with it.'
+        },
+        checkpointQuestions: ['Is your protocol reproducible?', 'Does it account for bias?', 'Will it improve your evaluation?']
+      }
+    ],
+    estimatedTime: '100 minutes'
   }
 };
