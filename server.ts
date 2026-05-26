@@ -10,6 +10,7 @@ import { analysisCache } from './src/server/cache/analysisCache';
 import { buildAnalysisPrompt, buildAnalysisSchema } from './src/server/gemini/analysisPrompt';
 import { EnhancedFragranceAnalysis, AnalyzeResponse } from './src/server/types/analysisTypes';
 import { createBlendingRouter } from './src/server/blending/router';
+import { createEducationRouter } from './src/server/education/router';
 import { initializeDatabase } from './src/server/db/schema';
 import { TrialQueries } from './src/server/db/queries';
 import Database from 'better-sqlite3';
@@ -365,6 +366,9 @@ Avoid ANY markdown wraps or container brackets outside the pure JSON payload.`;
 
 // Register blending router
 app.use('/api/blending', createBlendingRouter(trialQueries, getGeminiClient()));
+
+// Register education router
+app.use('/api/education', createEducationRouter(getGeminiClient()));
 
 // 3. Mount Dev Sever / Static Serve Configuration
 async function startServer() {
