@@ -224,29 +224,119 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
           </div>
         )}
 
-        {/* IFRA Assessment */}
+        {/* IFRA Assessment - Enhanced Matrix */}
         {fragrance.ifraAssessment && (
-          <div className="mt-4 bg-[#0A0B0E] border border-[#2D3139] p-4 rounded-sm">
-            <h5 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#F59E0B]" />
-              IFRA Compliance Assessment
-            </h5>
-            <p className="text-[#6A7180] text-xs mb-3">
-              Status: <span className={`font-mono font-bold ${fragrance.ifraAssessment.status === 'Compliant' ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
-                {fragrance.ifraAssessment.status}
+          <div className="mt-4 bg-[#15181F] border border-[#2D3139] p-6 rounded-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h5 className="text-white font-bold text-lg flex items-center gap-2">
+                <Zap className="w-5 h-5 text-[#F59E0B]" />
+                IFRA Material Compliance Matrix
+              </h5>
+              <span className={`font-mono text-[9px] font-bold uppercase px-3 py-1 rounded-sm ${
+                fragrance.ifraAssessment.status === 'Compliant'
+                  ? 'bg-[#10B981]/20 text-[#10B981]'
+                  : 'bg-[#F59E0B]/20 text-[#F59E0B]'
+              }`}>
+                Status: {fragrance.ifraAssessment.status}
               </span>
-            </p>
+            </div>
+
+            {/* Compliance Matrix Table */}
             {fragrance.ifraAssessment.criticalRestrictedMaterials.length > 0 && (
-              <div className="space-y-2 mb-3">
-                {fragrance.ifraAssessment.criticalRestrictedMaterials.map((mat, i) => (
-                  <div key={i} className="bg-[#15181F] border border-[#2D3139] p-2 rounded-sm text-xs">
-                    <p className="text-white font-mono font-bold">{mat.name}</p>
-                    <p className="text-[#6A7180]">Limit: {mat.limitPercent}% | Actual: {mat.actualPercent}% | Impact: {mat.impact}</p>
-                  </div>
-                ))}
+              <div className="mb-6 overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#2D3139]">
+                      <th className="text-left px-3 py-2 text-[#6A7180] font-mono uppercase">Restricted Chemical / Fraction</th>
+                      <th className="text-center px-3 py-2 text-[#6A7180] font-mono uppercase">IFRA Threshold Limit</th>
+                      <th className="text-center px-3 py-2 text-[#6A7180] font-mono uppercase">Actual Scent Mass</th>
+                      <th className="text-left px-3 py-2 text-[#6A7180] font-mono uppercase">Formulation/Safety Impact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fragrance.ifraAssessment.criticalRestrictedMaterials.map((mat, i) => {
+                      const proximityPercent = (mat.actualPercent / mat.limitPercent) * 100;
+                      const riskLevel = proximityPercent >= 100 ? 'critical' : proximityPercent >= 80 ? 'high' : proximityPercent >= 60 ? 'medium' : 'low';
+                      const riskColor = riskLevel === 'critical' ? 'text-[#DC2626]' : riskLevel === 'high' ? 'text-[#F59E0B]' : riskLevel === 'medium' ? 'text-[#3B82F6]' : 'text-[#10B981]';
+
+                      return (
+                        <tr key={i} className="border-b border-[#2D3139]">
+                          <td className="px-3 py-3 text-white font-mono font-bold">{mat.name}</td>
+                          <td className="text-center px-3 py-3 text-[#3B82F6] font-mono font-bold">{mat.limitPercent}%</td>
+                          <td className={`text-center px-3 py-3 font-mono font-bold ${riskColor}`}>{mat.actualPercent}%</td>
+                          <td className="px-3 py-3 text-[#6A7180]">{mat.impact}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
-            <p className="text-[#E0E2E6] text-xs">{fragrance.ifraAssessment.chemistsTakeaway}</p>
+
+            {/* Regulatory Ceiling Usage Proximity Visualization */}
+            {fragrance.ifraAssessment.criticalRestrictedMaterials.length > 0 && (
+              <div className="mb-6 bg-[#0A0B0E] border border-[#2D3139] p-6 rounded-sm">
+                <h6 className="text-white font-bold text-sm mb-4 flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-[#DC2626]" />
+                  Regulatory Ceiling Usage Proximity
+                </h6>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {fragrance.ifraAssessment.criticalRestrictedMaterials.map((mat, i) => {
+                    const proximityPercent = Math.min(100, (mat.actualPercent / mat.limitPercent) * 100);
+                    const riskLevel = proximityPercent >= 100 ? 'critical' : proximityPercent >= 80 ? 'high' : proximityPercent >= 60 ? 'medium' : 'low';
+                    const riskLabel = riskLevel === 'critical' ? 'CRITICAL RISK' : riskLevel === 'high' ? 'HIGH RISK' : riskLevel === 'medium' ? 'MODERATE' : 'SAFE';
+                    const riskColors = {
+                      critical: { ring: '#DC2626', text: 'text-[#DC2626]', bg: 'bg-[#DC2626]/10' },
+                      high: { ring: '#F59E0B', text: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/10' },
+                      medium: { ring: '#3B82F6', text: 'text-[#3B82F6]', bg: 'bg-[#3B82F6]/10' },
+                      low: { ring: '#10B981', text: 'text-[#10B981]', bg: 'bg-[#10B981]/10' }
+                    };
+                    const colors = riskColors[riskLevel];
+
+                    return (
+                      <div key={i} className="flex flex-col items-center gap-3">
+                        <div className="relative w-20 h-20">
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
+                            {/* Background circle */}
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="#2D3139" strokeWidth="4" />
+                            {/* Progress circle */}
+                            <circle
+                              cx="40"
+                              cy="40"
+                              r="35"
+                              fill="none"
+                              stroke={colors.ring}
+                              strokeWidth="4"
+                              strokeDasharray={`${2 * Math.PI * 35 * proximityPercent / 100} ${2 * Math.PI * 35}`}
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <p className={`text-sm font-bold ${colors.text}`}>{proximityPercent.toFixed(0)}%</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-center space-y-1">
+                          <p className="text-[9px] text-white font-mono font-bold">{mat.name}</p>
+                          <p className={`text-[8px] font-mono font-bold uppercase ${colors.text}`}>{riskLabel}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Chemist's Takeaway */}
+            <div className={`bg-amber-950/20 border-l-4 p-4 rounded-r-sm ${
+              fragrance.ifraAssessment.status === 'Compliant' ? 'border-[#10B981]' : 'border-[#F59E0B]'
+            }`}>
+              <h6 className="text-amber-600 font-mono text-[9px] uppercase font-bold mb-2">
+                The Chemist's Takeaway: Cumulative Aggregate Burden
+              </h6>
+              <p className="text-[#E0E2E6] text-xs leading-relaxed">{fragrance.ifraAssessment.chemistsTakeaway}</p>
+            </div>
           </div>
         )}
       </div>
