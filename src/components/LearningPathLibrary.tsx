@@ -10,7 +10,11 @@ interface LearningPath {
   estimatedTime: string;
 }
 
-export const LearningPathLibrary: React.FC = () => {
+interface LearningPathLibraryProps {
+  onSelectPath?: (pathId: string) => void;
+}
+
+export const LearningPathLibrary: React.FC<LearningPathLibraryProps> = ({ onSelectPath }) => {
   const [paths, setPaths] = useState<LearningPath[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<string>('');
@@ -71,7 +75,11 @@ export const LearningPathLibrary: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">{path.lessons.length} lessons • {path.estimatedTime}</p>
-              <Button variant="primary" size="sm">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => onSelectPath?.(path.id)}
+              >
                 Start Path
               </Button>
             </div>

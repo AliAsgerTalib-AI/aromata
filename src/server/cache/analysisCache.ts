@@ -1,7 +1,7 @@
-import { EnhancedFragranceAnalysis } from '../types/analysisTypes';
+import { FragranceData } from '../../types';
 
 interface CacheEntry {
-  data: EnhancedFragranceAnalysis;
+  data: FragranceData;
   timestamp: number;
 }
 
@@ -14,7 +14,7 @@ class AnalysisCache {
     return `${brand}||${name}`.toLowerCase();
   }
 
-  get(brand: string, name: string): EnhancedFragranceAnalysis | null {
+  get(brand: string, name: string): FragranceData | null {
     const key = this.getCacheKey(brand, name);
     const entry = this.cache.get(key);
 
@@ -29,7 +29,7 @@ class AnalysisCache {
     return entry.data;
   }
 
-  set(brand: string, name: string, data: EnhancedFragranceAnalysis): void {
+  set(brand: string, name: string, data: FragranceData): void {
     const key = this.getCacheKey(brand, name);
     this.cache.set(key, {
       data,

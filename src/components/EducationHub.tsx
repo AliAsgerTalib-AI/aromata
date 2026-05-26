@@ -3,11 +3,13 @@ import { BookOpen, Lightbulb, Compass } from 'lucide-react';
 import { CaseStudyLibrary } from './CaseStudyLibrary';
 import { FrameworkHub } from './FrameworkHub';
 import { LearningPathLibrary } from './LearningPathLibrary';
+import { LearningPathView } from './LearningPathView';
 
 type EducationTab = 'cases' | 'frameworks' | 'paths';
 
 export const EducationHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<EducationTab>('cases');
+  const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
@@ -71,7 +73,18 @@ export const EducationHub: React.FC = () => {
         {activeTab === 'frameworks' && <FrameworkHub />}
       </div>
       <div id="panel-paths" role="tabpanel" aria-labelledby="tab-paths">
-        {activeTab === 'paths' && <LearningPathLibrary />}
+        {activeTab === 'paths' && (
+          selectedPathId ? (
+            <LearningPathView
+              pathId={selectedPathId}
+              onBack={() => setSelectedPathId(null)}
+            />
+          ) : (
+            <LearningPathLibrary
+              onSelectPath={setSelectedPathId}
+            />
+          )
+        )}
       </div>
     </div>
   );

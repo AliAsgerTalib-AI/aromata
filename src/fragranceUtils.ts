@@ -1,7 +1,7 @@
 import { FragranceData, AccordIntensity } from './types';
 
 export function normalizeFragranceId(brand: string, name: string): string {
-  return `${brand.toLowerCase()}|||${name.toLowerCase()}`;
+  return `${(brand || '').toLowerCase()}|||${(name || '').toLowerCase()}`;
 }
 
 export function fragranceMatches(frag1: FragranceData, frag2: FragranceData): boolean {

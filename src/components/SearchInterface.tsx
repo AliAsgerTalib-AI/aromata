@@ -1,6 +1,6 @@
 import { FormEvent } from 'react';
 import { Search, AlertTriangle } from 'lucide-react';
-import { ParsedBatchCode } from '../server/types/analysisTypes';
+import { ParsedBatchCode } from '../types';
 
 interface SearchInterfaceProps {
   searchBrand: string;

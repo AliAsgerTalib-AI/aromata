@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EnhancedFragranceAnalysis, ParsedBatchCode } from '../server/types/analysisTypes';
+import { ParsedBatchCode, FragranceData } from '../types';
 
 export function useAnalysisApi() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -24,7 +24,7 @@ export function useAnalysisApi() {
       }
 
       const data = await response.json();
-      return data.analysis as EnhancedFragranceAnalysis;
+      return data.analysis as FragranceData;
     } catch (err: any) {
       const message = err.message || 'Analysis failed';
       setErrorMessage(message);

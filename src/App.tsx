@@ -40,7 +40,13 @@ export default function App() {
   const [layeringError, setLayeringError] = useState<string | null>(null);
   const [isAnalyzingLayering, setIsAnalyzingLayering] = useState(false);
 
-  // Guard: ensure selectedFragrance is initialized before rendering
+  // Available fragrances for selection
+  const availableFragrances = useMemo(() => [
+    ...PREDEFINED_FRAGRANCES,
+    ...fragState.cabinet
+  ], [fragState.cabinet]);
+
+  // Guard: ensure selectedFragrance is initialized before rendering main UI
   if (!fragState.selectedFragrance || !fragState.selectedFragrance.brand || !fragState.selectedFragrance.name) {
     return (
       <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased flex items-center justify-center">
@@ -52,17 +58,10 @@ export default function App() {
     );
   }
 
-  // Available fragrances for selection
-  const availableFragrances = useMemo(() => [
-    ...PREDEFINED_FRAGRANCES,
-    ...fragState.cabinet
-  ], [fragState.cabinet]);
-
   // Handle fragrance analysis
   const handleAnalyze = async (brand: string, name: string) => {
     try {
-      const analysis = await apiState.analyzeFragrance(brand, name);
-      const fragranceData = analysis as any as FragranceData;
+      const fragranceData = await apiState.analyzeFragrance(brand, name);
       fragState.setSelectedFragrance(fragranceData);
       if (!fragState.cabinet.find(f => f.brand === fragranceData.brand && f.name === fragranceData.name)) {
         fragState.updateCabinet([fragranceData, ...fragState.cabinet]);

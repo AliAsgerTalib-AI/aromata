@@ -1,5 +1,6 @@
 import express from 'express';
 import { v4 as uuid } from 'uuid';
+import rateLimit from 'express-rate-limit';
 import { BlendingService } from './service';
 import { TrialQueries } from '../db/queries';
 import { GoogleGenAI } from '@google/genai';
@@ -10,7 +11,7 @@ export function createBlendingRouter(
 ): express.Router {
   const router = express.Router();
   const service = new BlendingService(db, ai);
-  const analysisLimit = require('express-rate-limit')({
+  const analysisLimit = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 20,
     message: 'Too many blending requests. Please try again later.'
