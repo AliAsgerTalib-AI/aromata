@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from './ui/Button';
 
 interface Lesson {
   id: string;
@@ -68,9 +69,9 @@ export const LearningPathView: React.FC<LearningPathViewProps> = ({ pathId, onBa
 
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      <Button onClick={onBack} variant="ghost" size="sm">
         ← Back to Learning Paths
-      </button>
+      </Button>
 
       {/* Progress */}
       <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -114,29 +115,29 @@ export const LearningPathView: React.FC<LearningPathViewProps> = ({ pathId, onBa
 
         {/* Navigation */}
         <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-          <button
+          <Button
             onClick={() => setCurrentLessonIndex(Math.max(0, currentLessonIndex - 1))}
             disabled={currentLessonIndex === 0}
-            className="px-4 py-2 bg-gray-300 text-gray-900 rounded-lg font-medium disabled:opacity-50"
+            variant="secondary"
           >
             ← Previous
-          </button>
+          </Button>
 
           {isLastLesson ? (
-            <button
+            <Button
               disabled={!allCheckpointsAnswered}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-400"
+              variant="primary"
             >
               Complete Path
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={handleNext}
               disabled={!allCheckpointsAnswered}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+              variant="primary"
             >
               Next →
-            </button>
+            </Button>
           )}
         </div>
       </div>

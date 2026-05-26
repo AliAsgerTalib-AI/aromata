@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from './ui/Button';
 
 interface CaseStudy {
   id: string;
@@ -45,17 +46,14 @@ export const CaseStudyLibrary: React.FC = () => {
         <h3 className="font-semibold mb-3 text-gray-900">Filter by Difficulty</h3>
         <div className="flex gap-3">
           {['', 'beginner', 'intermediate', 'advanced'].map(level => (
-            <button
+            <Button
               key={level || 'all'}
               onClick={() => setSelectedDifficulty(level)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedDifficulty === level
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-              }`}
+              variant={selectedDifficulty === level ? 'primary' : 'secondary'}
+              size="sm"
             >
               {level || 'All'}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -73,9 +71,9 @@ export const CaseStudyLibrary: React.FC = () => {
               <p><strong>Released:</strong> {caseStudy.fragrance.releaseYear}</p>
               <p><strong>Difficulty:</strong> <span className="capitalize text-blue-600">{caseStudy.difficultyLevel}</span></p>
             </div>
-            <button className="mt-4 w-full px-3 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+            <Button variant="primary" size="sm" className="mt-4 w-full">
               Read Case Study
-            </button>
+            </Button>
           </div>
         ))}
       </div>

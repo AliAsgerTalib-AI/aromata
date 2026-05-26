@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from './ui/Button';
 import { AnalysisView } from './AnalysisView';
 
 interface CaseStudy {
@@ -53,9 +54,9 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ caseStudyId, o
 
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      <Button onClick={onBack} variant="ghost" size="sm">
         ← Back to Case Studies
-      </button>
+      </Button>
 
       {/* Header */}
       <div className="bg-white p-6 rounded-lg border border-gray-200">

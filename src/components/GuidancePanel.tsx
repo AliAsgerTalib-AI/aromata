@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from './ui/Button';
 import { IntentSuggestion, BalanceHint } from '../types';
 
 interface GuidancePanelProps {
@@ -31,13 +32,15 @@ export const GuidancePanel: React.FC<GuidancePanelProps> = ({
         <p className="text-xs text-indigo-700 mb-2">
           {intent ? `Intent: "${intent}"` : 'Describe your goal to get suggestions'}
         </p>
-        <button
+        <Button
           onClick={onGetIntentSuggestions}
           disabled={!intent || isLoading}
-          className="w-full px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded hover:bg-indigo-700 disabled:bg-gray-400"
+          isLoading={isLoading}
+          variant="primary"
+          className="w-full"
         >
           {isLoading ? 'Getting Suggestions...' : 'Get Suggestions'}
-        </button>
+        </Button>
 
         {suggestions && suggestions.length > 0 && (
           <div className="mt-3 space-y-2">
@@ -48,12 +51,14 @@ export const GuidancePanel: React.FC<GuidancePanelProps> = ({
                   {sug.suggestedPercentage !== undefined && ` to ${sug.suggestedPercentage}%`}
                 </div>
                 <div className="text-gray-700 mt-1">{sug.reasoning}</div>
-                <button
+                <Button
                   onClick={() => onApplySuggestion(sug)}
-                  className="text-indigo-600 hover:text-indigo-900 text-xs font-medium mt-1"
+                  variant="ghost"
+                  size="sm"
+                  className="mt-1"
                 >
                   Apply
-                </button>
+                </Button>
               </div>
             ))}
           </div>

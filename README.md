@@ -45,29 +45,83 @@ Results are cached for 10 minutes, and the UI presents a **layered deep-dive** i
 - **Strategic Takeaways** — Honest analysis of brand margins, demographic targeting, and regulatory strategies
 - **IFRA Compliance Assessment** — Restricted materials analysis and allergen aggregation warnings
 
+### Education Hub (Phase 3)
+The **Education Hub** provides structured learning and expert resources for fragrance analysis:
+
+#### Case Studies
+- Real-world fragrance analysis examples with detailed molecular breakdowns
+- Learn from pre-analyzed fragrances and understand key decision points
+- Browse and filter case studies by brand, family, or analysis focus
+
+#### Expert Frameworks
+- Curated analytical frameworks for fragrance evaluation
+- Interactive methodology guides with step-by-step instructions
+- Evaluate your own fragrance compositions against professional standards
+- Learn the expert approach to assessing fragrance quality and design
+
+#### Learning Paths
+- Structured, progressive lessons on fragrance chemistry and analysis
+- Sequenced content from fundamentals to advanced concepts
+- Checkpoint questions at each lesson to verify understanding
+- Self-paced learning with clear objectives and outcomes
+
+### Fragrance Comparison Tool
+- **Side-by-Side Analysis** — Compare two fragrances across multiple dimensions
+- **Key Differences Detection** — Automatically identifies how fragrances differ in composition, performance, and classification
+- **Educational Insights** — Understand why two fragrances are similar or different at the molecular level
+
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Google Gemini API key
+- **Node.js** 18 or higher ([download](https://nodejs.org/))
+- **npm** (included with Node.js) or **yarn**
+- **Google Gemini API key** ([get one free](https://ai.google.dev/))
 
 ### Installation
 
+#### 1. Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/aromata.git
 cd aromata
+```
 
-# Install dependencies
+#### 2. Install Dependencies
+```bash
 npm install
+```
 
+This installs all required packages including:
+- React 19, TypeScript, Vite
+- Express, Node.js backend dependencies
+- Google Gemini SDK (@google/genai)
+- Styling (Tailwind CSS), icons (Lucide), animations (Motion)
+
+#### 3. Set Up Environment Variables
+```bash
 # Create environment file
 cp .env.example .env.local
-
-# Add your Gemini API key
-echo "GEMINI_API_KEY=your_api_key_here" >> .env.local
 ```
+
+Or manually create `.env.local` in the project root:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-3.5-flash
+NODE_ENV=development
+```
+
+**How to get your Gemini API key:**
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Click "Create API Key"
+3. Copy the key
+4. Paste it in `.env.local` as shown above
+
+#### 4. Verify Installation
+```bash
+# Type-check to verify everything is set up correctly
+npm run lint
+```
+
+If there are no errors, you're ready to develop!
 
 ### Development
 
@@ -75,18 +129,43 @@ echo "GEMINI_API_KEY=your_api_key_here" >> .env.local
 # Start dev server with hot reload (port 3000)
 npm run dev
 
-# Type-check code
+# The app will open at: http://localhost:3000
+# Changes to files automatically refresh the browser (HMR)
+
+# In another terminal, type-check code (optional, but recommended)
 npm run lint
 
 # Build for production
 npm run build
 
-# Start production server
+# Run production build locally (for testing)
 npm run start
 
 # Clean build artifacts
 npm run clean
 ```
+
+### Troubleshooting
+
+**Issue: "GEMINI_API_KEY is required"**
+- Check that `.env.local` exists in the project root
+- Verify the key is set: `cat .env.local | grep GEMINI_API_KEY`
+- Make sure there are no extra spaces or quotes around the key
+
+**Issue: Port 3000 already in use**
+- Change the port in `server.ts` or kill the process using port 3000:
+  - macOS/Linux: `lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9`
+  - Windows: `netstat -ano | findstr :3000` then `taskkill /PID <PID> /F`
+
+**Issue: Node modules not installing**
+- Clear npm cache: `npm cache clean --force`
+- Delete `node_modules/` and `package-lock.json`: `rm -rf node_modules package-lock.json`
+- Reinstall: `npm install`
+
+**Issue: TypeScript errors in IDE**
+- Make sure TypeScript version matches: `npm list typescript`
+- Reload your IDE/editor
+- Run `npm run lint` to see detailed errors
 
 ## 📋 Environment Variables
 
@@ -134,6 +213,17 @@ aromata/
 │   ├── concentrationUtils.ts        # Concentration calculations
 │   ├── hooks/
 │   │   └── useTemporaryState.ts    # Custom state hook
+│   ├── components/
+│   │   ├── AnalysisView.tsx         # Main fragrance analysis display
+│   │   ├── EducationHub.tsx         # Education content hub
+│   │   ├── ComparisonTool.tsx       # Fragrance comparison interface
+│   │   ├── LearningPathView.tsx     # Structured learning paths
+│   │   ├── FrameworkDetail.tsx      # Expert analysis frameworks
+│   │   ├── CaseStudyLibrary.tsx     # Case study collection
+│   │   ├── FrameworkHub.tsx         # Framework collection
+│   │   ├── LearningPathLibrary.tsx  # Learning path collection
+│   │   ├── BlendingStudio.tsx       # Fragrance blending tool
+│   │   └── (other components...)
 │   └── databases/
 │       ├── data.ts                  # Predefined fragrances
 │       ├── nosesDatabase.ts         # Perfumer names/brands
@@ -235,6 +325,175 @@ Returns aesthetic assessment with:
 - Tactile metaphors
 - Seasonal associations
 - Occasion recommendations
+
+## 📚 Education Hub Endpoints
+
+### Case Studies
+```
+GET /api/education/cases
+```
+Retrieves list of all available fragrance case studies with metadata.
+
+```
+GET /api/education/cases/:caseId
+```
+Returns detailed analysis of a specific case study.
+
+### Expert Frameworks
+```
+GET /api/education/frameworks
+```
+Retrieves all available analytical frameworks.
+
+```
+GET /api/education/frameworks/:frameworkId
+```
+Returns detailed framework with methodology and key insights.
+
+```
+POST /api/education/frameworks/:frameworkId/evaluate
+Content-Type: application/json
+
+{
+  "composition": [ { "name": string, "percentage": number } ]
+}
+```
+Evaluates a user-provided fragrance composition against the framework methodology.
+
+### Learning Paths
+```
+GET /api/education/paths
+```
+Retrieves all available structured learning paths.
+
+```
+GET /api/education/paths/:pathId
+```
+Returns complete learning path with lessons and checkpoint questions.
+
+### Comparison Tool
+```
+GET /api/education/compare?frag1={id}&frag2={id}
+```
+Compares two fragrances and returns key differences across multiple dimensions (composition, performance, classification, etc.).
+
+### Framework Evaluation
+```
+POST /api/education/evaluate-composition
+Content-Type: application/json
+
+{
+  "compounds": [
+    { "name": "Iso E Super", "percentage": 15 },
+    { "name": "Sandalwood", "percentage": 10 }
+  ],
+  "frameworkId": "framework-id"
+}
+```
+Evaluates a user-provided fragrance composition against a specific expert framework methodology.
+
+## 🧪 Blending Studio Endpoints
+
+### Create a Blending Trial
+```
+POST /api/blending/trials
+Content-Type: application/json
+
+{
+  "name": "My Summer Scent",
+  "intent": "Fresh and uplifting",
+  "baseFragrance": "Dior Sauvage" // optional
+}
+```
+
+Returns:
+```json
+{
+  "id": "trial-id",
+  "userId": "user-123",
+  "name": "My Summer Scent",
+  "intent": "Fresh and uplifting",
+  "createdAt": 1234567890,
+  "updatedAt": 1234567890
+}
+```
+
+### Analyze a Composition
+```
+POST /api/blending/analyze
+Content-Type: application/json
+
+{
+  "trialId": "trial-id",
+  "composition": {
+    "compounds": [
+      { "name": "Bergamot", "percentage": 20 },
+      { "name": "Jasmine", "percentage": 15 },
+      { "name": "Sandalwood", "percentage": 25 }
+    ]
+  }
+}
+```
+
+Returns detailed analysis including:
+- Chemical composition breakdown
+- Evaporation profile
+- Performance metrics
+- Synergies and conflicts
+
+### Get Blending Guidance
+```
+POST /api/blending/guidance
+Content-Type: application/json
+
+{
+  "composition": {
+    "compounds": [
+      { "name": "Bergamot", "percentage": 20 }
+    ]
+  },
+  "analysis": { /* analysis object from /analyze */ },
+  "type": "balance" | "enhancement" | "fix-issue",
+  "intent": "Fresh and citrusy"
+}
+```
+
+Returns AI-powered guidance for improving the composition based on the requested type.
+
+### Save a Version
+```
+POST /api/blending/versions/:trialId/save
+Content-Type: application/json
+
+{
+  "composition": { "compounds": [ /* ... */ ] },
+  "analysis": { /* analysis object */ },
+  "snapshotName": "v1 - Base Formula"
+}
+```
+
+Saves a snapshot of the trial at a specific point in development.
+
+### Retrieve Trial Details
+```
+GET /api/blending/trials/:trialId
+```
+
+Returns the trial and all its saved versions.
+
+### List All Trials
+```
+GET /api/blending/trials
+```
+
+Returns all blending trials for the current user.
+
+### Delete a Version
+```
+DELETE /api/blending/versions/:versionId
+```
+
+Removes a specific version snapshot from a trial.
 
 ## 📊 Data Structures
 

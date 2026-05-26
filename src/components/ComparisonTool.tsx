@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from './ui/Button';
 
 interface KeyDifference {
   dimension: string;
@@ -61,13 +62,15 @@ export const ComparisonTool: React.FC = () => {
           />
         </div>
 
-        <button
+        <Button
           onClick={handleCompare}
           disabled={!frag1Id || !frag2Id || loading}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+          isLoading={loading}
+          variant="primary"
+          className="w-full"
         >
           {loading ? 'Comparing...' : 'Compare Fragrances'}
-        </button>
+        </Button>
       </div>
 
       {/* Results */}

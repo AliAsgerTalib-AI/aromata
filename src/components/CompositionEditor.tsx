@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from './ui/Button';
 import { TrialComposition } from '../types';
 
 interface CompositionEditorProps {
@@ -94,6 +95,7 @@ export const CompositionEditor: React.FC<CompositionEditorProps> = ({
                   max="100"
                   value={compound.percentage}
                   onChange={(e) => handleUpdatePercentage(idx, parseFloat(e.target.value))}
+                  aria-label={`${compound.name} percentage slider`}
                   className="flex-1"
                 />
                 <input
@@ -102,6 +104,7 @@ export const CompositionEditor: React.FC<CompositionEditorProps> = ({
                   max="100"
                   value={compound.percentage}
                   onChange={(e) => handleUpdatePercentage(idx, parseFloat(e.target.value))}
+                  aria-label={`${compound.name} percentage value`}
                   className="w-12 px-2 py-1 border border-gray-300 rounded text-sm"
                 />
                 <span className="text-sm text-gray-600">%</span>
@@ -143,12 +146,13 @@ export const CompositionEditor: React.FC<CompositionEditorProps> = ({
               className="w-16 px-2 py-2 border border-gray-300 rounded text-sm"
               placeholder="%"
             />
-            <button
+            <Button
               onClick={handleAddCompound}
-              className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700"
+              variant="primary"
+              size="sm"
             >
               Add
-            </button>
+            </Button>
           </div>
         </div>
       </div>

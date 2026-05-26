@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from './ui/Button';
 
 interface Framework {
   id: string;
@@ -46,9 +47,9 @@ export const FrameworkHub: React.FC = () => {
               <p className="text-xs font-semibold text-blue-900">Key Insight</p>
               <p className="text-xs text-blue-800 mt-1">{framework.keyInsight}</p>
             </div>
-            <button className="w-full px-3 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+            <Button variant="primary" size="sm" className="w-full">
               Learn Framework
-            </button>
+            </Button>
           </div>
         ))}
       </div>

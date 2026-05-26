@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from './ui/Button';
 
 interface Framework {
   id: string;
@@ -75,9 +76,9 @@ export const FrameworkDetail: React.FC<FrameworkDetailProps> = ({ frameworkId, o
 
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      <Button onClick={onBack} variant="ghost" size="sm">
         ← Back to Frameworks
-      </button>
+      </Button>
 
       {/* Header */}
       <div className="bg-white p-6 rounded-lg border border-gray-200">
@@ -106,13 +107,14 @@ export const FrameworkDetail: React.FC<FrameworkDetailProps> = ({ frameworkId, o
           placeholder="Enter compounds (e.g., Sandalwood: 10, Vanilla: 8, Amber: 5)"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 h-24"
         />
-        <button
+        <Button
           onClick={handleEvaluate}
           disabled={!userComposition.trim() || evaluating}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+          isLoading={evaluating}
+          variant="primary"
         >
           {evaluating ? 'Evaluating...' : 'Evaluate Composition'}
-        </button>
+        </Button>
 
         {evaluation && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">

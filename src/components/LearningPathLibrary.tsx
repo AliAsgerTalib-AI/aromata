@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from './ui/Button';
 
 interface LearningPath {
   id: string;
@@ -43,17 +44,14 @@ export const LearningPathLibrary: React.FC = () => {
         <h3 className="font-semibold mb-3 text-gray-900">Filter by Skill Level</h3>
         <div className="flex gap-3">
           {['', 'beginner', 'intermediate', 'advanced'].map(level => (
-            <button
+            <Button
               key={level || 'all'}
               onClick={() => setSelectedLevel(level)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedLevel === level
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-              }`}
+              variant={selectedLevel === level ? 'primary' : 'secondary'}
+              size="sm"
             >
               {level ? level.charAt(0).toUpperCase() + level.slice(1) : 'All'}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -73,9 +71,9 @@ export const LearningPathLibrary: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">{path.lessons.length} lessons • {path.estimatedTime}</p>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+              <Button variant="primary" size="sm">
                 Start Path
-              </button>
+              </Button>
             </div>
           </div>
         ))}
