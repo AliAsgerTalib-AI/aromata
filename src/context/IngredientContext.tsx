@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import { PERFUME_SYNTHETICS_DATABASE } from '../syntheticsDatabase';
 import { TECHNICAL_SYNTHETICS_DATABASE } from '../technicalSyntheticsDatabase';
 import { KNOWN_ISOLATES_DATABASE } from '../originDatabase';
@@ -7,6 +7,7 @@ import { IngredientRow } from '../types';
 interface IngredientContextType {
   allIngredients: IngredientRow[];
   searchIngredients: (query: string) => IngredientRow[];
+  paginate: (items: IngredientRow[], page: number, pageSize: number) => IngredientRow[];
 }
 
 const IngredientContext = createContext<IngredientContextType | undefined>(undefined);
@@ -56,8 +57,13 @@ export function IngredientProvider({ children }: { children: React.ReactNode }) 
     );
   };
 
+  const paginate = useCallback((items: IngredientRow[], page: number = 0, pageSize: number = 50) => {
+    const start = page * pageSize;
+    return items.slice(start, start + pageSize);
+  }, []);
+
   return (
-    <IngredientContext.Provider value={{ allIngredients, searchIngredients }}>
+    <IngredientContext.Provider value={{ allIngredients, searchIngredients, paginate }}>
       {children}
     </IngredientContext.Provider>
   );
