@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/Button';
 
+interface Exercise {
+  type: string;
+  instructions: string;
+  targetAccord?: string;
+  fragranceId?: string;
+  frag1Id?: string;
+  frag2Id?: string;
+}
+
 interface Lesson {
   id: string;
+  order?: number;
   title: string;
   objective: string;
   content: string;
+  framework?: string;
+  caseStudies?: string[];
+  exercise?: Exercise;
   checkpointQuestions: string[];
 }
 
@@ -88,26 +101,61 @@ export const LearningPathView: React.FC<LearningPathViewProps> = ({ pathId, onBa
       </div>
 
       {/* Lesson Content */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
-        <p className="text-sm text-gray-600 mb-4">Objective: {currentLesson.objective}</p>
+      <div className="bg-white p-6 rounded-lg border border-gray-200 space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
+          <p className="text-sm text-gray-600">Objective: {currentLesson.objective}</p>
+        </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        {/* Main Content */}
+        <div className="bg-gray-50 p-4 rounded-lg">
           <p className="text-gray-700 leading-relaxed">{currentLesson.content}</p>
         </div>
 
-        {/* Checkpoints */}
-        <div className="space-y-4 mb-6">
-          <h3 className="font-semibold text-gray-900">Checkpoint Questions</h3>
+        {/* Framework Reference */}
+        {currentLesson.framework && (
+          <div className="border-l-4 border-purple-500 bg-purple-50 p-4 rounded">
+            <h4 className="font-semibold text-gray-900 mb-2">📚 Framework</h4>
+            <p className="text-sm text-gray-700 capitalize">{currentLesson.framework.replace(/-/g, ' ')}</p>
+          </div>
+        )}
+
+        {/* Case Studies Reference */}
+        {currentLesson.caseStudies && currentLesson.caseStudies.length > 0 && (
+          <div className="border-l-4 border-green-500 bg-green-50 p-4 rounded">
+            <h4 className="font-semibold text-gray-900 mb-2">🔍 Case Studies</h4>
+            <ul className="text-sm text-gray-700 space-y-1">
+              {currentLesson.caseStudies.map((cs, i) => (
+                <li key={i}>• {cs.replace(/-/g, ' ').toUpperCase()}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Exercise */}
+        {currentLesson.exercise && (
+          <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
+            <h4 className="font-semibold text-gray-900 mb-2">✏️ Exercise</h4>
+            <p className="text-sm text-gray-700 mb-2 capitalize"><strong>Type:</strong> {currentLesson.exercise.type.replace(/_/g, ' ')}</p>
+            <p className="text-sm text-gray-700"><strong>Instructions:</strong> {currentLesson.exercise.instructions}</p>
+            {currentLesson.exercise.targetAccord && (
+              <p className="text-sm text-gray-700 mt-2"><strong>Target:</strong> {currentLesson.exercise.targetAccord}</p>
+            )}
+          </div>
+        )}
+
+        {/* Checkpoint Questions */}
+        <div className="space-y-3">
+          <h3 className="font-semibold text-gray-900 text-lg">✅ Checkpoint Questions</h3>
           {currentLesson.checkpointQuestions.map((question, idx) => (
-            <div key={idx} className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm font-semibold text-gray-900 mb-2">{question}</p>
+            <div key={idx} className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm font-semibold text-gray-900 mb-2">{idx + 1}. {question}</p>
               <input
                 type="text"
                 placeholder="Your answer..."
                 value={checkpointAnswers[question] || ''}
                 onChange={(e) => handleCheckpoint(question, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
