@@ -491,6 +491,183 @@ Avoid ANY markdown wraps or container brackets outside the pure JSON payload.`;
   },
 );
 
+// 2.8 API: Physics Simulation for Compounding Bench
+app.post(
+  "/api/physics-simulation",
+  standardLimit,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const { ingredients, carrierType, dilutionRatio, blendName, leadPerfumer } =
+        req.body;
+
+      // Validate ingredients array
+      if (!Array.isArray(ingredients) || ingredients.length === 0) {
+        return res.status(400).json({
+          error: "Ingredients array is required and must not be empty",
+        });
+      }
+
+      // Validate carrier type
+      if (!["ethanol", "dpg", "ipm"].includes(carrierType)) {
+        return res.status(400).json({
+          error: "Invalid carrier type. Must be one of: ethanol, dpg, ipm",
+        });
+      }
+
+      // Validate dilution ratio
+      if (
+        typeof dilutionRatio !== "number" ||
+        dilutionRatio < 0 ||
+        dilutionRatio > 100
+      ) {
+        return res.status(400).json({
+          error: "Dilution ratio must be a number between 0 and 100",
+        });
+      }
+
+      // Format ingredients for Gemini
+      const ingredientDescriptions = ingredients
+        .map(
+          (ing: any) =>
+            `${sanitizeInput(ing.name, 100)} (${Number(ing.ppt) || 0} ppt, ${sanitizeInput(ing.category, 50)})`
+        )
+        .join("; ");
+
+      const carrierMap: Record<string, string> = {
+        ethanol: "Ethanol (98%)",
+        dpg: "Dipropylene Glycol",
+        ipm: "Isopropyl Myristate",
+      };
+
+      const prompt = `You are a professional fragrance chemist and GC-MS expert. Analyze this fragrance formula and provide scientific predictions.
+
+Formula:
+- Blend Name: ${sanitizeInput(blendName || "Custom Blend", 100)}
+- Lead Perfumer: ${sanitizeInput(leadPerfumer || "Unknown", 100)}
+- Ingredients (ppt): ${ingredientDescriptions}
+- Carrier: ${carrierMap[carrierType]}
+- Dilution: ${dilutionRatio}% fragrance oil, ${100 - dilutionRatio}% solvent
+
+Provide your response as valid JSON with this exact structure:
+{
+  "evaporationCurve": [
+    {"timeHours": 0, "volatilityPercent": 100},
+    {"timeHours": 1, "volatilityPercent": number},
+    {"timeHours": 2, "volatilityPercent": number},
+    {"timeHours": 5, "volatilityPercent": number},
+    {"timeHours": 10, "volatilityPercent": number}
+  ],
+  "longevityHours": number,
+  "sillageFeetProjection": number,
+  "ifraCompliance": {
+    "isCompliant": boolean,
+    "ingredientAssessments": [
+      {
+        "chemicalName": "ingredient name",
+        "percentageInFormula": number,
+        "status": "compliant" or "exceeds-limit",
+        "message": "explanation"
+      }
+    ],
+    "overallWarning": null or "warning message"
+  }
+}
+
+Consider:
+1. Volatility profiles of each ingredient (top notes evaporate faster than base notes)
+2. Carrier effects on evaporation (ethanol evaporates fastest, allowing top notes to project)
+3. Dilution impact (higher oil concentration = stronger longevity and sillage)
+4. IFRA limits (Iso E Super max 8%, Ambroxan max 2%, etc. - use your knowledge)
+5. Sillage projection in feet (typical range 5-15 feet for well-composed fragrances)
+
+Ensure all numbers are realistic and scientifically grounded.`;
+
+      const ai = getGeminiClient();
+
+      const response = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction: `You are a professional fragrance chemist and GC-MS expert. Return ONLY valid JSON matching the requested schema. No markdown or explanations outside JSON.`,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            required: [
+              "evaporationCurve",
+              "longevityHours",
+              "sillageFeetProjection",
+              "ifraCompliance",
+            ],
+            properties: {
+              evaporationCurve: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    timeHours: { type: Type.INTEGER },
+                    volatilityPercent: { type: Type.NUMBER },
+                  },
+                },
+              },
+              longevityHours: { type: Type.NUMBER },
+              sillageFeetProjection: { type: Type.NUMBER },
+              ifraCompliance: {
+                type: Type.OBJECT,
+                properties: {
+                  isCompliant: { type: Type.BOOLEAN },
+                  ingredientAssessments: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        chemicalName: { type: Type.STRING },
+                        percentageInFormula: { type: Type.NUMBER },
+                        status: { type: Type.STRING },
+                        message: { type: Type.STRING },
+                      },
+                    },
+                  },
+                  overallWarning: { type: Type.STRING },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const resultText = response.text;
+      if (!resultText) {
+        throw new Error("Empty response received from physics simulation.");
+      }
+
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(resultText.trim());
+      } catch (e) {
+        throw new Error(
+          `Invalid JSON response from physics simulation: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+
+      // Validate required fields
+      if (
+        !parsedJson.evaporationCurve ||
+        parsedJson.longevityHours === undefined ||
+        parsedJson.sillageFeetProjection === undefined ||
+        !parsedJson.ifraCompliance
+      ) {
+        throw new Error(
+          "Response missing required fields. Schema validation failed."
+        );
+      }
+
+      return res.json(parsedJson);
+    } catch (error: any) {
+      return handleApiError(res, error, "physics simulation");
+    }
+  },
+);
+
 // Register blending router
 app.use("/api/blending", createBlendingRouter(trialQueries, getGeminiClient()));
 
