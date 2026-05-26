@@ -383,3 +383,45 @@ export interface UserEducationProgress {
   currentPathId?: string;
   lessonProgress: LessonProgressData[];
 }
+
+// CompoundingBench Types
+
+export interface IngredientRow {
+  id: string; // UUID
+  chemicalName: string;
+  category: string;
+  ppt: number; // parts per thousand
+  description?: string;
+}
+
+export interface CompoundingFormula {
+  blendName: string;
+  leadPerfumer: string;
+  ingredients: IngredientRow[];
+  carrierType: 'ethanol' | 'dpg' | 'ipm';
+  dilutionRatio: number; // 0-100, percentage oil
+}
+
+export interface CompoundingEvaporationPoint {
+  timeHours: number;
+  volatilityPercent: number;
+}
+
+export interface SimulationResult {
+  evaporationCurve: CompoundingEvaporationPoint[];
+  longevityHours: number;
+  sillageFeetProjection: number;
+}
+
+export interface IFRAIngredientAssessment {
+  chemicalName: string;
+  percentageInFormula: number;
+  status: 'compliant' | 'exceeds-limit';
+  message: string;
+}
+
+export interface IFRACompliance {
+  isCompliant: boolean;
+  ingredientAssessments: IFRAIngredientAssessment[];
+  overallWarning?: string;
+}
