@@ -14,6 +14,9 @@ import { BlendingStudio } from './components/BlendingStudio';
 import { EducationHub } from './components/EducationHub';
 import { CompoundingBench } from './components/CompoundingBench';
 
+// Context
+import { IngredientProvider } from './context/IngredientContext';
+
 // Data
 import { PREDEFINED_FRAGRANCES } from './data';
 import { FragranceData } from './types';
@@ -89,106 +92,108 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased selection:bg-[#3B82F6] selection:text-black pb-12">
-      {/* Header */}
-      <header className="border-b border-[#2D3139] bg-[#0A0B0E]/90 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <Beaker className="w-6 h-6 text-[#3B82F6]" />
-            <h1 className="text-xl font-bold text-white">AROMATA - Fragrance Analysis Platform</h1>
+    <IngredientProvider>
+      <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased selection:bg-[#3B82F6] selection:text-black pb-12">
+        {/* Header */}
+        <header className="border-b border-[#2D3139] bg-[#0A0B0E]/90 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <Beaker className="w-6 h-6 text-[#3B82F6]" />
+              <h1 className="text-xl font-bold text-white">AROMATA - Fragrance Analysis Platform</h1>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {[
+                { key: 'dossier', label: 'Dossier' },
+                { key: 'layering', label: 'Layering' },
+                { key: 'cabinet', label: 'Cabinet' },
+                { key: 'compounding', label: 'Compounding' },
+                { key: 'blending', label: 'Blending' },
+                { key: 'education', label: 'Education' }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`px-4 py-2 rounded-sm text-xs font-mono uppercase transition whitespace-nowrap ${
+                    activeTab === tab.key
+                      ? 'bg-[#3B82F6] text-white'
+                      : 'bg-[#2D3139] text-[#6A7180] hover:bg-[#3B82F6]/20'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
+        </header>
 
-          {/* Tab Navigation */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {[
-              { key: 'dossier', label: 'Dossier' },
-              { key: 'layering', label: 'Layering' },
-              { key: 'cabinet', label: 'Cabinet' },
-              { key: 'compounding', label: 'Compounding' },
-              { key: 'blending', label: 'Blending' },
-              { key: 'education', label: 'Education' }
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
-                className={`px-4 py-2 rounded-sm text-xs font-mono uppercase transition whitespace-nowrap ${
-                  activeTab === tab.key
-                    ? 'bg-[#3B82F6] text-white'
-                    : 'bg-[#2D3139] text-[#6A7180] hover:bg-[#3B82F6]/20'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </header>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          {activeTab === 'dossier' && (
+            <>
+              <SearchInterface
+                searchBrand={searchBrand}
+                setSearchBrand={setSearchBrand}
+                searchName={searchName}
+                setSearchName={setSearchName}
+                batchCodeInput=""
+                setBatchCodeInput={() => {}}
+                isAnalyzing={apiState.isAnalyzing}
+                errorMessage={apiState.errorMessage}
+                setErrorMessage={apiState.setErrorMessage}
+                onAnalyze={handleAnalyze}
+                batchResult={null}
+                batchError={null}
+              />
+              <FragranceDossier
+                fragrance={fragState.selectedFragrance}
+                onPrintDossier={() => window.print()}
+              />
+            </>
+          )}
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'dossier' && (
-          <>
-            <SearchInterface
-              searchBrand={searchBrand}
-              setSearchBrand={setSearchBrand}
-              searchName={searchName}
-              setSearchName={setSearchName}
-              batchCodeInput=""
-              setBatchCodeInput={() => {}}
-              isAnalyzing={apiState.isAnalyzing}
-              errorMessage={apiState.errorMessage}
-              setErrorMessage={apiState.setErrorMessage}
-              onAnalyze={handleAnalyze}
-              batchResult={null}
-              batchError={null}
+          {activeTab === 'layering' && (
+            <LayeringAnalyzer
+              availableFragrances={availableFragrances}
+              selectedFragA={layeringSelectA}
+              setSelectedFragA={setLayeringSelectA}
+              selectedFragB={layeringSelectB}
+              setSelectedFragB={setLayeringSelectB}
+              isAnalyzing={isAnalyzingLayering}
+              result={layeringResult}
+              error={layeringError}
+              onAnalyze={handleLayeringAnalysis}
+              onPrintLayering={() => window.print()}
             />
-            <FragranceDossier
-              fragrance={fragState.selectedFragrance}
-              onPrintDossier={() => window.print()}
+          )}
+
+          {activeTab === 'cabinet' && (
+            <FragranceCabinet
+              cabinet={fragState.cabinet}
+              selectedFragrance={fragState.selectedFragrance}
+              comparedSpecimens={fragState.comparedSpecimens}
+              onSelectFragrance={fragState.setSelectedFragrance}
+              onRemove={fragState.handleRemoveFromCabinet}
+              onToggleCompare={fragState.handleToggleCompare}
             />
-          </>
-        )}
+          )}
 
-        {activeTab === 'layering' && (
-          <LayeringAnalyzer
-            availableFragrances={availableFragrances}
-            selectedFragA={layeringSelectA}
-            setSelectedFragA={setLayeringSelectA}
-            selectedFragB={layeringSelectB}
-            setSelectedFragB={setLayeringSelectB}
-            isAnalyzing={isAnalyzingLayering}
-            result={layeringResult}
-            error={layeringError}
-            onAnalyze={handleLayeringAnalysis}
-            onPrintLayering={() => window.print()}
-          />
-        )}
+          {activeTab === 'compounding' && (
+            <CompoundingBench
+              availableFragrances={availableFragrances}
+              onRegisterFormula={(formula) => {
+                fragState.updateCabinet([formula, ...fragState.cabinet]);
+                setActiveTab('cabinet');
+              }}
+            />
+          )}
 
-        {activeTab === 'cabinet' && (
-          <FragranceCabinet
-            cabinet={fragState.cabinet}
-            selectedFragrance={fragState.selectedFragrance}
-            comparedSpecimens={fragState.comparedSpecimens}
-            onSelectFragrance={fragState.setSelectedFragrance}
-            onRemove={fragState.handleRemoveFromCabinet}
-            onToggleCompare={fragState.handleToggleCompare}
-          />
-        )}
+          {activeTab === 'blending' && <BlendingStudio />}
 
-        {activeTab === 'compounding' && (
-          <CompoundingBench
-            availableFragrances={availableFragrances}
-            onRegisterFormula={(formula) => {
-              fragState.updateCabinet([formula, ...fragState.cabinet]);
-              setActiveTab('cabinet');
-            }}
-          />
-        )}
-
-        {activeTab === 'blending' && <BlendingStudio />}
-
-        {activeTab === 'education' && <EducationHub />}
-      </main>
-    </div>
+          {activeTab === 'education' && <EducationHub />}
+        </main>
+      </div>
+    </IngredientProvider>
   );
 }

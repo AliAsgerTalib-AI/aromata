@@ -1,9 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { PERFUME_SYNTHETICS_DATABASE } from '../syntheticsDatabase';
-import { TECHNICAL_SYNTHETICS_DATABASE } from '../technicalSyntheticsDatabase';
-import { KNOWN_ISOLATES_DATABASE } from '../originDatabase';
 import { IngredientRow } from '../types';
+import { useIngredients } from '../context/IngredientContext';
 
 interface IngredientDropdownProps {
   onSelect: (ingredient: IngredientRow) => void;
@@ -13,52 +11,12 @@ interface IngredientDropdownProps {
 export function IngredientDropdown({ onSelect, disabled = false }: IngredientDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const { searchIngredients } = useIngredients();
 
-  // Combine all ingredient databases
-  const allIngredients = useMemo(() => {
-    const combined = [
-      ...PERFUME_SYNTHETICS_DATABASE.map(ing => ({
-        id: `synth-${ing.name}`,
-        chemicalName: ing.name,
-        category: ing.category || 'Others',
-        ppt: 0, // User will set this
-        description: ing.smell || ''
-      })),
-      ...TECHNICAL_SYNTHETICS_DATABASE.map(ing => ({
-        id: `tech-${ing.name}`,
-        chemicalName: ing.name,
-        category: ing.category || 'Others',
-        ppt: 0,
-        description: ing.profile || ''
-      })),
-      ...Object.values(KNOWN_ISOLATES_DATABASE).map(ing => ({
-        id: `isolate-${ing.chemicalName}`,
-        chemicalName: ing.chemicalName,
-        category: ing.originClassification || 'Others',
-        ppt: 0,
-        description: ing.technicalProcess || ''
-      }))
-    ];
-
-    // Deduplicate by chemicalName
-    const seen = new Set<string>();
-    return combined.filter(ing => {
-      if (seen.has(ing.chemicalName)) return false;
-      seen.add(ing.chemicalName);
-      return true;
-    });
-  }, []);
-
-  // Filter by search term
+  // Filter by search term using context
   const filteredIngredients = useMemo(() => {
-    if (!searchTerm.trim()) return allIngredients;
-    const lower = searchTerm.toLowerCase();
-    return allIngredients.filter(
-      ing =>
-        ing.chemicalName.toLowerCase().includes(lower) ||
-        ing.description.toLowerCase().includes(lower)
-    );
-  }, [searchTerm, allIngredients]);
+    return searchIngredients(searchTerm);
+  }, [searchTerm, searchIngredients]);
 
   const handleSelect = (ingredient: IngredientRow) => {
     const newIngredient: IngredientRow = {
