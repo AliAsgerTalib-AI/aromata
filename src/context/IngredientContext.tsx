@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { PERFUME_SYNTHETICS_DATABASE } from '../syntheticsDatabase';
 import { TECHNICAL_SYNTHETICS_DATABASE } from '../technicalSyntheticsDatabase';
 import { KNOWN_ISOLATES_DATABASE } from '../originDatabase';
@@ -57,10 +57,10 @@ export function IngredientProvider({ children }: { children: React.ReactNode }) 
     );
   };
 
-  const paginate = useCallback((items: IngredientRow[], page: number = 0, pageSize: number = 50) => {
+  const paginate = (items: IngredientRow[], page: number = 0, pageSize: number = 50) => {
     const start = page * pageSize;
     return items.slice(start, start + pageSize);
-  }, []);
+  };
 
   return (
     <IngredientContext.Provider value={{ allIngredients, searchIngredients, paginate }}>

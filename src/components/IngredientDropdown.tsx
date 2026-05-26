@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { IngredientRow } from '../types';
 import { useIngredients } from '../context/IngredientContext';
@@ -15,6 +15,7 @@ export function IngredientDropdown({ onSelect, disabled = false }: IngredientDro
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const throttleRef = useRef<NodeJS.Timeout | null>(null);
   const { searchIngredients, paginate } = useIngredients();
 
   // Filter by search term using context
@@ -35,20 +36,26 @@ export function IngredientDropdown({ onSelect, disabled = false }: IngredientDro
   // Check if there are more pages available
   const hasMorePages = (currentPage + 1) * PAGE_SIZE < filteredIngredients.length;
 
-  // Handle scroll to load more
-  const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current) return;
-    const { scrollHeight, scrollTop, clientHeight } = scrollContainerRef.current;
+  // Handle scroll to load more with throttling
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    if (throttleRef.current) return; // Already throttled, skip
 
-    if (scrollHeight - scrollTop < 100 && hasMorePages) {
+    const target = e.currentTarget;
+    if (target.scrollHeight - target.scrollTop < 100 && hasMorePages) {
       setCurrentPage(prev => prev + 1);
     }
+
+    // Throttle for 200ms
+    throttleRef.current = setTimeout(() => {
+      throttleRef.current = null;
+    }, 200);
   }, [hasMorePages]);
 
   const handleSelect = (ingredient: IngredientRow) => {
     const newIngredient: IngredientRow = {
       ...ingredient,
-      id: `${ingredient.id}-${Date.now()}`, // Unique ID
+      // Append timestamp to create unique instance ID (allows multiple instances of same ingredient with different PPT values)
+      id: `${ingredient.id}-${Date.now()}`,
       ppt: 50 // Default PPT
     };
     onSelect(newIngredient);
