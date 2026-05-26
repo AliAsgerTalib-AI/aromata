@@ -341,15 +341,15 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
         )}
       </div>
 
-      {/* ROW 1.5 — Scent Story & Olfactory Pyramid */}
+      {/* ROW 1.5 — Artistic Dossier: Scent Story & Concept */}
       {fragrance.story && fragrance.notes && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-7 bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-[#3B82F6]" />
-              Fragrance Story
+              Artistic Dossier: Scent Story & Concept
             </h3>
-            <p className="text-[#E0E2E6] text-sm leading-relaxed">{fragrance.story}</p>
+            <p className="text-[#E0E2E6] text-sm leading-relaxed italic">{fragrance.story}</p>
           </div>
 
           <div className="lg:col-span-5 bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
@@ -393,10 +393,13 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
         </div>
       )}
 
-      {/* ROW 1.5 — Molecule Mechanics & Layman Chemistry */}
+      {/* ROW 1.5 — Scent Physics & Molecular Mechanics */}
       {fragrance.laymanChemistryExplanation && (
         <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Molecular Mechanics & Layman Chemistry</h3>
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Beaker className="w-5 h-5 text-[#3B82F6]" />
+            Scent Physics: Molecule Mechanics & Layman's Chemistry
+          </h3>
           <div className="space-y-3">
             {fragrance.laymanChemistryExplanation.split('\n\n').map((para, idx) => (
               <p key={idx} className="text-[#E0E2E6] text-sm leading-relaxed">{para}</p>
@@ -450,12 +453,72 @@ export function FragranceDossier({ fragrance, onPrintDossier }: FragranceDossier
             ))}
           </div>
         </div>
+      </div>
 
-        {/* ROW 2 — Evaporation Chart */}
+      {/* ROW 2.5 — GC-MS QUANTIFIED */}
+      <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <Beaker className="w-5 h-5 text-[#3B82F6]" />
+          GC-MS Quantified: Chemical Analysis Breakdown
+        </h3>
+        <div className="bg-[#0A0B0E] border border-[#2D3139] rounded-sm p-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="text-center">
+              <p className="text-[#6A7180] text-xs uppercase font-mono mb-2">Total Identified Compounds</p>
+              <p className="text-3xl font-bold text-[#3B82F6]">{fragrance.aromaChemicalMatrix.length}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[#6A7180] text-xs uppercase font-mono mb-2">Natural Components</p>
+              <p className="text-3xl font-bold text-[#10B981]">{fragrance.naturalToSyntheticRatio.natural}%</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[#6A7180] text-xs uppercase font-mono mb-2">Synthetic Components</p>
+              <p className="text-3xl font-bold text-[#A855F7]">{fragrance.naturalToSyntheticRatio.synthetic}%</p>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {Object.entries({
+            'Ambers/Musks': fragrance.aromaChemicalMatrix.filter(c => c.category === 'Ambers/Musks'),
+            'Woody Backbones': fragrance.aromaChemicalMatrix.filter(c => c.category === 'Woody Backbones'),
+            'Sweet/Gourmand Anchors': fragrance.aromaChemicalMatrix.filter(c => c.category === 'Sweet/Gourmand Anchors'),
+            'Others': fragrance.aromaChemicalMatrix.filter(c => c.category === 'Others')
+          }).map(([category, chemicals]) => chemicals.length > 0 && (
+            <div key={category} className="bg-[#0A0B0E] border border-[#2D3139] p-4 rounded-sm">
+              <p className="text-[#3B82F6] font-mono text-[10px] uppercase font-bold mb-3 flex items-center gap-2">
+                <Beaker className="w-3 h-3" />
+                {category}
+              </p>
+              <div className="space-y-2">
+                {chemicals.map((chem, i) => (
+                  <div key={i} className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <p className="text-white font-mono text-xs font-bold">{chem.name}</p>
+                      <p className="text-[#6A7180] text-[10px] leading-snug">{chem.description}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-[#3B82F6] font-bold text-xs">{chem.percentage}%</span>
+                      <div className="w-20 bg-[#2D3139] h-2 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#3B82F6]"
+                          style={{ width: `${chem.percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ROW 3 — Evaporation Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-7 bg-[#15181F] border border-[#2D3139] rounded-sm p-6">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-[#3B82F6]" />
-            Volatility & Evaporation Decay
+            Volatility & Evaporation Decay Vector Map
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={evaporationData}>
