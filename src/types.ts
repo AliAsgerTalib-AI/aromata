@@ -296,3 +296,48 @@ export interface EnhancedAnalysisData {
     caveats?: string;
   };
 }
+
+// Blending Studio Types
+
+export interface TrialComposition {
+  compounds: Array<{
+    name: string;
+    percentage: number;
+  }>;
+}
+
+export interface BlendingTrial {
+  id: string;
+  userId: string;
+  name: string;
+  intent: string;
+  baseFragrance?: { brand: string; name: string };
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface BlendingVersion {
+  id: string;
+  trialId: string;
+  composition: TrialComposition;
+  analysis: EnhancedAnalysisData;
+  snapshotName: string;
+  isDraft: boolean;
+  createdAt: number;
+}
+
+export interface IntentSuggestion {
+  compound: string;
+  action: 'add' | 'increase' | 'decrease' | 'remove';
+  currentPercentage?: number;
+  suggestedPercentage?: number;
+  reasoning: string;
+}
+
+export interface BalanceHint {
+  type: 'redundancy' | 'imbalance' | 'missing';
+  title: string;
+  description: string;
+  compounds?: string[];
+  suggestion?: string;
+}
