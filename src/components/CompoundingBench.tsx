@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData } from '../types';
 import { IngredientDropdown } from './IngredientDropdown';
 import { ChartContainer } from './ChartContainer';
+import { usePhysicsSimulation } from '../hooks/usePhysicsSimulation';
 
 interface CompoundingBenchProps {
   availableFragrances?: FragranceData[];
@@ -20,11 +21,8 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     dilutionRatio: 20
   });
 
-  // Simulation state
-  const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
-  const [ifraCompliance, setIfraCompliance] = useState<IFRACompliance | null>(null);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Use Physics Simulation Hook
+  const { result: simulationResult, compliance: ifraCompliance, isLoading: isSimulating, error, retry: retrySimulation } = usePhysicsSimulation(formula);
 
   // Calculate total PPT
   const totalPpt = useMemo(() => {
@@ -39,48 +37,6 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     }));
   }, [formula.ingredients, totalPpt]);
 
-  // Trigger simulation
-  const triggerSimulation = useCallback(async () => {
-    if (formula.ingredients.length === 0) {
-      setError('Add at least one ingredient before simulating');
-      return;
-    }
-
-    setIsSimulating(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/physics-simulation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ingredients: formula.ingredients.map(ing => ({
-            name: ing.chemicalName,
-            ppt: ing.ppt,
-            category: ing.category,
-            description: ing.description
-          })),
-          carrierType: formula.carrierType,
-          dilutionRatio: formula.dilutionRatio,
-          blendName: formula.blendName,
-          leadPerfumer: formula.leadPerfumer
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Simulation failed');
-      }
-
-      const data = await response.json();
-      setSimulationResult(data);
-      setIfraCompliance(data.ifraCompliance);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsSimulating(false);
-    }
-  }, [formula]);
 
   // Update formula field
   const updateFormula = useCallback((updates: Partial<CompoundingFormula>) => {
@@ -93,11 +49,8 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
       ...prev,
       ingredients: [...prev.ingredients, ingredient]
     }));
-    // Trigger simulation after adding
-    setTimeout(() => {
-      triggerSimulation();
-    }, 0);
-  }, [triggerSimulation]);
+    // Hook automatically debounces and simulates
+  }, []);
 
   // Update ingredient PPT
   const updateIngredientPpt = useCallback((id: string, ppt: number) => {
@@ -105,36 +58,27 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
       ing.id === id ? { ...ing, ppt: Math.max(1, Math.min(1000, ppt)) } : ing
     );
     updateFormula({ ingredients: updated });
-    // Trigger simulation after change
-    setTimeout(() => triggerSimulation(), 0);
-  }, [formula.ingredients, updateFormula, triggerSimulation]);
+    // Hook automatically debounces and simulates
+  }, [formula.ingredients, updateFormula]);
 
   // Remove ingredient
   const removeIngredient = useCallback((id: string) => {
     const updated = formula.ingredients.filter(ing => ing.id !== id);
     updateFormula({ ingredients: updated });
-    // Trigger simulation after removal
-    setTimeout(() => {
-      if (updated.length > 0) {
-        triggerSimulation();
-      } else {
-        setSimulationResult(null);
-        setIfraCompliance(null);
-      }
-    }, 0);
-  }, [formula.ingredients, updateFormula, triggerSimulation]);
+    // Hook automatically debounces and simulates
+  }, [formula.ingredients, updateFormula]);
 
   // Update carrier
   const updateCarrier = useCallback((carrierType: 'ethanol' | 'dpg' | 'ipm') => {
     updateFormula({ carrierType });
-    setTimeout(() => triggerSimulation(), 0);
-  }, [updateFormula, triggerSimulation]);
+    // Hook automatically debounces and simulates
+  }, [updateFormula]);
 
   // Update dilution
   const updateDilution = useCallback((dilutionRatio: number) => {
     updateFormula({ dilutionRatio: Math.max(0, Math.min(100, dilutionRatio)) });
-    setTimeout(() => triggerSimulation(), 0);
-  }, [updateFormula, triggerSimulation]);
+    // Hook automatically debounces and simulates
+  }, [updateFormula]);
 
   return (
     <div className="grid grid-cols-2 gap-8">
@@ -340,7 +284,7 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
           <div className="bg-red-500/10 border border-red-500 rounded-sm p-4">
             <p className="text-red-300 text-sm mb-3">{error}</p>
             <button
-              onClick={() => triggerSimulation()}
+              onClick={() => retrySimulation()}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-mono rounded-sm transition"
             >
               Retry
@@ -419,7 +363,12 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
                   },
 
                   // Performance
-                  evaporationCurve: simulationResult?.evaporationCurve || [],
+                  evaporationCurve: simulationResult?.evaporationCurve.map(point => ({
+                    hour: Math.round(point.timeHours),
+                    top: point.volatilityPercent,
+                    heart: point.volatilityPercent * 0.8,
+                    base: point.volatilityPercent * 0.5
+                  })) || [],
                   skinLongevityIndex: simulationResult?.longevityHours || 0,
                   fabricPermanenceIndex: 0,
                   sillageProjectionRadiusCurve: simulationResult?.sillageFeetProjection ? [
@@ -460,7 +409,7 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
                   onRegisterFormula(newFragrance);
                 }
 
-                // Reset form
+                // Reset form (hook will automatically clear simulation results)
                 setFormula({
                   blendName: '',
                   leadPerfumer: '',
@@ -468,10 +417,8 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
                   carrierType: 'ethanol',
                   dilutionRatio: 20
                 });
-                setSimulationResult(null);
-                setIfraCompliance(null);
               } catch (err: any) {
-                setError('Failed to register formula: ' + err.message);
+                console.error('Failed to register formula:', err.message);
               }
             }}
             className="w-full py-3 bg-[#0F9] text-black font-bold rounded-sm hover:bg-[#0F9]/80 transition"
