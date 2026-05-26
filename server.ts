@@ -548,6 +548,8 @@ Formula:
 - Carrier: ${carrierMap[carrierType]}
 - Dilution: ${dilutionRatio}% fragrance oil, ${100 - dilutionRatio}% solvent
 
+REQUIRED: Include an assessment for EACH ingredient in the ingredientAssessments array, evaluating its compliance against IFRA restrictions. Calculate percentageInFormula for each ingredient based on its PPT relative to total PPT.
+
 Provide your response as valid JSON with this exact structure:
 {
   "evaporationCurve": [
@@ -566,10 +568,10 @@ Provide your response as valid JSON with this exact structure:
         "chemicalName": "ingredient name",
         "percentageInFormula": number,
         "status": "compliant" or "exceeds-limit",
-        "message": "explanation"
+        "message": "explanation of IFRA compliance"
       }
     ],
-    "overallWarning": null or "warning message"
+    "overallWarning": null or "warning message if any ingredient exceeds limits"
   }
 }
 
@@ -613,12 +615,14 @@ Ensure all numbers are realistic and scientifically grounded.`;
               sillageFeetProjection: { type: Type.NUMBER },
               ifraCompliance: {
                 type: Type.OBJECT,
+                required: ["isCompliant", "ingredientAssessments"],
                 properties: {
                   isCompliant: { type: Type.BOOLEAN },
                   ingredientAssessments: {
                     type: Type.ARRAY,
                     items: {
                       type: Type.OBJECT,
+                      required: ["chemicalName", "percentageInFormula", "status", "message"],
                       properties: {
                         chemicalName: { type: Type.STRING },
                         percentageInFormula: { type: Type.NUMBER },
