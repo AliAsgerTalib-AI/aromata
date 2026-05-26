@@ -1265,7 +1265,7 @@ ${layeringResult.applicationSequence}
               <button
                 type="button"
                 onClick={() => handlePrintSection('dossier')}
-                className="flex items-center gap-1.5 px-4 py-2 bg-purple-950/20 hover:bg-purple-600 hover:text-white text-purple-400 text-xs font-mono font-bold tracking-wider uppercase border border-purple-500/25 rounded-sm cursor-pointer transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-2 bg-purple-100 hover:bg-purple-600 hover:text-white text-purple-700 text-xs font-mono font-bold tracking-wider uppercase border border-purple-500/25 rounded-sm cursor-pointer transition-all shadow-sm"
               >
                 <Printer className="w-3.5 h-3.5" />
                 Print Analytical Report
@@ -2193,7 +2193,7 @@ ${layeringResult.applicationSequence}
                           colorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
                           dotClass = 'bg-amber-500 ring-amber-500/20';
                         } else if (event.classification === 'Flanker Release') {
-                          colorClass = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+                          colorClass = 'bg-purple-100 text-purple-700 border-purple-200';
                           dotClass = 'bg-purple-500' ;
                         } else if (event.classification === 'Award') {
                           colorClass = 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
@@ -3044,7 +3044,7 @@ ${layeringResult.applicationSequence}
                     <p className="text-4.5xl font-display font-black text-rose-400 mt-1">
                       {selectedFragrance.olfactoryFatigueRisk}%
                     </p>
-                    <span className="font-mono text-[10px] text-rose-300 font-bold mt-1 inline-block bg-rose-950/30 px-2 py-0.5 rounded-sm border border-rose-500/20">
+                    <span className="font-mono text-[10px] text-rose-300 font-bold mt-1 inline-block bg-rose-950/30 px-2 py-0.5 rounded-sm border border-rose-200">
                       {selectedFragrance.olfactoryFatigueRisk >= 85 ? 'EXTREME HAZARD' : selectedFragrance.olfactoryFatigueRisk >= 60 ? 'HIGH RISK' : 'MODERATE'}
                     </span>
                   </div>
@@ -3061,7 +3061,7 @@ ${layeringResult.applicationSequence}
                         RECOVERY PROTOCOL INSTRUCTIONS
                       </span>
                       {selectedFragrance.olfactoryFatigueRisk >= 60 && (
-                        <span className="text-[8px] font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                        <span className="text-[8px] font-mono bg-rose-100 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
                           HIGH RISK RECEPTOR OVERLOAD
                         </span>
                       )}
@@ -4153,7 +4153,7 @@ ${layeringResult.applicationSequence}
                   </p>
                 </div>
                 
-                <span className="font-mono text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-1 rounded font-bold uppercase tracking-wider self-start md:self-auto">
+                <span className="font-mono text-[9px] bg-purple-100 text-purple-700 border border-purple-200 px-2 py-1 rounded font-bold uppercase tracking-wider self-start md:self-auto">
                   Aromachemical Lab Engine
                 </span>
               </div>
@@ -4244,7 +4244,7 @@ ${layeringResult.applicationSequence}
 
               {/* Error Boundary */}
               {layeringError && (
-                <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-sm text-xs text-rose-400 font-mono">
+                <div className="mt-4 p-4 bg-rose-500/10 border border-rose-200 rounded-sm text-xs text-rose-400 font-mono">
                   ERROR: {layeringError}
                 </div>
               )}
@@ -4267,7 +4267,7 @@ ${layeringResult.applicationSequence}
                       <button
                         type="button"
                         onClick={() => handlePrintSection('layering')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/15 hover:bg-purple-600 text-purple-300 hover:text-white text-[10px] font-mono font-bold tracking-wider uppercase border border-purple-500/20 rounded-sm cursor-pointer transition-all shadow-sm"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/15 hover:bg-purple-600 text-purple-300 hover:text-white text-[10px] font-mono font-bold tracking-wider uppercase border border-purple-200 rounded-sm cursor-pointer transition-all shadow-sm"
                       >
                         <Printer className="w-3.5 h-3.5" />
                         Print Interaction Report
@@ -5018,7 +5018,7 @@ ${layeringResult.applicationSequence}
                             <ShieldAlert className="w-4 h-4 text-rose-500 animate-pulse" />
                             Molecular Clash & Anosmia Risk Warning System
                           </h5>
-                          <span className="font-mono text-[9px] bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded border border-rose-500/20 uppercase font-semibold">
+                          <span className="font-mono text-[9px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded border border-rose-200 uppercase font-semibold">
                             Receptor Saturation Analysis: {clashes.length > 0 ? `${clashes.length} Active Conflict(s)` : 'Optimal Synergy'}
                           </span>
                         </div>
@@ -5323,7 +5323,7 @@ ${layeringResult.applicationSequence}
                                     <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
                                       {item.name}
                                       {isHighlighted && (
-                                        <span className="shrink-0 px-1 py-0.5 font-mono text-[7px] bg-red-500/15 text-red-400 border border-red-500/30 rounded uppercase font-bold tracking-wider">
+                                        <span className="shrink-0 px-1 py-0.5 font-mono text-[7px] bg-red-100 text-red-700 border border-red-200 rounded uppercase font-bold tracking-wider">
                                           clash
                                         </span>
                                       )}
@@ -5400,7 +5400,7 @@ ${layeringResult.applicationSequence}
                                     <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
                                       {item.name}
                                       {isHighlighted && (
-                                        <span className="shrink-0 px-1 py-0.5 font-mono text-[7px] bg-red-500/15 text-red-400 border border-red-500/30 rounded uppercase font-bold tracking-wider">
+                                        <span className="shrink-0 px-1 py-0.5 font-mono text-[7px] bg-red-100 text-red-700 border border-red-200 rounded uppercase font-bold tracking-wider">
                                           clash
                                         </span>
                                       )}
@@ -5565,7 +5565,7 @@ ${layeringResult.applicationSequence}
                       </button>
                       <button
                         onClick={() => handleDeleteFromCabinet(frag.brand, frag.name)}
-                        className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent rounded cursor-pointer transition-colors flex items-center justify-center p-1"
+                        className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-200 hover:border-transparent rounded cursor-pointer transition-colors flex items-center justify-center p-1"
                         title="Delete from Cabinet"
                         aria-label="Delete from Cabinet"
                       >
@@ -5771,7 +5771,7 @@ ${layeringResult.applicationSequence}
                               <span className={`px-1.5 py-0.5 text-[8px] rounded uppercase font-bold tracking-wider ${
                                 item.category === 'Ambers/Musks' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
                                 item.category === 'Woody Backbones' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                                item.category === 'Sweet/Gourmand Anchors' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
+                                item.category === 'Sweet/Gourmand Anchors' ? 'bg-rose-100 text-rose-700 border border-rose-200' :
                                 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
                               }`}>
                                 {item.category.split('/')[0].split(' ')[0]}
@@ -6018,7 +6018,7 @@ ${layeringResult.applicationSequence}
                       key={`safety-chk-${cIdx}`} 
                       className={`font-mono text-[10px] p-2 border ${
                         check.status === 'non-compliant' 
-                          ? 'bg-rose-500/5 border-rose-500/20 text-rose-300' 
+                          ? 'bg-rose-500/5 border-rose-200 text-rose-300' 
                           : check.status === 'warning' 
                             ? 'bg-yellow-500/5 border-yellow-500/20 text-yellow-300' 
                             : 'bg-[#0A0B0E]/60 border-[#2D3139]/40 text-slate-400'
@@ -6359,6 +6359,7 @@ ${layeringResult.applicationSequence}
                 placeholder="Search technical glossary terms..."
                 value={searchGlossaryQuery}
                 onChange={(e) => setSearchGlossaryQuery(e.target.value)}
+                aria-label="Search technical glossary terms"
                 className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180] pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                 id="glossary-search-input"
               />
@@ -6518,6 +6519,7 @@ ${layeringResult.applicationSequence}
                 placeholder="Search master noses, signatures, or seminal creations..."
                 value={searchNosesQuery}
                 onChange={(e) => setSearchNosesQuery(e.target.value)}
+                aria-label="Search master noses database"
                 className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                 id="noses-search-input"
               />
@@ -6767,6 +6769,7 @@ ${layeringResult.applicationSequence}
                 placeholder="Search master houses, philosophies, scents, or creations..."
                 value={searchHousesQuery}
                 onChange={(e) => setSearchHousesQuery(e.target.value)}
+                aria-label="Search master houses database"
                 className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                 id="houses-search-input"
               />
@@ -6925,6 +6928,7 @@ ${layeringResult.applicationSequence}
                   placeholder="Search independent niche, philosophies, blueprints, or creations..."
                   value={searchNicheQuery}
                   onChange={(e) => setSearchNicheQuery(e.target.value)}
+                  aria-label="Search independent niche fragrances"
                   className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                   id="niche-search-input"
                 />
@@ -7119,6 +7123,7 @@ ${layeringResult.applicationSequence}
                   placeholder="Search synthetics, scent profiles, magic tricks, or fragrances..."
                   value={searchSyntheticsQuery}
                   onChange={(e) => setSearchSyntheticsQuery(e.target.value)}
+                  aria-label="Search perfume synthetics database"
                   className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                   id="synthetics-search-input"
                 />
@@ -7314,6 +7319,7 @@ ${layeringResult.applicationSequence}
                   placeholder="Search by name, CAS, IUPAC identity, or scent profiles..."
                   value={searchMatrixQuery}
                   onChange={(e) => setSearchMatrixQuery(e.target.value)}
+                  aria-label="Search technical matrix data"
                   className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#3B82F6] transition-colors"
                   id="matrix-search-input"
                 />
@@ -7483,6 +7489,7 @@ ${layeringResult.applicationSequence}
                   placeholder="Search genres, years, benchmark creations, molecules, or masters..."
                   value={searchTimelineQuery}
                   onChange={(e) => setSearchTimelineQuery(e.target.value)}
+                  aria-label="Search fragrance timeline events"
                   className="w-full bg-[#0A0B0E] border border-[#2D3139] text-xs font-mono text-white placeholder-[#6A7180]/50 pl-9 pr-4 py-2 rounded focus:outline-none focus:border-[#F59E0B] transition-colors"
                   id="timeline-search-input"
                 />
@@ -7858,7 +7865,7 @@ ${layeringResult.applicationSequence}
               </div>
 
               {/* Informational Warning Info Plate */}
-              <div className="bg-amber-950/20 border-b border-amber-500/20 p-4 font-sans text-xs text-amber-300 space-y-2">
+              <div className="bg-amber-100 border-b border-amber-200 p-4 font-sans text-xs text-amber-700 space-y-2">
                 <div className="flex items-center gap-2 font-bold font-mono text-[10px] uppercase">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                   Iframe Sandbox Guidance Directive
@@ -7898,7 +7905,7 @@ ${layeringResult.applicationSequence}
                         console.warn(err);
                       }
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-purple-500/10 hover:bg-purple-600 text-purple-400 hover:text-white text-xs font-mono font-bold tracking-wider uppercase border border-purple-500/20 rounded-sm cursor-pointer transition-all"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-purple-500/10 hover:bg-purple-600 text-purple-400 hover:text-white text-xs font-mono font-bold tracking-wider uppercase border border-purple-200 rounded-sm cursor-pointer transition-all"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     Retry Print Trigger
@@ -7966,19 +7973,19 @@ ${layeringResult.applicationSequence}
                         <div className="grid grid-cols-3 gap-3 font-mono text-[90%]">
                           <div className="p-2 border border-zinc-200 bg-zinc-50/50">
                             <strong>Top Notes</strong>
-                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                            <ul className="list-disc pl-4 text-zinc-700 space-y-0.5 mt-1 font-serif text-[90%]">
                               {selectedFragrance.notes.top.map((n, i) => <li key={i}>{n}</li>)}
                             </ul>
                           </div>
                           <div className="p-2 border border-zinc-200 bg-zinc-50/50">
                             <strong>Heart Notes</strong>
-                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                            <ul className="list-disc pl-4 text-zinc-700 space-y-0.5 mt-1 font-serif text-[90%]">
                               {selectedFragrance.notes.heart.map((n, i) => <li key={i}>{n}</li>)}
                             </ul>
                           </div>
                           <div className="p-2 border border-zinc-200 bg-zinc-50/50">
                             <strong>Base Notes</strong>
-                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                            <ul className="list-disc pl-4 text-zinc-700 space-y-0.5 mt-1 font-serif text-[90%]">
                               {selectedFragrance.notes.base.map((n, i) => <li key={i}>{n}</li>)}
                             </ul>
                           </div>
@@ -8004,7 +8011,7 @@ ${layeringResult.applicationSequence}
                         <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block mb-1">Aroma Isolates & Chemical Matrix</span>
                         <table className="w-full text-left font-mono text-[85%] border border-zinc-200">
                           <thead>
-                            <tr className="bg-zinc-100 border-b border-zinc-200 font-bold text-zinc-650">
+                            <tr className="bg-zinc-100 border-b border-zinc-200 font-bold text-zinc-600">
                               <th className="p-1.5 pl-3">Isolate Agent</th>
                               <th className="p-1.5 text-right">Ratio</th>
                               <th className="p-1.5 pl-4">Chemical Purpose</th>
@@ -8076,17 +8083,17 @@ ${layeringResult.applicationSequence}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-2 border border-zinc-150">
                           <strong className="font-mono text-[85%] uppercase text-zinc-400 block pb-1 border-b border-zinc-100 mb-1">Base Fixative Amplification</strong>
-                          <p className="text-zinc-650 font-serif text-[95%]">{layeringResult.baseFixativeAmplification}</p>
+                          <p className="text-zinc-600 font-serif text-[95%]">{layeringResult.baseFixativeAmplification}</p>
                         </div>
                         <div className="p-2 border border-zinc-150">
                           <strong className="font-mono text-[85%] uppercase text-zinc-400 block pb-1 border-b border-zinc-100 mb-1">Aroma Head-Note Collision Alerts</strong>
-                          <p className="text-zinc-650 font-serif text-[95%]">{layeringResult.topNoteConflict}</p>
+                          <p className="text-zinc-600 font-serif text-[95%]">{layeringResult.topNoteConflict}</p>
                         </div>
                       </div>
 
                       <div className="p-3 border-l-4 border-amber-600 bg-amber-50 rounded-r-sm">
                         <strong className="font-mono text-[80%] uppercase text-amber-800 block mb-0.5">Optimal Laydown Sequence:</strong>
-                        <p className="font-sans text-zinc-850 text-[95%]">{layeringResult.applicationSequence}</p>
+                        <p className="font-sans text-zinc-800 text-[95%]">{layeringResult.applicationSequence}</p>
                       </div>
                     </div>
                   ) : (
@@ -8365,7 +8372,7 @@ ${layeringResult.applicationSequence}
                 <div className="col-span-1 text-center border-r border-purple-100 pr-4 font-mono mb-2">
                   <span className="font-mono text-[8px] text-purple-700 uppercase font-bold tracking-widest block mb-1">Synergy Coefficient</span>
                   <div className="text-4xl font-black text-purple-950 leading-none">{layeringResult.compatibilityScore}%</div>
-                  <span className="inline-block mt-2 font-mono text-[9px] font-bold text-textColor bg-purple-100 border border-purple-200 rounded px-2 py-0.5">
+                  <span className="inline-block mt-2 font-mono text-[9px] font-bold text-gray-900 bg-purple-100 border border-purple-200 rounded px-2 py-0.5">
                     {layeringResult.compatibilityLevel}
                   </span>
                 </div>
@@ -8398,7 +8405,7 @@ ${layeringResult.applicationSequence}
               {/* Order of Spray application sequence instruction sheet */}
               <div className="p-5 border-l-4 border-amber-600 bg-amber-50/50 rounded-r-sm page-break-avoid">
                 <span className="font-mono text-[9px] text-amber-800 uppercase font-bold block mb-1.5 font-bold">OPTIMAL DISPENSING & SPRAYING SEQUENCE:</span>
-                <p className="text-xs text-zinc-850 font-sans leading-relaxed text-justify">
+                <p className="text-xs text-zinc-800 font-sans leading-relaxed text-justify">
                   {layeringResult.applicationSequence}
                 </p>
               </div>
