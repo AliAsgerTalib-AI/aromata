@@ -39,7 +39,10 @@ import {
   Scroll,
   Sparkles,
   Users,
-  Atom
+  Atom,
+  Printer,
+  Copy,
+  Check
 } from 'lucide-react';
 import { getDynamicSourceOriginData, KNOWN_ISOLATES_DATABASE } from './originDatabase';
 import { 
@@ -213,6 +216,110 @@ export default function App() {
   const [isVerifyingBatch, setIsVerifyingBatch] = useState(false);
   const [batchResult, setBatchResult] = useState<ParsedBatchCode | null>(null);
   const [batchError, setBatchError] = useState<string | null>(null);
+
+  // Quality of Life Olfactory Fatigue Alert states
+  const [isFatigueBannerDismissed, setIsFatigueBannerDismissed] = useState(false);
+
+  // Print Mode & Interactive Export Portal State
+  const [printMode, setPrintMode] = useState<'dossier' | 'layering' | null>(null);
+  const [isPrintPortalOpen, setIsPrintPortalOpen] = useState(false);
+  const [printPortalType, setPrintPortalType] = useState<'dossier' | 'layering' | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handlePrintSection = (type: 'dossier' | 'layering') => {
+    setPrintMode(type);
+    setPrintPortalType(type);
+    setIsPrintPortalOpen(true);
+    setCopySuccess(false);
+    
+    // Attempt standard print dialog wrapper gracefully
+    setTimeout(() => {
+      try {
+        window.print();
+      } catch (e) {
+        console.warn("Printing is sandboxed or unavailable in this view context:", e);
+      }
+      
+      // Let printMode reset so screen rendering is normal, but keep the full interactive preview open for copy & export support!
+      setTimeout(() => {
+        setPrintMode(null);
+      }, 500);
+    }, 150);
+  };
+
+  const handleCopyReportData = () => {
+    let text = '';
+    if (printPortalType === 'dossier' && selectedFragrance) {
+      text = `AROMATA MOLECULAR SYSTEMS - LAB REPORT
+TARGET: ${selectedFragrance.brand} - ${selectedFragrance.name} (${selectedFragrance.concentration || 'EDPs'})
+CREATOR: ${selectedFragrance.nose || 'N/A'} | YEAR: ${selectedFragrance.releaseYear}
+FAMILY: ${selectedFragrance.olfactoryFamily}
+
+CONCEPT DESCRIPTION:
+${selectedFragrance.story || ''}
+
+OLFACTORY NOTES MAP:
+- TOP NOTES: ${selectedFragrance.notes?.top?.join(', ') || 'N/A'}
+- HEART NOTES: ${selectedFragrance.notes?.heart?.join(', ') || 'N/A'}
+- BASE NOTES: ${selectedFragrance.notes?.base?.join(', ') || 'N/A'}
+
+PERFORMANCE INDICES:
+- Skin Longevity: ${selectedFragrance.skinLongevityIndex?.toFixed(1) || 'N/A'} Hours
+- Fabric Permanence: ${selectedFragrance.fabricPermanenceIndex || 'N/A'} Hours
+- Olfactory Fatigue Risk: ${selectedFragrance.olfactoryFatigueRisk || '0'}%
+
+COMPOSITION SPECIMEN MATRICES:
+- Natural Percentage: ${selectedFragrance.naturalToSyntheticRatio?.natural || 'N/A'}%
+- Synthetic Percentage: ${selectedFragrance.naturalToSyntheticRatio?.synthetic || 'N/A'}%
+- Chemical Isolation Breakdown:
+${selectedFragrance.aromaChemicalMatrix?.map(i => `  * ${i.name} - ${i.percentage}% [Description: ${i.description}]`).join('\n') || ''}
+
+IFRA REGULATORY SAFETY STATUS: ${selectedFragrance.ifraAssessment?.status || 'N/A'}
+${selectedFragrance.ifraAssessment?.criticalRestrictedMaterials?.map(m => `  * ${m.name}: Ceiling (${m.limitPercent}%) | Actual Scent (${m.actualPercent}%) [${m.impact}]`).join('\n') || ''}
+CHEF DIRECTIVES: ${selectedFragrance.ifraAssessment?.chemistsTakeaway || 'N/A'}
+`;
+    } else if (printPortalType === 'layering' && layeringResult) {
+      text = `AROMATA MOLECULAR SYSTEMS - MOLECULAR LAYERING REPORT
+PRIMARY SPECIMEN A: ${layeringSelectA}
+CANOPY SPECIMEN B: ${layeringSelectB}
+
+SYNERGY COEFFICIENT: ${layeringResult.compatibilityScore}% [${layeringResult.compatibilityLevel}]
+
+CHEMIST PAIRING OVERVIEW:
+${layeringResult.molecularSummary}
+
+DETAILED CHEMICAL ACTIONS:
+- Base-Fixative Amplification Action:
+${layeringResult.baseFixativeAmplification}
+
+- Top-Note Conflict Actions & Warnings:
+${layeringResult.topNoteConflict}
+
+OPTIMAL APPLICATION PROTOCOL & TIMELINE:
+${layeringResult.applicationSequence}
+`;
+    }
+
+    if (text) {
+      navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
+
+  // Intelligent Molecular Layering Compatibility Solver states
+  const [layeringSelectA, setLayeringSelectA] = useState<string>(PREDEFINED_FRAGRANCES[0] ? `${PREDEFINED_FRAGRANCES[0].brand} - ${PREDEFINED_FRAGRANCES[0].name}` : '');
+  const [layeringSelectB, setLayeringSelectB] = useState<string>(PREDEFINED_FRAGRANCES[1] ? `${PREDEFINED_FRAGRANCES[1].brand} - ${PREDEFINED_FRAGRANCES[1].name}` : '');
+  const [isAnalyzingLayering, setIsAnalyzingLayering] = useState(false);
+  const [layeringResult, setLayeringResult] = useState<{
+    compatibilityScore: number;
+    compatibilityLevel: string;
+    baseFixativeAmplification: string;
+    topNoteConflict: string;
+    applicationSequence: string;
+    molecularSummary: string;
+  } | null>(null);
+  const [layeringError, setLayeringError] = useState<string | null>(null);
 
   // Active View Tab State
   const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
@@ -695,6 +802,92 @@ export default function App() {
     return () => clearInterval(timer);
   }, [isSimPlaying]);
 
+  // Trigger Browser Notifications for High Olfactory Fatigue Risk
+  useEffect(() => {
+    if (selectedFragrance && selectedFragrance.olfactoryFatigueRisk > 80) {
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              try {
+                new Notification(`RECEPTOR FATIGUE HAZARD: ${selectedFragrance.name}`, {
+                  body: `This fragrance carries an extreme anosmia risk of ${selectedFragrance.olfactoryFatigueRisk}%. Click to view olfactory recovery guidelines.`,
+                });
+              } catch (e) {
+                console.warn("Notification error:", e);
+              }
+            }
+          });
+        } else if (Notification.permission === 'granted') {
+          try {
+            new Notification(`RECEPTOR FATIGUE HAZARD: ${selectedFragrance.name}`, {
+              body: `This fragrance carries an extreme anosmia risk of ${selectedFragrance.olfactoryFatigueRisk}%. Click to view olfactory recovery guidelines.`,
+            });
+          } catch (e) {
+            console.warn("Notification error:", e);
+          }
+        }
+      }
+    }
+  }, [selectedFragrance]);
+
+  // Reset the fatigue banner dismissal status on specimen change
+  useEffect(() => {
+    setIsFatigueBannerDismissed(false);
+  }, [selectedFragrance]);
+
+  // Trigger Molecular Layering Compatibility Report Generation via Backend API
+  const handleLayeringCompatibilityCheck = async () => {
+    if (!layeringSelectA || !layeringSelectB) {
+      setLayeringError("Both Fragrance A and Fragrance B must be selected.");
+      return;
+    }
+
+    if (layeringSelectA === layeringSelectB) {
+      setLayeringError("To evaluate layering compatibility, please select two distinct specimen formulas.");
+      return;
+    }
+
+    setIsAnalyzingLayering(true);
+    setLayeringError(null);
+    setLayeringResult(null);
+
+    const availableFragrances = [
+      ...PREDEFINED_FRAGRANCES,
+      ...cabinet.filter(c => !PREDEFINED_FRAGRANCES.some(p => p.name === c.name && p.brand === c.brand))
+    ];
+
+    const fragA = availableFragrances.find(f => `${f.brand} - ${f.name}` === layeringSelectA);
+    const fragB = availableFragrances.find(f => `${f.brand} - ${f.name}` === layeringSelectB);
+
+    if (!fragA || !fragB) {
+      setLayeringError("Selected specimen formulas could not be loaded.");
+      setIsAnalyzingLayering(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/layering-compatibility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fragA, fragB })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Chemistry server returned error evaluating formula interactions.');
+      }
+
+      setLayeringResult(data);
+
+    } catch (err: any) {
+      console.error("Layering Compatibility error:", err);
+      setLayeringError(err?.message || "An unexpected error occurred during chemical evaluation.");
+    } finally {
+      setIsAnalyzingLayering(false);
+    }
+  };
+
   // Handle Dynamic Specimen Molecular Report Generation via Backend API (using real server-side Gemini call)
   const handleAnalyze = async (e: FormEvent) => {
     e.preventDefault();
@@ -792,6 +985,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased selection:bg-[#3B82F6] selection:text-black pb-12 relative">
+      <div id="main-app-layout">
       
       {/* Decorative Matrix Background Accent Elements */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#3B82F6]/5 to-transparent pointer-events-none" />
@@ -974,8 +1168,73 @@ export default function App() {
 
         {activeTab === 'dossier' && (
           <>
-            {/* Added dynamic database shelf linkage check */}
-            <div className="flex justify-end mb-4">
+            {/* Olfactory Fatigue Alert Warning Banner */}
+            {selectedFragrance && selectedFragrance.olfactoryFatigueRisk > 80 && !isFatigueBannerDismissed && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-6 bg-gradient-to-r from-rose-950/40 to-rose-900/10 border-l-4 border-rose-500 rounded-r-sm p-5 relative overflow-hidden shadow-lg"
+              >
+                <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-5 pointer-events-none">
+                  <ShieldAlert className="w-32 h-32 text-rose-500" />
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="bg-rose-500/15 p-2 rounded-sm text-rose-400 mt-1">
+                    <ShieldAlert className="w-5 h-5 text-rose-400 animate-pulse" />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>CRITICAL RECEPTOR FATIGUE HAZARD</span>
+                        <span className="bg-rose-500 text-white font-mono text-[9px] px-1.5 py-0.5 rounded-sm uppercase tracking-normal animate-pulse">
+                          {selectedFragrance.olfactoryFatigueRisk}% ANOSMIA RISK
+                        </span>
+                      </h4>
+                      <button
+                        onClick={() => setIsFatigueBannerDismissed(true)}
+                        className="text-slate-500 hover:text-slate-300 transition-colors font-mono text-[10px] uppercase tracking-wider cursor-pointer font-bold"
+                      >
+                        Dismiss ×
+                      </button>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed max-w-4xl font-sans">
+                      The high density of complex linear synthetics inside <strong className="text-rose-300 font-medium">{selectedFragrance.brand} {selectedFragrance.name}</strong> is medically certified to rapidly saturate human olfactory receptors, inducing temporary sensory blindness (anosmia) to the scent itself.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 bg-black/40 border border-rose-950/50 p-4 rounded-sm">
+                      <div className="space-y-1">
+                        <span className="font-mono text-[9px] text-rose-400 uppercase font-bold tracking-wider block">
+                          [1] Nasal Neutralization Purge (Active Protocol)
+                        </span>
+                        <p className="text-[11px] text-slate-400 leading-normal">
+                          Smell clean, unperfumed bare forearms or raw organic wool for 45 seconds. Avoid coffee beans as they introduce heavy volatile oils that compound receptor exhaust.
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="font-mono text-[9px] text-rose-400 uppercase font-bold tracking-wider block">
+                          [2] Optimum Dispenser Rotation Protocol
+                        </span>
+                        <p className="text-[11px] text-slate-400 leading-normal">
+                          Initiate a strict 72-hour olfactory holiday from this formula. Re-prime receptors using ultra-airy citrus eau de colognes or light high-evaporation solo molecules.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {/* Added dynamic database shelf linkage check and Print Report option */}
+            <div className="flex justify-end gap-3 mb-4 no-print">
+              <button
+                type="button"
+                onClick={() => handlePrintSection('dossier')}
+                className="flex items-center gap-1.5 px-4 py-2 bg-purple-950/20 hover:bg-purple-600 hover:text-white text-purple-400 text-xs font-mono font-bold tracking-wider uppercase border border-purple-500/25 rounded-sm cursor-pointer transition-all shadow-sm"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print Analytical Report
+              </button>
+
               <button
                 onClick={handleSaveCurrentToCabinet}
                 className="flex items-center gap-1.5 px-4 py-2 bg-[#3B82F6]/10 hover:bg-[#3B82F6] hover:text-white text-[#3B82F6] text-xs font-mono font-bold tracking-wider uppercase border border-[#3B82F6]/25 rounded-sm cursor-pointer transition-all shadow-sm"
@@ -2046,27 +2305,128 @@ export default function App() {
                         </span>
                       </div>
 
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left font-mono text-[10px] border border-[#2D3139]/40 min-w-[600px]">
-                          <thead>
-                            <tr className="bg-[#0A0B0E] border-b border-[#2D3139]/60 text-[#6A7180]">
-                              <th className="p-2.5 font-bold uppercase">Restricted Chemical / Fraction</th>
-                              <th className="p-2.5 font-bold uppercase text-right">IFRA Threshold Limit</th>
-                              <th className="p-2.5 font-bold uppercase text-right">Actual Scent Mass</th>
-                              <th className="p-2.5 font-bold uppercase pl-4">Formulation/Safety Impact</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#2D3139]/30 text-[#8C93A3]">
-                            {selectedFragrance.ifraAssessment.criticalRestrictedMaterials.map((material, idx) => (
-                              <tr key={idx} className="hover:bg-[#0A0B0E]/50 transition-colors">
-                                <td className="p-2.5 font-bold text-[#E0E2E6]">{material.name}</td>
-                                <td className="p-2.5 text-right font-medium text-amber-400">{material.limitPercent === 0 ? "BANNED (0.00%)" : `≤ ${material.limitPercent}%`}</td>
-                                <td className="p-2.5 text-right font-semibold text-white">{material.actualPercent}%</td>
-                                <td className="p-2.5 pl-4 text-[11px] font-sans text-[#8C93A3] leading-relaxed">{material.impact}</td>
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        {/* LEFT COLUMN: Table (7 cols) */}
+                        <div className="lg:col-span-7 overflow-x-auto">
+                          <table className="w-full text-left font-mono text-[10px] border border-[#2D3139]/40 min-w-[500px]">
+                            <thead>
+                              <tr className="bg-[#0A0B0E] border-b border-[#2D3139]/60 text-[#6A7180]">
+                                <th className="p-2.5 font-bold uppercase">Restricted Chemical / Fraction</th>
+                                <th className="p-2.5 font-bold uppercase text-right">IFRA Threshold Limit</th>
+                                <th className="p-2.5 font-bold uppercase text-right">Actual Scent Mass</th>
+                                <th className="p-2.5 font-bold uppercase pl-4">Formulation/Safety Impact</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-[#2D3139]/30 text-[#8C93A3]">
+                              {selectedFragrance.ifraAssessment.criticalRestrictedMaterials.map((material, idx) => (
+                                <tr key={idx} className="hover:bg-[#0A0B0E]/50 transition-colors">
+                                  <td className="p-2.5 font-bold text-[#E0E2E6]">{material.name}</td>
+                                  <td className="p-2.5 text-right font-medium text-amber-400">{material.limitPercent === 0 ? "BANNED (0.00%)" : `≤ ${material.limitPercent}%`}</td>
+                                  <td className="p-2.5 text-right font-semibold text-white">{material.actualPercent}%</td>
+                                  <td className="p-2.5 pl-4 text-[11px] font-sans text-[#8C93A3] leading-relaxed">{material.impact}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* RIGHT COLUMN: Radial Regulatory Ceiling Usage Chart (5 cols) */}
+                        <div className="lg:col-span-5 bg-[#0D0F14] border border-[#2D3139]/40 p-5 rounded-sm space-y-4">
+                          <span className="font-mono text-[9px] text-[#6A7180] uppercase tracking-widest font-bold flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444] animate-pulse" />
+                            Regulatory Ceiling Usage Proximity
+                          </span>
+                          
+                          <div className="space-y-3.5">
+                            {(() => {
+                              const materialsWithCeiling = selectedFragrance.ifraAssessment.criticalRestrictedMaterials.map(material => {
+                                const limit = material.limitPercent;
+                                const actual = material.actualPercent;
+                                let ratio = 0;
+                                
+                                if (limit === 0) {
+                                  ratio = actual > 0 ? 100 : 0;
+                                } else {
+                                  ratio = Math.min(100, Number(((actual / limit) * 100).toFixed(1)));
+                                }
+                                
+                                let color = "#10B981"; // emerald
+                                let textClass = "text-emerald-400";
+                                let borderClass = "border-emerald-500/20 bg-emerald-500/10";
+                                
+                                if (ratio >= 80) {
+                                  color = "#EF4444"; // red
+                                  textClass = "text-rose-400 font-bold animate-pulse";
+                                  borderClass = "border-rose-500/25 bg-rose-500/10";
+                                } else if (ratio >= 50) {
+                                  color = "#F59E0B"; // amber
+                                  textClass = "text-amber-400 font-semibold";
+                                  borderClass = "border-amber-500/20 bg-amber-500/10";
+                                }
+                                
+                                return {
+                                  ...material,
+                                  ratio,
+                                  color,
+                                  textClass,
+                                  borderClass
+                                };
+                              });
+
+                              return materialsWithCeiling.map((m, idx) => {
+                                const radius = 22;
+                                const circ = 2 * Math.PI * radius;
+                                const offset = circ - (m.ratio / 100) * circ;
+                                
+                                return (
+                                  <div key={idx} className="flex items-center gap-4 bg-[#15181F] border border-[#2D3139]/40 p-3 rounded-sm hover:border-[#3B82F6]/20 transition-all">
+                                    <div className="relative shrink-0 w-12 h-12">
+                                      <svg className="w-full h-full -rotate-90">
+                                        <circle
+                                          cx="24"
+                                          cy="24"
+                                          r={radius}
+                                          className="stroke-[#2D3139]/30 fill-none"
+                                          strokeWidth="3"
+                                        />
+                                        <motion.circle
+                                          cx="24"
+                                          cy="24"
+                                          r={radius}
+                                          className="fill-none"
+                                          stroke={m.color}
+                                          strokeWidth="3"
+                                          strokeDasharray={circ}
+                                          initial={{ strokeDashoffset: circ }}
+                                          animate={{ strokeDashoffset: offset }}
+                                          transition={{ duration: 1.2, ease: "easeOut" }}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <div className="absolute inset-0 flex flex-col items-center justify-center font-mono leading-none">
+                                        <span className="text-[9px] font-bold text-white">{m.ratio}%</span>
+                                        <span className="text-[5px] text-[#6A7180] tracking-tighter uppercase">ceiling</span>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex-1 space-y-0.5 min-w-0">
+                                      <span className="font-mono text-[10px] font-bold text-white block truncate" title={m.name}>
+                                        {m.name}
+                                      </span>
+                                      <div className="font-mono text-[9px] flex items-center gap-2 text-[#6A7180]">
+                                        <span>Actual: <b className="text-white font-semibold">{m.actualPercent}%</b></span>
+                                        <span>Ceiling: <b className="text-amber-400 font-semibold">{m.limitPercent === 0 ? "0%" : `${m.limitPercent}%`}</b></span>
+                                      </div>
+                                      <span className={`font-mono text-[8px] font-bold px-1.5 py-0.5 rounded inline-block uppercase border mt-1 ${m.borderClass} ${m.textClass}`}>
+                                        {m.ratio >= 80 ? "CRITICAL RISK" : m.ratio >= 50 ? "WARNING" : "SAFE / COMPLIANT"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              });
+                            })()}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Chemist's Takeaway Callout Box */}
@@ -3737,6 +4097,243 @@ export default function App() {
 
               </div>
 
+            </div>
+
+            {/* COMPREHENSIVE LABORATORY MOLECULAR LAYERING COMPATIBILITY PANEL */}
+            <div className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 relative overflow-hidden mt-8 shadow-xl" id="layering-compatibility-deck">
+              <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-5 pointer-events-none">
+                <Atom className="w-36 h-36 text-white/5 animate-pulse" />
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#2D3139] pb-4 mb-6 gap-4">
+                <div>
+                  <h3 className="font-display text-xs font-bold text-white tracking-widest flex items-center gap-2 uppercase">
+                    <Atom className="w-4 h-4 text-purple-400 animate-spin" style={{ animationDuration: '6s' }} />
+                    Molecular Layering Compatibility Deck & Solver
+                  </h3>
+                  <p className="text-[11px] text-[#6A7180] leading-relaxed mt-1">
+                    Select any two specimens to evaluate aroma-chemical synergy, fixative-amplification, or headnote clashes.
+                  </p>
+                </div>
+                
+                <span className="font-mono text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-1 rounded font-bold uppercase tracking-wider self-start md:self-auto">
+                  Aromachemical Lab Engine
+                </span>
+              </div>
+
+              {/* Selector Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                {/* Fragrance A Selection */}
+                <div className="md:col-span-5 space-y-2">
+                  <label className="block text-[10px] font-mono uppercase tracking-wider text-[#6A7180] font-bold">
+                    Base Specimen A (Primary Scent)
+                  </label>
+                  {(() => {
+                    const availableFragrances = [
+                      ...PREDEFINED_FRAGRANCES,
+                      ...cabinet.filter(c => !PREDEFINED_FRAGRANCES.some(p => p.name === c.name && p.brand === c.brand))
+                    ];
+                    return (
+                      <select
+                        value={layeringSelectA}
+                        onChange={(e) => setLayeringSelectA(e.target.value)}
+                        className="w-full bg-[#0A0B0E] border border-[#2D3139] focus:border-purple-500 text-xs font-mono text-[#E0E2E6] rounded-sm px-3 py-2 outline-none transition-colors"
+                      >
+                        <option value="">-- Choose Specimen A --</option>
+                        {availableFragrances.map((f, idx) => (
+                          <option key={idx} value={`${f.brand} - ${f.name}`}>
+                            {f.brand} - {f.name} ({f.concentration || 'EDP'})
+                          </option>
+                        ))}
+                      </select>
+                    );
+                  })()}
+                </div>
+
+                {/* Connection Line */}
+                <div className="md:col-span-2 flex justify-center text-center">
+                  <span className="text-[#6A7180] font-mono text-xs font-bold animate-pulse">➔ ⚗️ ➔</span>
+                </div>
+
+                {/* Fragrance B Selection */}
+                <div className="md:col-span-5 space-y-2">
+                  <label className="block text-[10px] font-mono uppercase tracking-wider text-[#6A7180] font-bold">
+                    Overlay Specimen B (Layering Canopy)
+                  </label>
+                  {(() => {
+                    const availableFragrances = [
+                      ...PREDEFINED_FRAGRANCES,
+                      ...cabinet.filter(c => !PREDEFINED_FRAGRANCES.some(p => p.name === c.name && p.brand === c.brand))
+                    ];
+                    return (
+                      <select
+                        value={layeringSelectB}
+                        onChange={(e) => setLayeringSelectB(e.target.value)}
+                        className="w-full bg-[#0A0B0E] border border-[#2D3139] focus:border-purple-500 text-xs font-mono text-[#E0E2E6] rounded-sm px-3 py-2 outline-none transition-colors"
+                      >
+                        <option value="">-- Choose Specimen B --</option>
+                        {availableFragrances.map((f, idx) => (
+                          <option key={idx} value={`${f.brand} - ${f.name}`}>
+                            {f.brand} - {f.name} ({f.concentration || 'EDP'})
+                          </option>
+                        ))}
+                      </select>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  disabled={isAnalyzingLayering || !layeringSelectA || !layeringSelectB}
+                  onClick={handleLayeringCompatibilityCheck}
+                  className="px-6 py-2.5 bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 disabled:from-[#1A1624] disabled:to-[#1A1624] disabled:text-[#4A4753] text-white font-mono text-xs font-bold uppercase tracking-wider rounded-sm flex items-center gap-2 transition-all cursor-pointer shadow-md disabled:cursor-not-allowed"
+                >
+                  {isAnalyzingLayering ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      Analyzing Aroma Matrix...
+                    </>
+                  ) : (
+                    <>
+                      <Atom className="w-3.5 h-3.5" />
+                      Compile Molecular Interaction
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Error Boundary */}
+              {layeringError && (
+                <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-sm text-xs text-rose-400 font-mono">
+                  ERROR: {layeringError}
+                </div>
+              )}
+
+              {/* Results Showcase Block */}
+              <AnimatePresence mode="wait">
+                {layeringResult && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-6 pt-6 border-t border-[#2D3139] overflow-hidden"
+                  >
+                    {/* Header with Print Action */}
+                    <div className="flex items-center justify-between mb-4 border-b border-[#2D3139]/40 pb-3 no-print">
+                      <span className="font-mono text-[10px] text-purple-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                        Formula Synergy Evaluation Generated
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handlePrintSection('layering')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/15 hover:bg-purple-600 text-purple-300 hover:text-white text-[10px] font-mono font-bold tracking-wider uppercase border border-purple-500/20 rounded-sm cursor-pointer transition-all shadow-sm"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        Print Interaction Report
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                      
+                      {/* Left Block: Compatibility Ring and Base specs (4 cols) */}
+                      <div className="lg:col-span-4 flex flex-col items-center justify-center p-6 bg-[#0A0B0E] border border-purple-500/15 rounded-sm relative text-center">
+                        <div className="absolute top-0 right-0 p-2 opacity-5">
+                          <Beaker className="w-24 h-24 text-purple-400" />
+                        </div>
+                        
+                        <span className="font-mono text-[9px] text-[#6A7180] uppercase tracking-widest font-bold">SYNERGY COEFFICIENT</span>
+                        
+                        {/* Circle Gauge */}
+                        <div className="relative w-32 h-32 my-4">
+                          <svg className="w-full h-full -rotate-90">
+                            <circle
+                              cx="64"
+                              cy="64"
+                              r="48"
+                              className="stroke-[#2D3139]/45 fill-none"
+                              strokeWidth="6"
+                            />
+                            <circle
+                              cx="64"
+                              cy="64"
+                              r="48"
+                              className="fill-none"
+                              stroke="#A855F7"
+                              strokeWidth="6"
+                              strokeDasharray={2 * Math.PI * 48}
+                              strokeDashoffset={(2 * Math.PI * 48) - (layeringResult.compatibilityScore / 100) * (2 * Math.PI * 48)}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center font-mono">
+                            <span className="text-3xl font-black text-white">{layeringResult.compatibilityScore}%</span>
+                            <span className="text-[8px] text-[#6A7180] uppercase">COMPATIBLE</span>
+                          </div>
+                        </div>
+
+                        <span className="font-mono text-xs font-bold text-purple-300 uppercase tracking-wide bg-purple-950/30 px-3 py-1 rounded border border-purple-500/25">
+                          {layeringResult.compatibilityLevel}
+                        </span>
+                      </div>
+
+                      {/* Right Block: Dynamic Text Readouts (8 cols) */}
+                      <div className="lg:col-span-8 space-y-4">
+                        {/* Summary overview */}
+                        <div className="p-4 bg-[#12141C] border border-[#2D3139]/60 rounded-sm">
+                          <span className="font-mono text-[9px] text-purple-400 uppercase font-bold tracking-wider block mb-1">
+                            Molecular Interaction Overview:
+                          </span>
+                          <p className="text-xs text-[#E0E2E6] leading-relaxed text-justify font-sans">
+                            {layeringResult.molecularSummary}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Base-Fixative Amplification card */}
+                          <div className="p-4 bg-[#0A0B0E] border border-[#2D3139]/60 hover:border-purple-500/25 rounded-sm transition-colors">
+                            <span className="font-mono text-[9px] text-purple-400 uppercase font-bold tracking-wider block mb-1.5 flex items-center gap-1.5">
+                              <Layers className="w-3.5 h-3.5 text-purple-400" />
+                              Base-Fixative Amplification
+                            </span>
+                            <p className="text-[11px] text-[#8C93A3] leading-relaxed text-justify">
+                              {layeringResult.baseFixativeAmplification}
+                            </p>
+                          </div>
+
+                          {/* Top Note Conflict card */}
+                          <div className="p-4 bg-[#0A0B0E] border border-[#2D3139]/60 hover:border-amber-500/25 rounded-sm transition-colors">
+                            <span className="font-mono text-[9px] text-amber-400 uppercase font-bold tracking-wider block mb-1.5 flex items-center gap-1.5">
+                              <Wind className="w-3.5 h-3.5 text-amber-400" />
+                              Top-Note Conflict
+                            </span>
+                            <p className="text-[11px] text-[#8C93A3] leading-relaxed text-justify">
+                              {layeringResult.topNoteConflict}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Order of Application Sequence Banner */}
+                        <div className="p-4 bg-[#1C1613] border-l-2 border-amber-500 rounded-r-xs">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+                            <span className="font-mono text-[9px] text-amber-500 uppercase font-bold tracking-wider">
+                              Optimal Spray Sequence:
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#E0E2E6] font-sans leading-relaxed text-justify">
+                            {layeringResult.applicationSequence}
+                          </p>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
           </div>
@@ -7183,7 +7780,610 @@ export default function App() {
           </p>
         </div>
       </footer>
+      </div> {/* Closing main-app-layout wrapping for proper print isolation */}
 
+      {/* ON-SCREEN PRINT PORTAL MODAL PREVIEW FOR SANDBOX OR STANDARD SHARING */}
+      <AnimatePresence>
+        {isPrintPortalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto no-print">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0D0F14] border border-[#2D3139] rounded-sm w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col my-8 max-h-[90vh]"
+            >
+              {/* Header */}
+              <div className="border-b border-[#2D3139] p-5 flex items-center justify-between bg-[#15181F]">
+                <div className="flex items-center gap-2">
+                  <div className="bg-purple-500/10 p-2 rounded text-purple-400">
+                    <Printer className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xs font-bold text-white uppercase tracking-widest">
+                      Aromata Lab Export & Print Portal
+                    </h3>
+                    <p className="text-[10px] text-[#6A7180] font-mono uppercase mt-0.5">
+                      Deterministic Spectrometry Reporting Engine
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsPrintPortalOpen(false)}
+                  className="text-slate-400 hover:text-white font-mono text-sm uppercase cursor-pointer"
+                >
+                  Close ×
+                </button>
+              </div>
+
+              {/* Informational Warning Info Plate */}
+              <div className="bg-amber-950/20 border-b border-amber-500/20 p-4 font-sans text-xs text-amber-300 space-y-2">
+                <div className="flex items-center gap-2 font-bold font-mono text-[10px] uppercase">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  Iframe Sandbox Guidance Directive
+                </div>
+                <p className="leading-relaxed">
+                  Most modern web browsers restrict interactive modal dialogs (like print, prompt, or alert) when apps are rendered inside a **sandboxed preview frame**. If your printer dialog did not launch, please click the <strong>"Open in normal window/New Tab"</strong> icon at the top right of your workspace before printing, or instantly copy the master lab report below.
+                </p>
+              </div>
+
+              {/* Action Buttons Hub */}
+              <div className="p-4 bg-[#15181F] border-b border-[#2D3139] flex flex-wrap gap-3 items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopyReportData}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-[#3B82F6]/10 hover:bg-[#3B82F6] hover:text-white text-[#3B82F6] text-xs font-mono font-bold tracking-wider uppercase border border-[#3B82F6]/25 rounded-sm cursor-pointer transition-all"
+                  >
+                    {copySuccess ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        Copied Lab Data!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy Structured Raw Report
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try {
+                        window.print();
+                      } catch (err) {
+                        console.warn(err);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-purple-500/10 hover:bg-purple-600 text-purple-400 hover:text-white text-xs font-mono font-bold tracking-wider uppercase border border-purple-500/20 rounded-sm cursor-pointer transition-all"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    Retry Print Trigger
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsPrintPortalOpen(false)}
+                  className="px-4 py-2 bg-transparent text-[#6A7180] hover:text-white text-xs font-mono uppercase tracking-widest font-bold cursor-pointer transition-colors"
+                >
+                  Exit Portal
+                </button>
+              </div>
+
+              {/* Paper Certificate Layout Preview */}
+              <div className="p-6 md:p-8 overflow-y-auto bg-zinc-100 flex-1">
+                <div className="bg-white text-black p-8 md:p-12 shadow-lg rounded-sm border border-zinc-300 font-serif max-w-3xl mx-auto text-left relative">
+                  {/* Seal watermark */}
+                  <div className="absolute right-8 top-8 w-24 h-24 border border-zinc-200 rounded-full flex items-center justify-center opacity-40 pointer-events-none select-none">
+                    <span className="font-mono text-[9px] uppercase tracking-tighter text-zinc-400 font-bold text-center">AROMATA<br/>SEAL OF<br/>ORIGIN</span>
+                  </div>
+
+                  {/* Document Header */}
+                  <div className="border-b-4 border-black pb-4 mb-6 flex justify-between items-end">
+                    <div>
+                      <h4 className="text-xl font-black uppercase font-serif tracking-tight">
+                        Aromata Molecular Systems
+                      </h4>
+                      <p className="text-[9px] uppercase tracking-widest font-mono text-zinc-500 font-extrabold">
+                        Chromatography & Residual Fine Spectrometry Lab Report
+                      </p>
+                    </div>
+                    <div className="text-right font-mono text-[8px] text-zinc-400 leading-tight">
+                      <div>REPORT ID: AMS-DETERMINISTIC-{selectedFragrance ? selectedFragrance.brand.substring(0,3).toUpperCase() : 'LAY'}</div>
+                      <div>DATE: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                      <div>CERTIFICATION: SECURE LAB DATA</div>
+                    </div>
+                  </div>
+
+                  {printPortalType === 'dossier' && selectedFragrance ? (
+                    <div className="space-y-6 text-xs text-zinc-900 leading-relaxed">
+                      <div>
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block">Specimen Analysis Target</span>
+                        <h3 className="text-xl font-bold font-serif italic text-black">
+                          {selectedFragrance.brand} — {selectedFragrance.name}
+                        </h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 font-mono text-[90%] text-zinc-700 bg-zinc-50 p-2 border border-zinc-200 rounded-sm">
+                          <div><strong>CONC:</strong> {selectedFragrance.concentration || 'EDPs'}</div>
+                          <div><strong>CREATOR:</strong> {selectedFragrance.nose || 'N/A'}</div>
+                          <div><strong>YEAR:</strong> {selectedFragrance.releaseYear}</div>
+                          <div><strong>FAMILY:</strong> {selectedFragrance.olfactoryFamily}</div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-zinc-150 pt-3">
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block">SPECIMEN ESSENCE & PROFILE SUMMARY</span>
+                        <p className="italic text-zinc-700 font-serif mt-1">
+                          "{selectedFragrance.story || "Each selective compound represents a distinct sensory chapter."}"
+                        </p>
+                      </div>
+
+                      <div className="border-t border-zinc-150 pt-3">
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block mb-1">OLFACTORY NOTES HIERARCHY</span>
+                        <div className="grid grid-cols-3 gap-3 font-mono text-[90%]">
+                          <div className="p-2 border border-zinc-200 bg-zinc-50/50">
+                            <strong>Top Notes</strong>
+                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                              {selectedFragrance.notes.top.map((n, i) => <li key={i}>{n}</li>)}
+                            </ul>
+                          </div>
+                          <div className="p-2 border border-zinc-200 bg-zinc-50/50">
+                            <strong>Heart Notes</strong>
+                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                              {selectedFragrance.notes.heart.map((n, i) => <li key={i}>{n}</li>)}
+                            </ul>
+                          </div>
+                          <div className="p-2 border border-zinc-200 bg-zinc-50/50">
+                            <strong>Base Notes</strong>
+                            <ul className="list-disc pl-4 text-zinc-750 space-y-0.5 mt-1 font-serif text-[90%]">
+                              {selectedFragrance.notes.base.map((n, i) => <li key={i}>{n}</li>)}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-zinc-150 pt-3 grid grid-cols-3 gap-3 text-center">
+                        <div className="p-2 border border-zinc-200">
+                          <span className="font-mono text-[80%] text-zinc-400 uppercase font-bold">Skin Longevity</span>
+                          <div className="text-sm font-black mt-0.5 text-black">{selectedFragrance.skinLongevityIndex.toFixed(1)} Hours</div>
+                        </div>
+                        <div className="p-2 border border-zinc-200">
+                          <span className="font-mono text-[80%] text-zinc-400 uppercase font-bold">Fabric Permanence</span>
+                          <div className="text-sm font-black mt-0.5 text-black">{selectedFragrance.fabricPermanenceIndex >= 24 ? `${(selectedFragrance.fabricPermanenceIndex/24).toFixed(0)}d+` : `${selectedFragrance.fabricPermanenceIndex}h`}</div>
+                        </div>
+                        <div className="p-2 border border-zinc-200">
+                          <span className="font-mono text-[80%] text-zinc-400 uppercase font-bold">Anosmia Risk</span>
+                          <div className="text-sm font-black mt-0.5 text-rose-700">{selectedFragrance.olfactoryFatigueRisk}%</div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-zinc-150 pt-3">
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block mb-1">Aroma Isolates & Chemical Matrix</span>
+                        <table className="w-full text-left font-mono text-[85%] border border-zinc-200">
+                          <thead>
+                            <tr className="bg-zinc-100 border-b border-zinc-200 font-bold text-zinc-650">
+                              <th className="p-1.5 pl-3">Isolate Agent</th>
+                              <th className="p-1.5 text-right">Ratio</th>
+                              <th className="p-1.5 pl-4">Chemical Purpose</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedFragrance.aromaChemicalMatrix.map((iso, i) => (
+                              <tr key={i} className="border-b border-zinc-100">
+                                <td className="p-1.5 pl-3 font-semibold text-zinc-900">{iso.name}</td>
+                                <td className="p-1.5 text-right font-black text-black">{iso.percentage}%</td>
+                                <td className="p-1.5 pl-4 text-zinc-500">{iso.description}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="border-t border-zinc-150 pt-3">
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block mb-1">IFRA Regulatory Compliance Checklist</span>
+                        <div className="bg-zinc-50 border border-zinc-200 p-2 font-mono text-[90%] flex justify-between font-bold mb-2 rounded-sm">
+                          <span>VERIFICATION STATUS:</span>
+                          <span className="text-emerald-700">{selectedFragrance.ifraAssessment.status}</span>
+                        </div>
+                        <table className="w-full text-left font-mono text-[80%] border border-zinc-200">
+                          <thead>
+                            <tr className="bg-zinc-100 border-b border-zinc-200 text-zinc-500 font-bold">
+                              <th className="p-1">Restricted Active</th>
+                              <th className="p-1 text-right">Ceiling</th>
+                              <th className="p-1 text-right">Actual</th>
+                              <th className="p-1 pl-3">Mitigation & Safety</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedFragrance.ifraAssessment.criticalRestrictedMaterials.slice(0, 4).map((m, i) => (
+                              <tr key={i} className="border-b border-zinc-100">
+                                <td className="p-1 font-bold text-black">{m.name}</td>
+                                <td className="p-1 text-right text-amber-700">{m.limitPercent}%</td>
+                                <td className="p-1 text-right text-zinc-900">{m.actualPercent}%</td>
+                                <td className="p-1 pl-3 text-zinc-500">{m.impact}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : printPortalType === 'layering' && layeringResult ? (
+                    <div className="space-y-6 text-xs text-zinc-900 leading-relaxed">
+                      <div>
+                        <span className="font-mono text-[80%] uppercase tracking-widest text-zinc-400 font-bold block">Chemical Synergy Combination Report</span>
+                        <h3 className="text-xl font-bold font-serif italic text-black">
+                          Scent Overlay & Interaction Matrix
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3 mt-3 font-mono text-[90%] text-zinc-700 bg-zinc-50 p-2 border border-zinc-200 rounded-sm">
+                          <div><strong>BASE SPECIMEN A:</strong> {layeringSelectA}</div>
+                          <div><strong>CANOPY SPECIMEN B:</strong> {layeringSelectB}</div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-purple-50 border border-purple-200 rounded-sm">
+                        <div className="flex items-center justify-between font-mono font-bold mb-1.5 text-purple-950 text-[95%]">
+                          <span>SYNERGY COEFFICIENT:</span>
+                          <span className="text-purple-800 text-sm">{layeringResult.compatibilityScore}% ({layeringResult.compatibilityLevel})</span>
+                        </div>
+                        <p className="font-serif italic text-purple-900 mt-1">
+                          {layeringResult.molecularSummary}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-2 border border-zinc-150">
+                          <strong className="font-mono text-[85%] uppercase text-zinc-400 block pb-1 border-b border-zinc-100 mb-1">Base Fixative Amplification</strong>
+                          <p className="text-zinc-650 font-serif text-[95%]">{layeringResult.baseFixativeAmplification}</p>
+                        </div>
+                        <div className="p-2 border border-zinc-150">
+                          <strong className="font-mono text-[85%] uppercase text-zinc-400 block pb-1 border-b border-zinc-100 mb-1">Aroma Head-Note Collision Alerts</strong>
+                          <p className="text-zinc-650 font-serif text-[95%]">{layeringResult.topNoteConflict}</p>
+                        </div>
+                      </div>
+
+                      <div className="p-3 border-l-4 border-amber-600 bg-amber-50 rounded-r-sm">
+                        <strong className="font-mono text-[80%] uppercase text-amber-800 block mb-0.5">Optimal Laydown Sequence:</strong>
+                        <p className="font-sans text-zinc-850 text-[95%]">{layeringResult.applicationSequence}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-10 font-mono text-zinc-400">
+                      Loading certified data...
+                    </div>
+                  )}
+
+                  <div className="border-t border-zinc-300 pt-6 mt-10 flex justify-between items-center text-[75%] font-mono text-zinc-400">
+                    <span>AROMATA CHEMISTRY PORTAL • SECURE VERIFICATION SEAL</span>
+                    <span>AUTOMATIC DIGITAL OUTPUT CERTIFICATE</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="border-t border-[#2D3139] p-4 flex justify-end bg-[#0D0F14]">
+                <button
+                  type="button"
+                  onClick={() => setIsPrintPortalOpen(false)}
+                  className="px-5 py-2 bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 text-white font-mono text-xs uppercase tracking-wider rounded-sm cursor-pointer transition-colors shadow"
+                >
+                  Dismiss Preview
+                </button>
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* PRINT PORTAL FOR HIGH-RESOLUTION FINE PAPER PRINTING */}
+      {printMode && (
+        <div id="print-portal" className="hidden print:block p-10 bg-white text-black font-serif">
+          {/* Header block with laboratory seals */}
+          <div className="border-b-4 border-black pb-4 mb-6 flex justify-between items-end">
+            <div>
+              <h1 className="text-2xl font-black tracking-tight uppercase" style={{ fontFamily: 'Georgia, serif' }}>
+                Aromata Molecular Systems
+              </h1>
+              <p className="text-[10px] uppercase tracking-widest font-mono text-zinc-600 font-bold">
+                Chromatography & Residual Fine Spectrometry Lab Report
+              </p>
+            </div>
+            <div className="text-right font-mono text-[9px] text-zinc-500">
+              <div>REPORT ID: AMS-DETERMINISTIC-{selectedFragrance ? selectedFragrance.brand.substring(0,3).toUpperCase() : 'LAY'}</div>
+              <div>DATE: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <div>CERTIFICATION: SECURE LAB DATA</div>
+            </div>
+          </div>
+
+          {printMode === 'dossier' && selectedFragrance ? (
+            <div className="space-y-6">
+              {/* Scent Primary Info */}
+              <div className="border-b border-zinc-300 pb-4">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block">Specimen Analysis Target</span>
+                <h2 className="text-2xl font-bold font-serif italic text-black">
+                  {selectedFragrance.brand} — {selectedFragrance.name}
+                </h2>
+                <div className="grid grid-cols-4 gap-4 mt-3 font-mono text-[10px] text-zinc-700 bg-zinc-50 p-3 border border-zinc-200">
+                  <div>
+                    <strong>CONCENTRATION:</strong> {selectedFragrance.concentration || 'Eau de Parfum'}
+                  </div>
+                  <div>
+                    <strong>CREATOR (NOSE):</strong> {selectedFragrance.nose || 'N/A'}
+                  </div>
+                  <div>
+                    <strong>YEAR OF ORIGIN:</strong> {selectedFragrance.releaseYear}
+                  </div>
+                  <div>
+                    <strong>FAMILY:</strong> {selectedFragrance.olfactoryFamily}
+                  </div>
+                </div>
+              </div>
+
+              {/* Story/Concept */}
+              <div className="space-y-1">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block">SPECIMEN ESSENCE & PROFILE SUMMARY</span>
+                <p className="text-xs text-zinc-800 leading-relaxed italic pr-6 text-justify">
+                  "{selectedFragrance.story || "Each selective compound represents a distinct sensory chapter. This fragrance encapsulates a bespoke universe, shifting delicately across its physical boundaries to paint a luminous atmosphere on skin."}"
+                </p>
+              </div>
+
+              {/* Olfactory Notes Hierarchy Section */}
+              <div className="page-break-avoid">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block mb-2">OLFACTORY NOTES HIERARCHY MAP</span>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-3 border border-zinc-200 bg-zinc-50/50">
+                    <span className="font-mono text-[9px] text-amber-700 uppercase font-bold block border-b border-zinc-200 pb-1 mb-2">Top Notes (High Volatility)</span>
+                    <ul className="list-disc pl-4 text-[11px] text-zinc-700 space-y-1 font-serif">
+                      {selectedFragrance.notes.top.map((n, i) => (
+                        <li key={i}>{n}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="p-3 border border-zinc-200 bg-zinc-50/50">
+                    <span className="font-mono text-[9px] text-rose-700 uppercase font-bold block border-b border-zinc-200 pb-1 mb-2">Heart Notes (Medium Volatility)</span>
+                    <ul className="list-disc pl-4 text-[11px] text-zinc-700 space-y-1 font-serif">
+                      {selectedFragrance.notes.heart.map((n, i) => (
+                        <li key={i}>{n}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="p-3 border border-zinc-200 bg-zinc-50/50">
+                    <span className="font-mono text-[9px] text-slate-700 uppercase font-bold block border-b border-zinc-200 pb-1 mb-2">Base Notes (Low Volatility)</span>
+                    <ul className="list-disc pl-4 text-[11px] text-zinc-700 space-y-1 font-serif">
+                      {selectedFragrance.notes.base.map((n, i) => (
+                        <li key={i}>{n}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sillage, Durability and Longevity index */}
+              <div className="page-break-avoid border-t border-zinc-200 pt-4 grid grid-cols-3 gap-4 font-mono text-[10px] text-zinc-800">
+                <div className="p-3 border border-zinc-200 rounded-sm">
+                  <span className="text-zinc-500 font-bold block text-[8px] uppercase tracking-wider">Skin Longevity</span>
+                  <div className="text-lg font-black mt-1 text-black">{selectedFragrance.skinLongevityIndex.toFixed(1)} Hours</div>
+                  <p className="text-[9px] text-zinc-500 leading-tight mt-1">Calculated skin residue half-life index under normal ambient atmospheric conditions.</p>
+                </div>
+                <div className="p-3 border border-zinc-200 rounded-sm">
+                  <span className="text-zinc-500 font-bold block text-[8px] uppercase tracking-wider">Fabric Permanence</span>
+                  <div className="text-lg font-black mt-1 text-black">
+                    {selectedFragrance.fabricPermanenceIndex >= 24 
+                      ? `${(selectedFragrance.fabricPermanenceIndex / 24).toFixed(0)} Days+` 
+                      : `${selectedFragrance.fabricPermanenceIndex} Hours`
+                    }
+                  </div>
+                  <p className="text-[9px] text-zinc-500 leading-tight mt-1">Fiber trap longevity index showing resilience against standard washing/evaporation.</p>
+                </div>
+                <div className="p-3 border border-zinc-200 rounded-sm">
+                  <span className="text-zinc-500 font-bold block text-[8px] uppercase tracking-wider">Olfactory Receptor Fatigue</span>
+                  <div className="text-lg font-black mt-1 text-black">{selectedFragrance.olfactoryFatigueRisk}% Risk</div>
+                  <span className="text-[9px] text-red-700 font-bold block uppercase mt-0.5">
+                    {selectedFragrance.olfactoryFatigueRisk >= 80 ? 'EXTREME HAZARD' : selectedFragrance.olfactoryFatigueRisk >= 60 ? 'HIGH RISK' : 'MODERATE'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Natural vs Synthetic Ratios and Matrix Isolate details */}
+              <div className="page-break-avoid border-t border-zinc-200 pt-4">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block mb-2">Aroma Isolation & Chemical Composition</span>
+                <div className="grid grid-cols-12 gap-6 items-start">
+                  <div className="col-span-4 bg-zinc-50 p-4 border border-zinc-200 font-mono text-[10px] space-y-3">
+                    <span className="text-zinc-500 font-bold block uppercase text-[8px] tracking-wider mb-1">BOTANICAL VS SYNTHETIC</span>
+                    <div>
+                      <div className="flex justify-between font-bold mb-1">
+                        <span>Natural / Botanicals:</span>
+                        <span>{selectedFragrance.naturalToSyntheticRatio.natural}%</span>
+                      </div>
+                      <div className="w-full bg-zinc-200 h-2 rounded-sm overflow-hidden">
+                        <div className="bg-emerald-600 h-full" style={{ width: `${selectedFragrance.naturalToSyntheticRatio.natural}%` }} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-bold mb-1">
+                        <span>Synthetics (Organic/High-End):</span>
+                        <span>{selectedFragrance.naturalToSyntheticRatio.synthetic}%</span>
+                      </div>
+                      <div className="w-full bg-zinc-200 h-2 rounded-sm overflow-hidden">
+                        <div className="bg-indigo-600 h-full" style={{ width: `${selectedFragrance.naturalToSyntheticRatio.synthetic}%` }} />
+                      </div>
+                    </div>
+                    <p className="text-[8.5px] leading-relaxed text-zinc-500 font-sans mt-3">
+                      This represents the molecular mass separation ratio deduced by gas-liquid chromatography algorithms.
+                    </p>
+                  </div>
+
+                  {/* Chemical Matrix Table */}
+                  <div className="col-span-8 overflow-x-auto">
+                    <table className="w-full text-left font-mono text-[9px] border border-zinc-200">
+                      <thead>
+                        <tr className="bg-zinc-100 border-b border-zinc-300 text-zinc-600 font-bold">
+                          <th className="p-2 uppercase">Isolate Compound</th>
+                          <th className="p-2 uppercase text-right">Molecular Ratio</th>
+                          <th className="p-2 uppercase pl-4">Primary Scent Purpose</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-200 text-zinc-700">
+                        {selectedFragrance.aromaChemicalMatrix.map((iso, i) => (
+                          <tr key={i} className="hover:bg-zinc-50">
+                            <td className="p-2 font-bold text-zinc-900">{iso.name}</td>
+                            <td className="p-2 text-right font-semibold text-black">{iso.percentage}%</td>
+                            <td className="p-2 pl-4 text-zinc-500">{iso.description}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* IFRA SAFETY COMPLIANCE MATRIX */}
+              <div className="page-break-avoid border-t border-zinc-200 pt-4">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block mb-2">IFRA STATUTORY SAFETY & COMPLIANCE MATRIX</span>
+                
+                <div className="bg-zinc-50 border border-zinc-200 p-4 mb-4 flex items-center justify-between font-mono">
+                  <span className="text-[10px] text-zinc-700 font-bold">REGULATORY STANDARDIZATION ASSESSMENT STATUS:</span>
+                  <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded ${
+                    selectedFragrance.ifraAssessment.status === 'Compliant' 
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                      : 'bg-amber-100 text-amber-800 border border-amber-300'
+                  }`}>
+                    {selectedFragrance.ifraAssessment.status}
+                  </span>
+                </div>
+
+                <table className="w-full text-left font-mono text-[9px] border border-zinc-200">
+                  <thead>
+                    <tr className="bg-zinc-100 border-b border-zinc-300 text-zinc-600 font-bold">
+                      <th className="p-2 uppercase">Restricted Agent Index</th>
+                      <th className="p-2 uppercase text-right">IFRA Ceiling Limit</th>
+                      <th className="p-2 uppercase text-right">Concentration Detected</th>
+                      <th className="p-2 uppercase pl-4">Formulation Impact & Mitigation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200 text-zinc-700">
+                    {selectedFragrance.ifraAssessment.criticalRestrictedMaterials.map((material, idx) => (
+                      <tr key={idx} className="hover:bg-zinc-50">
+                        <td className="p-2 font-bold text-zinc-900">{material.name}</td>
+                        <td className="p-2 text-right text-amber-800 font-semibold">{material.limitPercent === 0 ? "BANNED" : `≤ ${material.limitPercent}%`}</td>
+                        <td className="p-2 text-right font-black text-black">{material.actualPercent}%</td>
+                        <td className="p-2 pl-4 text-zinc-500">{material.impact}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                <div className="mt-4 p-3 border border-zinc-200 bg-amber-50/40 rounded-sm">
+                  <span className="font-mono text-[8px] text-amber-800 uppercase font-bold block mb-1">Chemist's Regulatory Directives</span>
+                  <p className="text-[10px] text-zinc-600 font-sans leading-relaxed text-justify">
+                    {selectedFragrance.ifraAssessment.chemistsTakeaway}
+                  </p>
+                </div>
+              </div>
+
+              {/* Timeline Heritage */}
+              <div className="page-break-avoid border-t border-zinc-200 pt-4">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block mb-2">ARCHITECTURAL TIMELINE & CLINICAL HERITAGE</span>
+                <p className="text-xs text-zinc-600 leading-relaxed font-sans mt-1 text-justify text-justify">
+                  {selectedFragrance.formulationHeritage}
+                </p>
+              </div>
+
+              {/* End signature block */}
+              <div className="border-t border-zinc-300 pt-8 mt-12 flex justify-between items-center text-[9px] font-mono text-zinc-400">
+                <span>AROMATA CHEMISTRY INSTRUMENTATION SYSTEMS • AUTOMATED CERTIFICATION</span>
+                <span>AUTHENTIC PRINT REPORT GENERATOR</span>
+              </div>
+            </div>
+          ) : printMode === 'layering' && layeringResult ? (
+            <div className="space-y-6">
+              {/* Scent Layering Header */}
+              <div className="border-b border-zinc-300 pb-4">
+                <span className="font-mono text-[9px] text-zinc-500 uppercase font-bold block text-purple-700 font-bold">Intelligent Scent Synthesis Compatibility Report</span>
+                <h2 className="text-2xl font-bold font-serif italic text-black mt-1">
+                  Formula Layering Interaction Analysis Dossier
+                </h2>
+                
+                {/* Formulas Specimen Description */}
+                <div className="grid grid-cols-2 gap-4 mt-4 font-mono text-[10px] text-zinc-800 bg-zinc-50 p-4 border border-zinc-200">
+                  <div className="border-r border-zinc-200 pr-4">
+                    <span className="text-zinc-500 font-bold uppercase text-[8px] block tracking-wider mb-1">SPECIMEN A (Primary Canvas)</span>
+                    <div className="text-xs font-bold text-black">{layeringSelectA}</div>
+                  </div>
+                  <div className="pl-2">
+                    <span className="text-zinc-500 font-bold uppercase text-[8px] block tracking-wider mb-1">SPECIMEN B (Overlay Scent Canopy)</span>
+                    <div className="text-xs font-bold text-black">{layeringSelectB}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compatibility Synergy Rating */}
+              <div className="grid grid-cols-3 gap-6 items-center bg-purple-50 p-6 border border-purple-200 rounded-sm">
+                <div className="col-span-1 text-center border-r border-purple-100 pr-4 font-mono mb-2">
+                  <span className="font-mono text-[8px] text-purple-700 uppercase font-bold tracking-widest block mb-1">Synergy Coefficient</span>
+                  <div className="text-4xl font-black text-purple-950 leading-none">{layeringResult.compatibilityScore}%</div>
+                  <span className="inline-block mt-2 font-mono text-[9px] font-bold text-textColor bg-purple-100 border border-purple-200 rounded px-2 py-0.5">
+                    {layeringResult.compatibilityLevel}
+                  </span>
+                </div>
+                
+                <div className="col-span-2">
+                  <span className="font-mono text-[9px] text-purple-700 uppercase font-bold tracking-wider block mb-1.5">Chemists Interaction Prognosis</span>
+                  <p className="text-xs text-purple-950 font-sans leading-relaxed text-zinc-800 text-justify">
+                    {layeringResult.molecularSummary}
+                  </p>
+                </div>
+              </div>
+
+              {/* Interactions Breakdown cards */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="p-4 border border-zinc-200 bg-zinc-50/50 page-break-avoid">
+                  <span className="font-mono text-[9px] text-purple-800 uppercase font-bold block border-b border-zinc-200 pb-1 mb-2 font-bold">Molecular Base-Fixative Amplification</span>
+                  <p className="text-xs text-zinc-700 font-serif leading-relaxed text-left text-justify">
+                    {layeringResult.baseFixativeAmplification}
+                  </p>
+                </div>
+
+                <div className="p-4 border border-zinc-200 bg-zinc-50/50 page-break-avoid">
+                  <span className="font-mono text-[9px] text-amber-800 uppercase font-bold block border-b border-zinc-200 pb-1 mb-2 font-bold">Aromachemical Head-Note Collision Alerts</span>
+                  <p className="text-xs text-zinc-700 font-serif leading-relaxed text-left text-justify">
+                    {layeringResult.topNoteConflict}
+                  </p>
+                </div>
+              </div>
+
+              {/* Order of Spray application sequence instruction sheet */}
+              <div className="p-5 border-l-4 border-amber-600 bg-amber-50/50 rounded-r-sm page-break-avoid">
+                <span className="font-mono text-[9px] text-amber-800 uppercase font-bold block mb-1.5 font-bold">OPTIMAL DISPENSING & SPRAYING SEQUENCE:</span>
+                <p className="text-xs text-zinc-850 font-sans leading-relaxed text-justify">
+                  {layeringResult.applicationSequence}
+                </p>
+              </div>
+
+              {/* Quick printing tips */}
+              <div className="p-4 border border-zinc-200 font-mono text-[9px] text-zinc-500 bg-zinc-50/20">
+                <div className="font-bold uppercase text-zinc-700 mb-1">Layering Methodology Guideline Note:</div>
+                <p className="font-sans text-[10px] leading-relaxed text-zinc-600">
+                  Lay the heavy base formula with low volatility thresholds (e.g. Amber/Synthetic fixative rich specimens) first on pulse points, waiting 120 seconds to allow the volatile molecular layer to settle before locking down the layout using the airy Citrus/Aromachemical overlay specimen.
+                </p>
+              </div>
+
+              {/* Scent analysis security seals */}
+              <div className="border-t border-zinc-300 pt-8 mt-12 flex justify-between items-center text-[9px] font-mono text-zinc-400">
+                <span>AROMATA CHEMISTRY INSTRUMENTATION SYSTEMS • AUTOMATED CERTIFICATION</span>
+                <span>AUTHENTIC PRINT REPORT GENERATOR</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-20 font-mono text-sm text-zinc-400">
+              No results catalogued to print.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

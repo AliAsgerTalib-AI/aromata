@@ -344,6 +344,80 @@ Avoid marketing fluff. Keep it objective, laboratory-oriented, and structured.`;
   }
 });
 
+// 2.6 API: Comprehensive Layering Compatibility Molecular Analysis
+app.post('/api/layering-compatibility', async (req: express.Request, res: express.Response) => {
+  try {
+    const { fragA, fragB } = req.body;
+    if (!fragA || !fragB) {
+      return res.status(400).json({ error: 'Two fragrance specimens are required for compatibility analysis.' });
+    }
+
+    const ai = getGeminiClient();
+    
+    const prompt = `Perform a high-precision molecular layering compatibility analysis between these two fragrances:
+Fragrance A: ${fragA.brand} - ${fragA.name} (${fragA.concentration || 'EDP'})
+  Olfactory Family: ${fragA.olfactoryFamily}
+  Isolates Matrix: ${fragA.aromaChemicalMatrix?.map((i: any) => `${i.name} (${i.percentage}%)`).join(', ') || 'N/A'}
+  Notes Pyramid: Top: ${fragA.notes?.top?.join(', ') || 'N/A'}, Heart: ${fragA.notes?.heart?.join(', ') || 'N/A'}, Base: ${fragA.notes?.base?.join(', ') || 'N/A'}
+
+Fragrance B: ${fragB.brand} - ${fragB.name} (${fragB.concentration || 'EDP'})
+  Olfactory Family: ${fragB.olfactoryFamily}
+  Isolates Matrix: ${fragB.aromaChemicalMatrix?.map((i: any) => `${i.name} (${i.percentage}%)`).join(', ') || 'N/A'}
+  Notes Pyramid: Top: ${fragB.notes?.top?.join(', ') || 'N/A'}, Heart: ${fragB.notes?.heart?.join(', ') || 'N/A'}, Base: ${fragB.notes?.base?.join(', ') || 'N/A'}
+
+Analyze:
+1. Base-Fixative Amplification: How do heavy-weight, low-volatility fixative compounds like Ambroxan, Iso E Super, Evernyl, Galaxolide, or crystalline spices interact? Will they create a synergistic longevity extension or merge into an indistinct, muddy mass?
+2. Top-Note Conflict: Do volatile headnotes or light synthetics (such as Citral, Methyl Pamplemousse, or high-diffusion aldehydes) crash, create olfactory noise, or construct a balanced, multi-toned sparkling opening?
+3. Scent Development Profile: What is the optimal order of spray administration? Explain exactly which fragrance to lay down first as the physical base-anchor, and which to mist over top as the volatile veil.
+4. Molecular Summary: A general high-vibe scientific summary of this layering recipe.`;
+
+    const response = await ai.models.generateContent({
+      model: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          required: [
+            "compatibilityScore", 
+            "compatibilityLevel", 
+            "baseFixativeAmplification", 
+            "topNoteConflict", 
+            "applicationSequence", 
+            "molecularSummary"
+          ],
+          properties: {
+            compatibilityScore: { 
+              type: Type.INTEGER, 
+              description: "Numeric score from 0 (extreme clashing/noise) to 100 (absolute synergy/seamless blending)." 
+            },
+            compatibilityLevel: { 
+              type: Type.STRING, 
+              description: "e.g., 'Aroma-Chemical Synergy', 'Harmonious Synthesis', 'Static Interference', 'Olfactory Clash'" 
+            },
+            baseFixativeAmplification: { type: Type.STRING },
+            topNoteConflict: { type: Type.STRING },
+            applicationSequence: { type: Type.STRING },
+            molecularSummary: { type: Type.STRING }
+          }
+        }
+      }
+    });
+
+    const resultText = response.text;
+    if (!resultText) {
+      throw new Error('Empty response received from compatibility analysis.');
+    }
+
+    const parsedJson = JSON.parse(resultText.trim());
+    return res.json(parsedJson);
+
+  } catch (error: any) {
+    console.error('Error in layering compatibility API:', error);
+    return res.status(500).json({ error: error?.message || 'Failed to complete layering compatibility analysis.' });
+  }
+});
+
 // 2.7 API: AI-Assisted Olfactory Moodboard & Vibe Summary Generator
 app.post('/api/moodboard-generator', async (req: express.Request, res: express.Response) => {
   try {
