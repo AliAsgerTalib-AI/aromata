@@ -32,6 +32,19 @@ The enhanced FragranceDossier displays richly detailed analysis across seven key
 - **Personal Cabinet Management** — Save and organize favorite fragrances for comparison
 - **Specimen Comparison Matrix** — Side-by-side molecular analysis of multiple fragrances
 
+### Compounding Bench (Laboratory-Grade Formula Creation)
+The **Compounding Bench** is a professional-grade tool for creating and analyzing custom fragrance formulas with real-time physics simulation and IFRA safety compliance checking:
+
+**Key Capabilities:**
+- **Formula Creation** — Combine aromachemicals with precise PPT (parts per thousand) ratios
+- **Ingredient Library** — Access 100+ pre-cataloged synthetics, technical isolates, and natural extracts
+- **Carrier Selection** — Choose between Ethanol (98%), Dipropylene Glycol (DPG), or Isopropyl Myristate (IPM)
+- **Dilution Control** — Adjust fragrance oil to carrier solvent ratio (0-100%) with live recalculation
+- **Live Physics Simulation** — Gemini-powered predictions for evaporation curves, skin longevity, and sillage projection
+- **Volatility Decay Curves** — Visual hour-by-hour breakdown of top, heart, and base note evaporation
+- **IFRA Safety Compliance** — Real-time per-ingredient validation against international safety thresholds
+- **Formula Registration** — Save completed formulas to cabinet as full FragranceData objects for layering analysis and comparison
+
 ### Education Hub (Professional Learning Platform)
 The **Education Hub** provides structured learning and expert resources with a professional dark-theme interface:
 
@@ -250,6 +263,8 @@ aromata/
 │   │   ├── LayeringAnalyzer.tsx            # Fragrance layering compatibility
 │   │   ├── FragranceCabinet.tsx            # Personal fragrance library
 │   │   ├── BlendingStudio.tsx              # Fragrance blending tool
+│   │   ├── CompoundingBench.tsx            # Laboratory formula creation tool
+│   │   ├── IngredientDropdown.tsx          # Aromachemical ingredient selector
 │   │   ├── SearchInterface.tsx             # Fragrance search and input
 │   │   ├── ui/
 │   │   │   ├── Button.tsx                  # Reusable button component
@@ -352,6 +367,29 @@ Content-Type: application/json
 
 Returns aesthetic assessment with mood, colors, and seasonal associations.
 
+### Compounding Bench Physics Simulation
+```
+POST /api/physics-simulation
+Content-Type: application/json
+
+{
+  "ingredients": [
+    {"name": "Iso E Super", "ppt": 220, "category": "Woody Backbones", "description": "..."},
+    {"name": "Ambroxan", "ppt": 145, "category": "Ambers/Musks", "description": "..."}
+  ],
+  "carrierType": "ethanol",
+  "dilutionRatio": 20,
+  "blendName": "My Custom Blend",
+  "leadPerfumer": "Artisan Perfumer"
+}
+```
+
+Returns physics simulation results including:
+- **evaporationCurve** — Hour-by-hour volatility decay for top, heart, and base layers
+- **longevityHours** — Predicted skin longevity in hours
+- **sillageFeetProjection** — Initial sillage projection radius in feet
+- **ifraCompliance** — Per-ingredient and overall IFRA safety assessment
+
 ## 📚 Education Hub API Endpoints
 
 ### Learning Paths
@@ -411,15 +449,53 @@ The central data structure representing a fragrance's complete profile.
 }
 ```
 
+### CompoundingFormula
+```typescript
+{
+  blendName: string                           // User-provided formula name
+  leadPerfumer: string                        // Perfumer or creator attribution
+  ingredients: IngredientRow[]                // Array of aromachemicals with PPT ratios
+  carrierType: 'ethanol' | 'dpg' | 'ipm'    // Solvent selection
+  dilutionRatio: number                       // 0-100% fragrance oil concentration
+}
+```
+
+### IngredientRow
+```typescript
+{
+  id: string             // Unique identifier
+  chemicalName: string   // e.g., "Iso E Super"
+  category: string       // Chemical category
+  ppt: number            // Parts per thousand (0-1000)
+  description?: string   // Optional chemical description
+}
+```
+
+### SimulationResult
+```typescript
+{
+  evaporationCurve: EvaporationPoint[]  // Hour-by-hour volatility breakdown
+  longevityHours: number                // Predicted skin longevity
+  sillageFeetProjection: number         // Initial sillage radius
+}
+```
+
 ## 🧪 Gemini API Integration
 
 All analysis endpoints use Google Gemini with structured JSON output to guarantee valid, type-safe responses.
 
-### System Prompt
-The model is positioned as a "professional research chemist and GC-MS expert" to ensure scientific accuracy over marketing language, providing unbiased molecular analysis rather than brand narratives.
+### System Prompts
+- **Analysis Endpoints** — Model positioned as a "professional research chemist and GC-MS expert" to ensure scientific accuracy over marketing language
+- **Compounding Bench** — Model provides "professional fragrance chemist and GC-MS expert" reasoning for physics simulations, evaporation profiles, and IFRA compliance assessments
+
+### Structured JSON Responses
+All endpoints enforce structured JSON output via `responseMimeType: 'application/json'` and schema definitions to ensure:
+- Type-safe responses matching TypeScript interfaces
+- Predictable field availability
+- Eliminates response parsing errors
 
 ### Caching
-Analysis results are cached for 10 minutes to reduce API calls and improve response times.
+Analysis results are cached for 10 minutes to reduce API calls and improve response times. Compounding Bench simulations are computed on-demand (no caching) for formula accuracy.
 
 ## 🧑‍💻 Development
 
