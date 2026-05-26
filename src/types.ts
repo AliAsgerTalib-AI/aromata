@@ -77,6 +77,14 @@ export interface HistoricalMilestone {
   classification: TimelineClassification | string;
 }
 
+export interface WardrobeRecommendation {
+  materials: string[];
+  silhouette: string;
+  stylePersona: string;
+  outfitPairing: string;
+  concept: string;
+}
+
 export interface FragranceData {
   brand: string;
   name: string;

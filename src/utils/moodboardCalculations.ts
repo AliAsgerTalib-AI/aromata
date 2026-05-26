@@ -54,22 +54,42 @@ export const getSeasonalWardrobeRecommendation = (frag: FragranceData): Wardrobe
   const minTemp = frag.tempRangeMinCelsius;
   const dominantAccord = getDominantAccord(frag.accords);
 
-  let season = 'Spring/Fall';
-  let occasions = ['Evening', 'Casual'];
-  let recommendedGarments = ['Light layers', 'Transitional fabrics'];
-  let colorPalette = ['Soft pastels', 'Warm neutrals'];
+  let materials: string[] = ['Gabardine', 'Merino blend'];
+  let silhouette = 'Transitional layers';
+  let stylePersona = 'Technical utility';
+  let outfitPairing = 'Refined casual with structured layers';
+  let concept = 'Temperature-responsive adaptive clothing';
 
   if (minTemp >= 25) {
-    season = 'Summer';
-    occasions = ['Beach', 'Daytime', 'Resort'];
-    recommendedGarments = ['Linen', 'Cotton', 'Silk', 'Light fabrics'];
-    colorPalette = ['Bright whites', 'Pastels', 'Metallics'];
+    // Summer
+    materials = ['Linen', 'Tencel', 'Cotton voile', 'Hemp blend'];
+    silhouette = 'Slouchy minimalist';
+    stylePersona = 'Minimalist casual';
+    outfitPairing = 'Oversized linen shirts, light pants, open weave sweaters';
+    concept = 'Breathable high-ventilation silhouettes';
   } else if (maxTemp <= 5) {
-    season = 'Winter';
-    occasions = ['Evening', 'Formal', 'Layering'];
-    recommendedGarments = ['Wool', 'Cashmere', 'Leather', 'Suede'];
-    colorPalette = ['Deep jewel tones', 'Black', 'Burgundy', 'Navy'];
+    // Winter
+    materials = ['Boiled wool', 'Cashmere', 'Merino', 'Technical wool'];
+    silhouette = 'Structured overcoat';
+    stylePersona = 'Brutalist tailoring';
+    outfitPairing = 'Wool overcoats, tailored trousers, cashmere base layers';
+    concept = 'Dense insulation with architectural drape';
   }
 
-  return { season, occasions, recommendedGarments, colorPalette };
+  // Accord modifiers
+  if (dominantAccord.includes('wood') || dominantAccord.includes('earth') || dominantAccord.includes('patchouli') || dominantAccord.includes('vetiver')) {
+    materials.push('Raw denim', 'Suede');
+    stylePersona += ' / Earthy minimalism';
+    outfitPairing = `${outfitPairing}; pair with raw denim and earth tones`;
+  } else if (dominantAccord.includes('citrus') || dominantAccord.includes('fresh') || dominantAccord.includes('marine') || dominantAccord.includes('aquatic')) {
+    materials.push('Crisp cotton', 'Linen');
+    stylePersona += ' / Airy modernism';
+    outfitPairing = `${outfitPairing}; favor bright whites and cool grays`;
+  } else if (dominantAccord.includes('amber') || dominantAccord.includes('spice') || dominantAccord.includes('sweet') || dominantAccord.includes('leather') || dominantAccord.includes('gourmand')) {
+    materials.push('Leather', 'Velvet');
+    stylePersona += ' / Luxe opulence';
+    outfitPairing = `${outfitPairing}; add leather accents and rich jewel tones`;
+  }
+
+  return { materials, silhouette, stylePersona, outfitPairing, concept };
 };
