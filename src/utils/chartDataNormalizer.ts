@@ -1,13 +1,13 @@
-export interface EvaporationPoint {
+export interface NormalizedEvaporationPoint {
   timeHours: number;
   volatilityPercent: number;
 }
 
-export const normalizeChartData = (data: EvaporationPoint[]): EvaporationPoint[] => {
+export const normalizeChartData = (data: NormalizedEvaporationPoint[]): NormalizedEvaporationPoint[] => {
   if (!data || data.length === 0) return [];
 
   // Group by timeHours (within 0.1 hour tolerance) and average volatilityPercent
-  const grouped = new Map<string, EvaporationPoint[]>();
+  const grouped = new Map<string, NormalizedEvaporationPoint[]>();
 
   data.forEach(point => {
     const roundedTime = Math.round(point.timeHours * 10) / 10;

@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { normalizeChartData, EvaporationPoint } from '../utils/chartDataNormalizer';
+import { normalizeChartData, NormalizedEvaporationPoint } from '../utils/chartDataNormalizer';
 
 interface ChartContainerProps {
   title: string;
-  data: Array<{ [key: string]: number }> | EvaporationPoint[];
+  data: Array<{ [key: string]: number }> | NormalizedEvaporationPoint[];
   dataKey: string;
   xAxisKey?: string;
   height?: number;
@@ -25,7 +25,7 @@ const ChartContainerComponent: React.FC<ChartContainerProps> = ({
   const normalizedData = useMemo(() => {
     // Check if data contains evaporation points
     if (data.length > 0 && 'timeHours' in data[0] && 'volatilityPercent' in data[0]) {
-      return normalizeChartData(data as EvaporationPoint[]);
+      return normalizeChartData(data as NormalizedEvaporationPoint[]);
     }
     return data;
   }, [data]);
@@ -69,29 +69,46 @@ const ChartContainerComponent: React.FC<ChartContainerProps> = ({
   );
 };
 
+// Type guard to validate NormalizedEvaporationPoint array
+const isNormalizedEvaporationPoint = (data: any): data is NormalizedEvaporationPoint[] => {
+  return Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && 'timeHours' in data[0];
+};
+
 // Memoize with custom comparison that accounts for normalized data
 export const ChartContainer = React.memo(ChartContainerComponent, (prevProps, nextProps) => {
-  // If data length differs, they're different
-  if (prevProps.data.length !== nextProps.data.length) return false;
+  try {
+    // If data length differs, they're different
+    if (prevProps.data.length !== nextProps.data.length) return false;
 
-  // Normalize both and compare JSON
-  const prevData = prevProps.data as EvaporationPoint[];
-  const nextData = nextProps.data as EvaporationPoint[];
-  const prevNormalized = JSON.stringify(normalizeChartData(prevData));
-  const nextNormalized = JSON.stringify(normalizeChartData(nextData));
+    // Validate data before proceeding
+    const isValidData = isNormalizedEvaporationPoint(prevProps.data) && isNormalizedEvaporationPoint(nextProps.data);
+    if (!isValidData) return false; // Can't compare invalid data, force re-render
 
-  // Check all props
-  const propsEqual =
-    prevNormalized === nextNormalized &&
-    prevProps.title === nextProps.title &&
-    prevProps.dataKey === nextProps.dataKey &&
-    prevProps.xAxisKey === nextProps.xAxisKey &&
-    prevProps.height === nextProps.height &&
-    prevProps.description === nextProps.description &&
-    prevProps.yAxisLabel === nextProps.yAxisLabel;
+    // Normalize both and compare JSON
+    // Note: Data is normalized twice (in useMemo and memo comparison) to ensure
+    // accurate deep comparison. The memo comparison must normalize independently
+    // because the incoming data may not have been processed through useMemo.
+    const prevData = prevProps.data as NormalizedEvaporationPoint[];
+    const nextData = nextProps.data as NormalizedEvaporationPoint[];
+    const prevNormalized = JSON.stringify(normalizeChartData(prevData));
+    const nextNormalized = JSON.stringify(normalizeChartData(nextData));
 
-  // Return true if props are equal (skip re-render), false if different (re-render)
-  return propsEqual;
+    // Check all props
+    const propsEqual =
+      prevNormalized === nextNormalized &&
+      prevProps.title === nextProps.title &&
+      prevProps.dataKey === nextProps.dataKey &&
+      prevProps.xAxisKey === nextProps.xAxisKey &&
+      prevProps.height === nextProps.height &&
+      prevProps.description === nextProps.description &&
+      prevProps.yAxisLabel === nextProps.yAxisLabel;
+
+    // Return true if props are equal (skip re-render), false if different (re-render)
+    return propsEqual;
+  } catch (error) {
+    // If comparison fails, force re-render to be safe
+    return false;
+  }
 });
 
 ChartContainer.displayName = 'ChartContainer';
