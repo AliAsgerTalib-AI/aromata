@@ -6,6 +6,7 @@ import { IngredientDropdown } from './IngredientDropdown';
 import { ChartContainer } from './ChartContainer';
 import { TemplateSelector } from './TemplateSelector';
 import { ExportImportPanel } from './ExportImportPanel';
+import { CompoundLibrary } from './CompoundLibrary';
 import { usePhysicsSimulation } from '../hooks/usePhysicsSimulation';
 import { useFormulaHistory } from '../hooks/useFormulaHistory';
 import { HistoryPanel } from './HistoryPanel';
@@ -122,6 +123,25 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
     setTimeout(() => addVersion(newFormula, `Template: ${template.name}`), 0);
   }, [addVersion]);
 
+  // Handle adding compound blend to formula
+  const handleAddCompound = useCallback((compoundIngredients: IngredientRow[]) => {
+    // Generate unique IDs for each ingredient from the compound
+    const ingredientsWithIds = compoundIngredients.map(ing => ({
+      ...ing,
+      id: `${ing.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    }));
+
+    // Append to existing ingredients (additive, not replace)
+    const updatedFormula = {
+      ...formula,
+      ingredients: [...formula.ingredients, ...ingredientsWithIds]
+    };
+
+    setFormula(updatedFormula);
+    // Add to history
+    setTimeout(() => addVersion(updatedFormula), 0);
+  }, [formula, addVersion]);
+
   // Handle rollback to a previous version
   const handleRollback = useCallback((versionId: string) => {
     const restoredFormula = rollback(versionId);
@@ -136,6 +156,9 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
       <div>
         {/* Template Selector */}
         <TemplateSelector onSelectTemplate={handleSelectTemplate} />
+
+        {/* Compound Library */}
+        <CompoundLibrary onAddCompound={handleAddCompound} />
 
         {/* Export / Import Panel */}
         <ExportImportPanel
