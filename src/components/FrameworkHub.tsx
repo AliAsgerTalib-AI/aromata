@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from './ui/Button';
+import { Lightbulb } from 'lucide-react';
 
 interface Framework {
   id: string;
@@ -8,7 +8,11 @@ interface Framework {
   keyInsight: string;
 }
 
-export const FrameworkHub: React.FC = () => {
+interface FrameworkHubProps {
+  onSelectFramework?: (frameworkId: string) => void;
+}
+
+export const FrameworkHub: React.FC<FrameworkHubProps> = ({ onSelectFramework }) => {
   const [frameworks, setFrameworks] = useState<Framework[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,26 +34,33 @@ export const FrameworkHub: React.FC = () => {
   };
 
   if (loading) {
-    return <p className="text-gray-600">Loading frameworks...</p>;
+    return <p className="text-[#6A7180]">Loading frameworks...</p>;
   }
 
   return (
     <div className="space-y-6">
-      <p className="text-gray-600">Master the five expert frameworks that teach you to analyze fragrances like a professional.</p>
+      <p className="text-[#9CA3AF] text-lg">Master the five expert frameworks that teach you to analyze fragrances like a professional.</p>
 
       {/* Frameworks Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {frameworks.map(framework => (
-          <div key={framework.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{framework.name}</h3>
-            <p className="text-sm text-gray-600 mb-3 line-clamp-3">{framework.methodology}</p>
-            <div className="bg-blue-50 p-3 rounded mb-4">
-              <p className="text-xs font-semibold text-blue-900">Key Insight</p>
-              <p className="text-xs text-blue-800 mt-1">{framework.keyInsight}</p>
+          <div
+            key={framework.id}
+            onClick={() => onSelectFramework?.(framework.id)}
+            className="bg-[#15181F] border border-[#2D3139] rounded-sm p-6 hover:border-[#3B82F6] hover:shadow-lg transition-all cursor-pointer group"
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <Lightbulb className="w-5 h-5 text-[#3B82F6] flex-shrink-0 mt-1" />
+              <h3 className="text-lg font-bold text-white group-hover:text-[#3B82F6] transition-colors">{framework.name}</h3>
             </div>
-            <Button variant="primary" size="sm" className="w-full">
+            <p className="text-[#9CA3AF] text-sm mb-4 line-clamp-3">{framework.methodology}</p>
+            <div className="bg-[#0A0B0E] border border-[#2D3139] p-4 rounded-sm mb-4">
+              <p className="text-[#6A7180] text-xs uppercase font-mono font-bold mb-2">Key Insight</p>
+              <p className="text-[#E0E2E6] text-sm line-clamp-2">{framework.keyInsight}</p>
+            </div>
+            <button className="w-full px-4 py-2 bg-[#3B82F6] text-white font-mono text-xs uppercase rounded-sm hover:bg-[#60A5FA] transition-colors">
               Learn Framework
-            </Button>
+            </button>
           </div>
         ))}
       </div>
