@@ -6,12 +6,24 @@
 
 ## 🎯 Features
 
-### Core Analysis
+### Core Analysis Engine
 - **Molecular Composition Analysis** — Break down fragrances into their aromachemical components with percentages and descriptions
 - **Evaporation Profiling** — Detailed hour-by-hour evaporation curves for top, heart, and base layers
 - **Longevity Prediction** — Skin and fabric permanence indices with sillage projection curves
 - **Olfactory Classification** — Family, accords, thermal tolerance, humidity resilience, and occasion scoring
 - **Batch Code Decoding** — Intelligent parsing of commercial batch codes for manufacture date, factory origin, and shelf-life assessment
+- **Density Shift Analysis** — Real-time molecular diffusion modeling with dynamic vapor concentration visualization
+
+### Fragrance Dossier (Seven Comprehensive Sections)
+The enhanced FragranceDossier displays richly detailed analysis across seven key dimensions:
+
+1. **Artistic Dossier: Scent Story & Concept** — Brand positioning and creative intent
+2. **Scent Physics: Molecule Mechanics & Layman's Chemistry** — Accessible explanations of how fragrances work
+3. **GC-MS Quantified: Chemical Analysis Breakdown** — Compound count, natural/synthetic ratios, category distribution
+4. **Aroma-Chemical Fingerprint (Molecular Matrix)** — Complete compound listing with percentages and descriptions
+5. **Volatility & Evaporation Decay Vector Map** — Visual heatmap of evaporation over time
+6. **IFRA Material Compliance Matrix** — Restricted chemical analysis with regulatory ceiling gauges
+7. **Spatial Sillage Diffusion Simulator** — 2D floor plan heatmap with real-time vapor modeling and active projection
 
 ### Advanced Features
 - **Fragrance Layering Compatibility** — Deep molecular compatibility analysis between two fragrances with clash detection
@@ -20,8 +32,52 @@
 - **Personal Cabinet Management** — Save and organize favorite fragrances for comparison
 - **Specimen Comparison Matrix** — Side-by-side molecular analysis of multiple fragrances
 
+### Education Hub (Professional Learning Platform)
+The **Education Hub** provides structured learning and expert resources with a professional dark-theme interface:
+
+#### Learning Paths
+- **Three Skill Levels:** Beginner, Intermediate, Advanced
+- **Structured Lessons:** 25 total lessons across 8 learning paths
+- **Progressive Curriculum:** From fundamentals to expert-level fragrance engineering
+- **Interactive Exercises:** Multiple choice, fragrance analysis, composition design, and expert evaluation
+- **Checkpoint Questions:** Verify understanding with interactive assessments
+- **Real-World Case Studies:** Learn from pre-analyzed fragrances and expert annotations
+
+**Available Paths:**
+- **Beginner:** Fragrance Fundamentals, Why Famous Fragrances Work, My First Analysis
+- **Intermediate:** Molecular Synthesis & Advanced Chemistry, Comparative Analysis: Building Frameworks
+- **Advanced:** Niche Fragrance Engineering & Market Positioning, Expert Sensory Evaluation & Olfactory Judgment
+
+#### Expert Frameworks
+- **5 Professional Analytical Frameworks** with methodology guides:
+  - Synergy Framework — Understanding molecular interactions
+  - Volatility Tiers & Projection Logic — Predicting projection and longevity
+  - Accord Drivers Framework — Identifying key compounds
+  - Redundancy & Efficiency Analysis — Assessing formulation design
+  - Stability & Aging Prediction — Understanding aging trajectories
+
+- **Interactive Examples** with real fragrance case studies
+- **Key Insights** highlighting professional evaluation criteria
+- **Framework Evaluation Tool** — Apply frameworks to custom compositions
+
+#### Case Studies
+- **Real-World Fragrance Analysis** with detailed molecular breakdowns
+- **Strategic Context** — Understand brand positioning and market strategy
+- **Chemistry Stories** — Learn compound selection and formulation rationale
+- **Expert Commentary** — Professional perfumer insights on design decisions
+- **Key Lessons** — Takeaways you can apply to your own analysis
+- **Variants** — Compare different concentrations and reformulations
+
+**Featured Case Studies:**
+- Chanel No. 5 — Iconic aldehydes and prestige positioning
+- Dior Sauvage — Mass-market efficiency and ambroxan dominance
+- Prada L'Homme — Minimalism and versatility
+- Hermès Eau de Gentillesse — Understated luxury and restraint
+- Tom Ford Black Orchid — Dark florals and complexity
+- Versace Eros — Gourmand formulation and longevity
+
 ### Enhanced Fragrance Analysis (Five Dimensions)
-The enhanced `/api/analyze` endpoint now returns comprehensive analyses across **five key analytical dimensions**:
+The enhanced `/api/analyze` endpoint returns comprehensive analyses across **five key analytical dimensions**:
 
 1. **Synergistic Interactions** — Compound pairs that amplify, diminish, or transform effects
 2. **Dominant Accord Mechanics** — Why a fragrance "feels" like what it is
@@ -29,14 +85,7 @@ The enhanced `/api/analyze` endpoint now returns comprehensive analyses across *
 4. **Stability Predictions** — Oxidation risk, aging trajectory, shelf life
 5. **Formulation Efficiency** — Redundancy, density, balance, improvement suggestions
 
-Each analysis includes **pre-answered expert queries** for deep insight without additional API calls:
-- Synergies: "Which molecules are synergistic?"
-- Accords: "Why does this feel like [accord]?"
-- Diffusion: "How does this project on skin?"
-- Stability: "How will this age?"
-- Efficiency: "Is this over-formulated?"
-
-Results are cached for 10 minutes, and the UI presents a **layered deep-dive** interface where users can expand each analysis dimension and interact with structured queries.
+Each analysis includes **pre-answered expert queries** for deep insight without additional API calls.
 
 ### Educational Content
 - **Layman's Chemistry Explanation** — Accessible descriptions of how fragrances work physically and chemically
@@ -44,31 +93,6 @@ Results are cached for 10 minutes, and the UI presents a **layered deep-dive** i
 - **Molecular Blueprint Shifts** — How formulations change across concentration levels
 - **Strategic Takeaways** — Honest analysis of brand margins, demographic targeting, and regulatory strategies
 - **IFRA Compliance Assessment** — Restricted materials analysis and allergen aggregation warnings
-
-### Education Hub (Phase 3)
-The **Education Hub** provides structured learning and expert resources for fragrance analysis:
-
-#### Case Studies
-- Real-world fragrance analysis examples with detailed molecular breakdowns
-- Learn from pre-analyzed fragrances and understand key decision points
-- Browse and filter case studies by brand, family, or analysis focus
-
-#### Expert Frameworks
-- Curated analytical frameworks for fragrance evaluation
-- Interactive methodology guides with step-by-step instructions
-- Evaluate your own fragrance compositions against professional standards
-- Learn the expert approach to assessing fragrance quality and design
-
-#### Learning Paths
-- Structured, progressive lessons on fragrance chemistry and analysis
-- Sequenced content from fundamentals to advanced concepts
-- Checkpoint questions at each lesson to verify understanding
-- Self-paced learning with clear objectives and outcomes
-
-### Fragrance Comparison Tool
-- **Side-by-Side Analysis** — Compare two fragrances across multiple dimensions
-- **Key Differences Detection** — Automatically identifies how fragrances differ in composition, performance, and classification
-- **Educational Insights** — Understand why two fragrances are similar or different at the molecular level
 
 ## 🚀 Quick Start
 
@@ -94,7 +118,8 @@ This installs all required packages including:
 - React 19, TypeScript, Vite
 - Express, Node.js backend dependencies
 - Google Gemini SDK (@google/genai)
-- Styling (Tailwind CSS), icons (Lucide), animations (Motion)
+- Styling (Tailwind CSS 4), icons (Lucide React), animations (Motion)
+- Data visualization (Recharts)
 
 #### 3. Set Up Environment Variables
 ```bash
@@ -184,7 +209,7 @@ npm run clean
 **Frontend:**
 - React 19 with TypeScript
 - Vite (bundler with HMR)
-- Tailwind CSS 4 (styling)
+- Tailwind CSS 4 (styling with dark theme)
 - Recharts (data visualizations)
 - Lucide React (icons)
 - Motion (animations)
@@ -193,6 +218,7 @@ npm run clean
 - Node.js + Express
 - TypeScript
 - Google Gemini API (genai SDK v2.4.0)
+- Express caching middleware
 
 **Build & Dev:**
 - Vite (frontend bundling)
@@ -205,39 +231,61 @@ npm run clean
 ```
 aromata/
 ├── src/
-│   ├── App.tsx                      # Main React component
-│   ├── main.tsx                     # React entry point
-│   ├── types.ts                     # TypeScript interfaces
-│   ├── apiUtils.ts                  # API client utilities
-│   ├── fragranceUtils.ts            # Fragrance logic helpers
-│   ├── concentrationUtils.ts        # Concentration calculations
+│   ├── App.tsx                              # Main React component
+│   ├── main.tsx                             # React entry point
+│   ├── types.ts                             # TypeScript interfaces
+│   ├── fragranceUtils.ts                    # Fragrance logic helpers
 │   ├── hooks/
-│   │   └── useTemporaryState.ts    # Custom state hook
+│   │   ├── useFragranceState.ts            # Fragrance state management
+│   │   └── useAnalysisApi.ts               # API call hook
 │   ├── components/
-│   │   ├── AnalysisView.tsx         # Main fragrance analysis display
-│   │   ├── EducationHub.tsx         # Education content hub
-│   │   ├── ComparisonTool.tsx       # Fragrance comparison interface
-│   │   ├── LearningPathView.tsx     # Structured learning paths
-│   │   ├── FrameworkDetail.tsx      # Expert analysis frameworks
-│   │   ├── CaseStudyLibrary.tsx     # Case study collection
-│   │   ├── FrameworkHub.tsx         # Framework collection
-│   │   ├── LearningPathLibrary.tsx  # Learning path collection
-│   │   ├── BlendingStudio.tsx       # Fragrance blending tool
-│   │   └── (other components...)
-│   └── databases/
-│       ├── data.ts                  # Predefined fragrances
-│       ├── nosesDatabase.ts         # Perfumer names/brands
-│       ├── housesDatabase.ts        # Fashion houses
-│       ├── nicheDatabase.ts         # Niche brands
-│       ├── syntheticsDatabase.ts    # Aromachemical library
+│   │   ├── FragranceDossier.tsx            # Comprehensive fragrance analysis display
+│   │   ├── EducationHub.tsx                # Professional education portal
+│   │   ├── LearningPathView.tsx            # Interactive lesson viewer
+│   │   ├── LearningPathLibrary.tsx         # Learning path collection
+│   │   ├── FrameworkHub.tsx                # Expert frameworks collection
+│   │   ├── FrameworkDetail.tsx             # Framework details and examples
+│   │   ├── CaseStudyLibrary.tsx            # Case study collection
+│   │   ├── CaseStudyDetail.tsx             # Individual case study view
+│   │   ├── LayeringAnalyzer.tsx            # Fragrance layering compatibility
+│   │   ├── FragranceCabinet.tsx            # Personal fragrance library
+│   │   ├── BlendingStudio.tsx              # Fragrance blending tool
+│   │   ├── SearchInterface.tsx             # Fragrance search and input
+│   │   ├── ui/
+│   │   │   ├── Button.tsx                  # Reusable button component
+│   │   │   └── (other UI components)
+│   │   └── (other components)
+│   ├── server/
+│   │   ├── education/
+│   │   │   ├── router.ts                   # Education API routes
+│   │   │   ├── service.ts                  # Education business logic
+│   │   │   ├── learningPaths.ts            # Learning path content
+│   │   │   ├── frameworks.ts               # Framework definitions
+│   │   │   ├── caseStudies.ts              # Case study data
+│   │   │   ├── types.ts                    # Education types
+│   │   │   └── (other education modules)
+│   │   ├── blending/
+│   │   │   ├── router.ts                   # Blending API routes
+│   │   │   ├── service.ts                  # Blending logic
+│   │   │   └── (other blending modules)
+│   │   ├── cache/
+│   │   │   └── analysisCache.ts            # API response caching
+│   │   └── (other server modules)
+│   └── data/
+│       ├── data.ts                         # Predefined fragrances
+│       ├── nosesDatabase.ts                # Perfumer names/brands
+│       ├── housesDatabase.ts               # Fashion houses
+│       ├── nicheDatabase.ts                # Niche brands
+│       ├── syntheticsDatabase.ts           # Aromachemical library
 │       ├── technicalSyntheticsDatabase.ts  # Technical isolates
-│       ├── originDatabase.ts        # Chemical origins/sources
-│       └── timelineDatabase.ts      # Historical events
-├── server.ts                        # Express backend
-├── vite.config.ts                   # Vite configuration
-├── tsconfig.json                    # TypeScript configuration
-├── tailwind.config.js               # Tailwind CSS configuration
-├── index.html                       # HTML entry point
+│       ├── originDatabase.ts               # Chemical origins/sources
+│       └── timelineDatabase.ts             # Historical events
+├── server.ts                               # Express backend entry point
+├── vite.config.ts                          # Vite configuration
+├── tsconfig.json                           # TypeScript configuration
+├── tailwind.config.js                      # Tailwind CSS configuration
+├── index.html                              # HTML entry point
+├── README.md                               # This file
 └── package.json
 ```
 
@@ -263,16 +311,7 @@ Content-Type: application/json
 }
 ```
 
-Returns complete `FragranceData` object with:
-- Chemical composition matrix
-- Evaporation curves
-- Performance metrics
-- Classification and accords
-- Historical timeline
-- Batch code parsing (if provided)
-- Market intelligence
-- Layman's explanations
-- IFRA compliance assessment
+Returns complete `FragranceData` object with comprehensive analysis across all dimensions.
 
 ### Layering Compatibility (Deep Analysis)
 ```
@@ -285,13 +324,7 @@ Content-Type: application/json
 }
 ```
 
-Returns compatibility analysis including:
-- Overall compatibility score (0-100)
-- Compatibility level (Excellent/Good/Fair/Poor/Clash)
-- Base fixative amplification effects
-- Top note conflicts
-- Optimal application sequence
-- Molecular summary
+Returns compatibility analysis including scores, clash detection, and recommendations.
 
 ### Layering Advisor (Quick Assessment)
 ```
@@ -313,187 +346,47 @@ Content-Type: application/json
 
 {
   "brand": "Dior",
-  "name": "Sauvage",
-  "olfactoryFamily": "Aromatic",
-  "accords": [ /* AccordIntensity[] */ ]
+  "name": "Sauvage"
 }
 ```
 
-Returns aesthetic assessment with:
-- Mood/vibe description
-- Color palette
-- Tactile metaphors
-- Seasonal associations
-- Occasion recommendations
+Returns aesthetic assessment with mood, colors, and seasonal associations.
 
-## 📚 Education Hub Endpoints
-
-### Case Studies
-```
-GET /api/education/cases
-```
-Retrieves list of all available fragrance case studies with metadata.
-
-```
-GET /api/education/cases/:caseId
-```
-Returns detailed analysis of a specific case study.
-
-### Expert Frameworks
-```
-GET /api/education/frameworks
-```
-Retrieves all available analytical frameworks.
-
-```
-GET /api/education/frameworks/:frameworkId
-```
-Returns detailed framework with methodology and key insights.
-
-```
-POST /api/education/frameworks/:frameworkId/evaluate
-Content-Type: application/json
-
-{
-  "composition": [ { "name": string, "percentage": number } ]
-}
-```
-Evaluates a user-provided fragrance composition against the framework methodology.
+## 📚 Education Hub API Endpoints
 
 ### Learning Paths
 ```
 GET /api/education/paths
-```
-Retrieves all available structured learning paths.
-
-```
+GET /api/education/paths?skillLevel=intermediate
 GET /api/education/paths/:pathId
 ```
-Returns complete learning path with lessons and checkpoint questions.
+
+Returns learning paths with full lesson content, exercises, and checkpoint questions.
+
+### Expert Frameworks
+```
+GET /api/education/frameworks
+GET /api/education/frameworks/:frameworkId
+POST /api/education/evaluate-composition
+```
+
+Returns framework definitions, methodologies, and composition evaluation results.
+
+### Case Studies
+```
+GET /api/education/case-studies
+GET /api/education/case-studies?difficulty=beginner
+GET /api/education/case-studies/:caseStudyId
+```
+
+Returns case study collections and detailed fragrance analysis examples.
 
 ### Comparison Tool
 ```
 GET /api/education/compare?frag1={id}&frag2={id}
 ```
-Compares two fragrances and returns key differences across multiple dimensions (composition, performance, classification, etc.).
 
-### Framework Evaluation
-```
-POST /api/education/evaluate-composition
-Content-Type: application/json
-
-{
-  "compounds": [
-    { "name": "Iso E Super", "percentage": 15 },
-    { "name": "Sandalwood", "percentage": 10 }
-  ],
-  "frameworkId": "framework-id"
-}
-```
-Evaluates a user-provided fragrance composition against a specific expert framework methodology.
-
-## 🧪 Blending Studio Endpoints
-
-### Create a Blending Trial
-```
-POST /api/blending/trials
-Content-Type: application/json
-
-{
-  "name": "My Summer Scent",
-  "intent": "Fresh and uplifting",
-  "baseFragrance": "Dior Sauvage" // optional
-}
-```
-
-Returns:
-```json
-{
-  "id": "trial-id",
-  "userId": "user-123",
-  "name": "My Summer Scent",
-  "intent": "Fresh and uplifting",
-  "createdAt": 1234567890,
-  "updatedAt": 1234567890
-}
-```
-
-### Analyze a Composition
-```
-POST /api/blending/analyze
-Content-Type: application/json
-
-{
-  "trialId": "trial-id",
-  "composition": {
-    "compounds": [
-      { "name": "Bergamot", "percentage": 20 },
-      { "name": "Jasmine", "percentage": 15 },
-      { "name": "Sandalwood", "percentage": 25 }
-    ]
-  }
-}
-```
-
-Returns detailed analysis including:
-- Chemical composition breakdown
-- Evaporation profile
-- Performance metrics
-- Synergies and conflicts
-
-### Get Blending Guidance
-```
-POST /api/blending/guidance
-Content-Type: application/json
-
-{
-  "composition": {
-    "compounds": [
-      { "name": "Bergamot", "percentage": 20 }
-    ]
-  },
-  "analysis": { /* analysis object from /analyze */ },
-  "type": "balance" | "enhancement" | "fix-issue",
-  "intent": "Fresh and citrusy"
-}
-```
-
-Returns AI-powered guidance for improving the composition based on the requested type.
-
-### Save a Version
-```
-POST /api/blending/versions/:trialId/save
-Content-Type: application/json
-
-{
-  "composition": { "compounds": [ /* ... */ ] },
-  "analysis": { /* analysis object */ },
-  "snapshotName": "v1 - Base Formula"
-}
-```
-
-Saves a snapshot of the trial at a specific point in development.
-
-### Retrieve Trial Details
-```
-GET /api/blending/trials/:trialId
-```
-
-Returns the trial and all its saved versions.
-
-### List All Trials
-```
-GET /api/blending/trials
-```
-
-Returns all blending trials for the current user.
-
-### Delete a Version
-```
-DELETE /api/blending/versions/:versionId
-```
-
-Removes a specific version snapshot from a trial.
+Compares two fragrances across multiple dimensions.
 
 ## 📊 Data Structures
 
@@ -501,16 +394,14 @@ Removes a specific version snapshot from a trial.
 The central data structure representing a fragrance's complete profile.
 
 **Key Properties:**
-- **Metadata:** brand, name, concentration, nose (perfumer), releaseYear, batchLineage
+- **Metadata:** brand, name, concentration, nose (perfumer), releaseYear
 - **Chemistry:** aromaChemicalMatrix (compound list), naturalToSyntheticRatio
-- **Performance:** evaporationCurve, skinLongevityIndex, fabricPermanenceIndex, sillageProjectionRadiusCurve, olfactoryFatigueRisk
-- **Classification:** olfactoryFamily, accords, tempRange, humidityTolerance, settingScoring
-- **Market:** avgRetailPrice, pricePerMl, valueRating, alternatives
-- **Analysis:** notes (top/heart/base), historicalTimeline, laymanChemistryExplanation, story, molecularBlueprintShift, strategicTakeaway, ifraAssessment, parsedBatchCode
+- **Performance:** evaporationCurve, skinLongevityIndex, sillageProjectionRadiusCurve
+- **Classification:** olfactoryFamily, accords, tempRange, humidityTolerance
+- **Market:** avgRetailPrice, valueRating, alternatives
+- **Analysis:** notes, historicalTimeline, ifraAssessment, densityShiftAnalysis
 
 ### AromaChemical
-Represents a single aromachemical compound within a fragrance.
-
 ```typescript
 {
   name: string           // e.g., "Iso E Super", "Sandalwood Extract"
@@ -524,21 +415,18 @@ Represents a single aromachemical compound within a fragrance.
 
 All analysis endpoints use Google Gemini with structured JSON output to guarantee valid, type-safe responses.
 
-### Pattern
-1. Define response schema with explicit field types (Object, String, Array, Number, Boolean, Enum)
-2. Set `responseMimeType: 'application/json'` to guarantee JSON output
-3. Mark required fields in schema
-4. Parse response with `JSON.parse(response.text.trim())`
-
 ### System Prompt
 The model is positioned as a "professional research chemist and GC-MS expert" to ensure scientific accuracy over marketing language, providing unbiased molecular analysis rather than brand narratives.
+
+### Caching
+Analysis results are cached for 10 minutes to reduce API calls and improve response times.
 
 ## 🧑‍💻 Development
 
 ### Code Organization
-- **React Components:** App.tsx contains main component with state management (no Redux)
+- **React Components:** App.tsx contains main component with state management via custom hooks
 - **Type Safety:** Full TypeScript strict mode; tsconfig includes `skipLibCheck`, `moduleDetection: force`
-- **Styling:** Tailwind CSS 4 with no CSS modules
+- **Styling:** Tailwind CSS 4 with dark theme design system
 - **Imports:** Path alias `@/*` resolves to repository root
 
 ### Database Files
@@ -611,8 +499,9 @@ This project is licensed under the MIT License — see LICENSE file for details.
 
 - **Google Gemini API** — For AI-powered fragrance analysis
 - **React 19** — For reactive UI framework
-- **Tailwind CSS** — For utility-first styling
+- **Tailwind CSS 4** — For utility-first dark theme styling
 - **Recharts** — For beautiful data visualizations
+- **Lucide React** — For professional icons
 - **The fragrance community** — For inspiring this project
 
 ## 📮 Support
@@ -628,4 +517,4 @@ For issues, questions, or feature requests, please open an issue on GitHub or co
 
 ---
 
-**Built with 🧪 and ✨ for fragrance enthusiasts and chemists alike.**
+**Built with 🧪 and ✨ for fragrance enthusiasts, chemists, and perfumers.**
