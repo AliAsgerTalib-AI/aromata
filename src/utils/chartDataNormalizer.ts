@@ -21,8 +21,8 @@ export const normalizeChartData = (data: EvaporationPoint[]): EvaporationPoint[]
 
   // Average duplicate points
   return Array.from(grouped.entries())
-    .map(([, points]) => ({
-      timeHours: points[0].timeHours,
+    .map(([key, points]) => ({
+      timeHours: parseFloat(key),
       volatilityPercent: Math.round(
         points.reduce((sum, p) => sum + p.volatilityPercent, 0) / points.length
       )
