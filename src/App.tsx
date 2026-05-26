@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 import { getDynamicSourceOriginData, KNOWN_ISOLATES_DATABASE } from './originDatabase';
 import { BlendingStudio } from './components/BlendingStudio';
+import { EducationHub } from './components/EducationHub';
 import {
   ResponsiveContainer, 
   LineChart, 
@@ -320,7 +321,7 @@ ${layeringResult.applicationSequence}
   const [layeringError, setLayeringError] = useState<string | null>(null);
 
   // Active View Tab State
-  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'blending' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
+  const [activeTab, setActiveTab] = useState<'dossier' | 'references' | 'cabinet' | 'compounding' | 'blending' | 'education' | 'glossary' | 'noses' | 'houses' | 'niche' | 'synthetics' | 'matrix' | 'timeline'>('dossier');
 
   // Compounding Bench state parameters
   const [compoundingName, setCompoundingName] = useState('My Custom Blend');
@@ -1102,6 +1103,18 @@ ${layeringResult.applicationSequence}
           >
             <Shuffle className="w-4 h-4 text-[#A855F7]" />
             Blending Studio
+          </button>
+
+          <button
+            onClick={() => setActiveTab('education')}
+            className={`flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-sm border cursor-pointer transition-all outline-none ${
+              activeTab === 'education'
+                ? 'bg-[#8B5CF6]/10 border-[#8B5CF6] text-[#8B5CF6] shadow-[0_0_12px_rgba(139,92,246,0.15)]'
+                : 'bg-transparent border-[#2D3139] text-[#6A7180] hover:border-[#6A7180]/30 hover:text-white'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-[#8B5CF6]" />
+            Education Hub
           </button>
 
           <button
@@ -6313,6 +6326,10 @@ ${layeringResult.applicationSequence}
 
       {activeTab === 'blending' && (
         <BlendingStudio />
+      )}
+
+      {activeTab === 'education' && (
+        <EducationHub />
       )}
 
       {activeTab === 'glossary' && (
