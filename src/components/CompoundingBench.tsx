@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { IngredientRow, CompoundingFormula, SimulationResult, IFRACompliance, FragranceData } from '../types';
 import { IngredientDropdown } from './IngredientDropdown';
+import { ChartContainer } from './ChartContainer';
 
 interface CompoundingBenchProps {
   availableFragrances?: FragranceData[];
@@ -364,71 +365,31 @@ export function CompoundingBench({ onRegisterFormula }: CompoundingBenchProps) {
             </div>
 
             {/* Chart 1: Volatility Decay */}
-            <div className="mb-6">
-              <h4 className="text-[#6A7180] text-xs uppercase font-mono mb-3">Molecular Gas Volatility Decay Line</h4>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={simulationResult.evaporationCurve}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2D3139" />
-                  <XAxis
-                    dataKey="timeHours"
-                    label={{ value: 'Time (hours)', position: 'insideBottom', offset: -5, fill: '#6A7180' }}
-                    stroke="#6A7180"
-                  />
-                  <YAxis
-                    label={{ value: 'Volatility (%)', angle: -90, position: 'insideLeft', fill: '#6A7180' }}
-                    stroke="#6A7180"
-                  />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#0A0B0E', border: '1px solid #2D3139' }}
-                    labelStyle={{ color: '#E0E2E6' }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="volatilityPercent"
-                    stroke="#0F9"
-                    dot={false}
-                    strokeWidth={2}
-                    isAnimationActive={true}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            {simulationResult && (
+              <ChartContainer
+                title="Molecular Gas Volatility Decay Line"
+                data={simulationResult.evaporationCurve}
+                dataKey="volatilityPercent"
+                xAxisKey="timeHours"
+                yAxisLabel="Volatility (%)"
+                height={250}
+              />
+            )}
 
             {/* Chart 2: Sillage Projection */}
-            <div>
-              <h4 className="text-[#6A7180] text-xs uppercase font-mono mb-3">Simulated Dispersion Radius (Projection Feet)</h4>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart
-                  data={simulationResult.evaporationCurve.map(point => ({
-                    timeHours: point.timeHours,
-                    sillageFeet: simulationResult.sillageFeetProjection * (1 - point.volatilityPercent / 100)
-                  }))}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2D3139" />
-                  <XAxis
-                    dataKey="timeHours"
-                    label={{ value: 'Time (hours)', position: 'insideBottom', offset: -5, fill: '#6A7180' }}
-                    stroke="#6A7180"
-                  />
-                  <YAxis
-                    label={{ value: 'Radius (feet)', angle: -90, position: 'insideLeft', fill: '#6A7180' }}
-                    stroke="#6A7180"
-                  />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#0A0B0E', border: '1px solid #2D3139' }}
-                    labelStyle={{ color: '#E0E2E6' }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="sillageFeet"
-                    stroke="#0F9"
-                    dot={false}
-                    strokeWidth={2}
-                    isAnimationActive={true}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            {simulationResult && (
+              <ChartContainer
+                title="Simulated Dispersion Radius (Projection Feet)"
+                data={simulationResult.evaporationCurve.map(point => ({
+                  timeHours: point.timeHours,
+                  sillageFeet: simulationResult.sillageFeetProjection * (1 - point.volatilityPercent / 100)
+                }))}
+                dataKey="sillageFeet"
+                xAxisKey="timeHours"
+                yAxisLabel="Radius (feet)"
+                height={250}
+              />
+            )}
           </div>
         )}
 
