@@ -2031,6 +2031,7 @@ ${layeringResult.applicationSequence}
                         onChange={(e) => setBatchVerifyCode(e.target.value)}
                         placeholder="Enter code (e.g. 1H03)"
                         disabled={isVerifyingBatch}
+                        aria-label="Batch code"
                         className="flex-1 bg-[#0A0B0E] border border-[#2D3139] focus:border-[#3B82F6] text-xs font-mono text-white rounded-sm px-2.5 py-1.5 outline-none uppercase placeholder:text-[#6A7180]/30"
                       />
                       <button
@@ -5566,8 +5567,9 @@ ${layeringResult.applicationSequence}
                         onClick={() => handleDeleteFromCabinet(frag.brand, frag.name)}
                         className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent rounded cursor-pointer transition-colors flex items-center justify-center p-1"
                         title="Delete from Cabinet"
+                        aria-label="Delete from Cabinet"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -5816,14 +5818,15 @@ ${layeringResult.applicationSequence}
                               </span>
                             </td>
                             <td className="py-3 text-center">
-                              <button 
+                              <button
                                 onClick={() => {
                                   setCompoundingIsolates(compoundingIsolates.filter((_, i) => i !== idx));
                                 }}
                                 className="p-1 hover:text-red-400 text-slate-500 rounded transition-colors cursor-pointer"
                                 title="Remove isolate"
+                                aria-label="Remove isolate"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                               </button>
                             </td>
                           </tr>
