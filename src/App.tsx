@@ -10,12 +10,6 @@ import { SearchInterface } from './components/SearchInterface';
 import { FragranceDossier } from './components/FragranceDossier';
 import { LayeringAnalyzer } from './components/LayeringAnalyzer';
 import { FragranceCabinet } from './components/FragranceCabinet';
-import { BlendingStudio } from './components/BlendingStudio';
-import { EducationHub } from './components/EducationHub';
-import { CompoundingBench } from './components/CompoundingBench';
-
-// Context
-import { IngredientProvider } from './context/IngredientContext';
 
 // Data
 import { PREDEFINED_FRAGRANCES } from './data';
@@ -27,7 +21,7 @@ export default function App() {
   const apiState = useAnalysisApi();
 
   // Tab navigation state
-  const [activeTab, setActiveTab] = useState<'dossier' | 'layering' | 'cabinet' | 'compounding' | 'blending' | 'education'>('dossier');
+  const [activeTab, setActiveTab] = useState<'dossier' | 'layering' | 'cabinet'>('dossier');
 
   // Search interface state
   const [searchBrand, setSearchBrand] = useState('');
@@ -92,8 +86,7 @@ export default function App() {
   };
 
   return (
-    <IngredientProvider>
-      <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased selection:bg-[#3B82F6] selection:text-black pb-12">
+    <div className="min-h-screen bg-[#0A0B0E] text-[#E0E2E6] font-sans antialiased selection:bg-[#3B82F6] selection:text-black pb-12">
         {/* Header */}
         <header className="border-b border-[#2D3139] bg-[#0A0B0E]/90 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
           <div className="max-w-7xl mx-auto">
@@ -107,10 +100,7 @@ export default function App() {
               {[
                 { key: 'dossier', label: 'Dossier' },
                 { key: 'layering', label: 'Layering' },
-                { key: 'cabinet', label: 'Cabinet' },
-                { key: 'compounding', label: 'Compounding' },
-                { key: 'blending', label: 'Blending' },
-                { key: 'education', label: 'Education' }
+                { key: 'cabinet', label: 'Cabinet' }
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -178,22 +168,7 @@ export default function App() {
               onToggleCompare={fragState.handleToggleCompare}
             />
           )}
-
-          {activeTab === 'compounding' && (
-            <CompoundingBench
-              availableFragrances={availableFragrances}
-              onRegisterFormula={(formula) => {
-                fragState.updateCabinet([formula, ...fragState.cabinet]);
-                setActiveTab('cabinet');
-              }}
-            />
-          )}
-
-          {activeTab === 'blending' && <BlendingStudio />}
-
-          {activeTab === 'education' && <EducationHub />}
         </main>
       </div>
-    </IngredientProvider>
   );
 }
