@@ -7,7 +7,6 @@ import { useAnalysisApi } from './hooks/useAnalysisApi';
 
 // Components
 import { SearchInterface } from './components/SearchInterface';
-import { FragranceDossier } from './components/FragranceDossier';
 import { LayeringAnalyzer } from './components/LayeringAnalyzer';
 import { FragranceCabinet } from './components/FragranceCabinet';
 
@@ -136,10 +135,15 @@ export default function App() {
                 batchResult={null}
                 batchError={null}
               />
-              <FragranceDossier
-                fragrance={fragState.selectedFragrance}
-                onPrintDossier={() => window.print()}
-              />
+              <div className="mt-8 p-6 bg-[#14161A] rounded border border-[#2D3139]">
+                <h2 className="text-lg font-bold mb-4">{fragState.selectedFragrance.brand} - {fragState.selectedFragrance.name}</h2>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="text-[#6A7180]">Concentration:</span> {fragState.selectedFragrance.concentration}</div>
+                  <div><span className="text-[#6A7180]">Nose:</span> {fragState.selectedFragrance.nose}</div>
+                  <div><span className="text-[#6A7180]">Release Year:</span> {fragState.selectedFragrance.releaseYear}</div>
+                  <div><span className="text-[#6A7180]">Longevity:</span> {fragState.selectedFragrance.skinLongevityIndex}h</div>
+                </div>
+              </div>
             </>
           )}
 

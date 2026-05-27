@@ -1,5 +1,3 @@
-import { DensityShiftAnalysis } from './server/types/analysisTypes';
-
 export enum AromaCategory {
   AMBERS_MUSKS = 'Ambers/Musks',
   WOODY_BACKBONES = 'Woody Backbones',
@@ -151,7 +149,6 @@ export interface FragranceData {
     heart: string[];
     base: string[];
   };
-  densityShiftAnalysis?: DensityShiftAnalysis;
 }
 
 // Enhanced Analysis Types (Five Dimensions)

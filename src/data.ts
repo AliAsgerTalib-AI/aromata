@@ -1,20 +1,20 @@
-import { FragranceData } from './types';
+import { FragranceData, FragranceConcentration, AromaCategory } from './types';
 
 export const PREDEFINED_FRAGRANCES: FragranceData[] = [
   {
     brand: "Christian Dior",
     name: "Sauvage",
-    concentration: "Toilette (EDT)",
+    concentration: FragranceConcentration.TOILETTE,
     nose: "François Demachy",
     releaseYear: 2015,
     batchLineage: "Initial 2015 formula (09404/A) featured extremely high levels of pure Ambroxan. Subsequent reformulations in 2018 (12404/A) and 2021 adjusted the natural/synthetic balance slightly and reduced denatured solvents to meet updated IFRA standards, shifting the top-note citrus sparkle.",
     aromaChemicalMatrix: [
-      { name: "Ambroxan", percentage: 14.5, category: "Ambers/Musks", description: "Provides the signature high-vibrancy metallic woodiness and massive projection trail." },
-      { name: "Iso E Super", percentage: 22.0, category: "Woody Backbones", description: "Smooth amberwood background filler that provides velvety aura warmth." },
-      { name: "Dihydromyrcenol", percentage: 8.5, category: "Others", description: "Sharp, ultra-clean metallic-lime synthetic that gives the soap-and-shower gel effect." },
-      { name: "Galaxolide", percentage: 5.5, category: "Ambers/Musks", description: "Clean white musk used for skin durability and softness." },
-      { name: "Linalool & Linalyl Acetate", percentage: 12.0, category: "Others", description: "Synthetic isolates replicating high-projection bergamot and lavender." },
-      { name: "Ambrocenide", percentage: 1.5, category: "Ambers/Musks", description: "Extreme-power dry ambergris synthetic; highly responsible for fabric permanence." }
+      { name: "Ambroxan", percentage: 14.5, category: AromaCategory.AMBERS_MUSKS, description: "Provides the signature high-vibrancy metallic woodiness and massive projection trail." },
+      { name: "Iso E Super", percentage: 22.0, category: AromaCategory.WOODY_BACKBONES, description: "Smooth amberwood background filler that provides velvety aura warmth." },
+      { name: "Dihydromyrcenol", percentage: 8.5, category: AromaCategory.OTHERS, description: "Sharp, ultra-clean metallic-lime synthetic that gives the soap-and-shower gel effect." },
+      { name: "Galaxolide", percentage: 5.5, category: AromaCategory.AMBERS_MUSKS, description: "Clean white musk used for skin durability and softness." },
+      { name: "Linalool & Linalyl Acetate", percentage: 12.0, category: AromaCategory.OTHERS, description: "Synthetic isolates replicating high-projection bergamot and lavender." },
+      { name: "Ambrocenide", percentage: 1.5, category: AromaCategory.AMBERS_MUSKS, description: "Extreme-power dry ambergris synthetic; highly responsible for fabric permanence." }
     ],
     naturalToSyntheticRatio: {
       natural: 8,
@@ -103,16 +103,16 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
   {
     brand: "Maison Francis Kurkdjian",
     name: "Baccarat Rouge 540",
-    concentration: "Parfum (EDP)",
+    concentration: FragranceConcentration.PARFUM,
     nose: "Francis Kurkdjian",
     releaseYear: 2015,
     batchLineage: "A conceptual artistic triumph of modern organic chemistry. No natural florals are utilized. The formulation remains incredibly consistent across batch years (primarily coded under MFK's laser engraving) due to its dependency on ultra-precise synthetic isolates that carry virtually no raw crop variation.",
     aromaChemicalMatrix: [
-      { name: "Ethyl Maltol", percentage: 11.2, category: "Sweet/Gourmand Anchors", description: "Brings the legendary caramelized sugar and burnt cotton-candy note." },
-      { name: "Ambroxan", percentage: 18.0, category: "Ambers/Musks", description: "Synthesizes the highly radiant, salty marine ambergris finish." },
-      { name: "Hedione (High Cis)", percentage: 24.5, category: "Others", description: "Acts as a transparent, high-diffusion jasmine booster that suspends other molecules in the air." },
-      { name: "Veramoss (Evernyl)", percentage: 6.8, category: "Woody Backbones", description: "A highly synthetic oakmoss analog that creates the medicinal, forest-wood depth." },
-      { name: "Gamma-Nonalactone", percentage: 1.5, category: "Others", description: "Adds a subtle creamy peach skin texture to blend the sweetness." }
+      { name: "Ethyl Maltol", percentage: 11.2, category: AromaCategory.SWEET_GOURMAND, description: "Brings the legendary caramelized sugar and burnt cotton-candy note." },
+      { name: "Ambroxan", percentage: 18.0, category: AromaCategory.AMBERS_MUSKS, description: "Synthesizes the highly radiant, salty marine ambergris finish." },
+      { name: "Hedione (High Cis)", percentage: 24.5, category: AromaCategory.OTHERS, description: "Acts as a transparent, high-diffusion jasmine booster that suspends other molecules in the air." },
+      { name: "Veramoss (Evernyl)", percentage: 6.8, category: AromaCategory.WOODY_BACKBONES, description: "A highly synthetic oakmoss analog that creates the medicinal, forest-wood depth." },
+      { name: "Gamma-Nonalactone", percentage: 1.5, category: AromaCategory.OTHERS, description: "Adds a subtle creamy peach skin texture to blend the sweetness." }
     ],
     naturalToSyntheticRatio: {
       natural: 1,
@@ -199,17 +199,17 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
   {
     brand: "Creed",
     name: "Aventus",
-    concentration: "Parfum (EDP)",
+    concentration: FragranceConcentration.PARFUM,
     nose: "Jean-Christophe Hérault",
     releaseYear: 2010,
     batchLineage: "Infamous for batch-to-batch lineage differences ('Aventus Batch Variations'). Early batches (2010–2013, e.g., 11Z01, 13NB01) relied heavily on birch tar extracts for a deep, smoky birch and patchouli base. Post-2014, constraints on materials removed the heavy natural birch tar, transitionally making Aventus a more clean, citrus-pineapple and synthetic woody scent.",
     aromaChemicalMatrix: [
-      { name: "Iso E Super", percentage: 25.0, category: "Woody Backbones", description: "Binds the cedar-woods and patchouli in a vast, diffuse cage." },
-      { name: "Galaxolide", percentage: 8.0, category: "Ambers/Musks", description: "Provides the soft, clean laundry-like background support." },
-      { name: "Ambroxan / Ambrox DL", percentage: 6.5, category: "Ambers/Musks", description: "Drives the radiant ambergris saltiness in the sillage." },
-      { name: "L-Limonal (Isolate)", percentage: 11.0, category: "Others", description: "Provides the characteristic juicy yellow pineapple and blackcurrant lift." },
-      { name: "Evernia Prunastri (Oakmoss extract)", percentage: 1.2, category: "Woody Backbones", description: "Natural extract providing structural mossy darkness (highly constrained in modern batches)." },
-      { name: "Patchouli fraction", percentage: 4.5, category: "Woody Backbones", description: "Cleaned botanical oil that adds natural volume without headiness." }
+      { name: "Iso E Super", percentage: 25.0, category: AromaCategory.WOODY_BACKBONES, description: "Binds the cedar-woods and patchouli in a vast, diffuse cage." },
+      { name: "Galaxolide", percentage: 8.0, category: AromaCategory.AMBERS_MUSKS, description: "Provides the soft, clean laundry-like background support." },
+      { name: "Ambroxan / Ambrox DL", percentage: 6.5, category: AromaCategory.AMBERS_MUSKS, description: "Drives the radiant ambergris saltiness in the sillage." },
+      { name: "L-Limonal (Isolate)", percentage: 11.0, category: AromaCategory.OTHERS, description: "Provides the characteristic juicy yellow pineapple and blackcurrant lift." },
+      { name: "Evernia Prunastri (Oakmoss extract)", percentage: 1.2, category: AromaCategory.WOODY_BACKBONES, description: "Natural extract providing structural mossy darkness (highly constrained in modern batches)." },
+      { name: "Patchouli fraction", percentage: 4.5, category: AromaCategory.WOODY_BACKBONES, description: "Cleaned botanical oil that adds natural volume without headiness." }
     ],
     naturalToSyntheticRatio: {
       natural: 22,
@@ -297,16 +297,16 @@ export const PREDEFINED_FRAGRANCES: FragranceData[] = [
   {
     brand: "Terre d'Hermès",
     name: "Terre d'Hermès",
-    concentration: "Toilette (EDT)",
+    concentration: FragranceConcentration.TOILETTE,
     nose: "Jean-Claude Ellena",
     releaseYear: 2006,
     batchLineage: "Recognized as a milestone in minimalistic scent construction. Jean-Claude Ellena utilized an incredibly lean recipe where Iso E Super serves as the massive scaffolding (above 50% of the entire compound). Batches have remained remarkably stable since 2006, with minor adjustments to oakmoss limits.",
     aromaChemicalMatrix: [
-      { name: "Iso E Super", percentage: 55.0, category: "Woody Backbones", description: "The core driver of the fragrance. Creates the sheer cedar wood framework." },
-      { name: "Methyl Pamplemousse", percentage: 4.8, category: "Others", description: "A dry, sulfurous grapefruit isolate that blends with natural orange." },
-      { name: "Vetiver Isolate (Vetiveryl Acetate)", percentage: 8.5, category: "Woody Backbones", description: "Refined vetiver molecule providing clean, dry flint/dirt notes." },
-      { name: "Piperine/Pepper isolates", percentage: 3.5, category: "Others", description: "Provides the sharp, spicy mineral buzz that defines the midnotes." },
-      { name: "Galaxolide", percentage: 4.0, category: "Ambers/Musks", description: "Provides basic persistence and drydown comfort." }
+      { name: "Iso E Super", percentage: 55.0, category: AromaCategory.WOODY_BACKBONES, description: "The core driver of the fragrance. Creates the sheer cedar wood framework." },
+      { name: "Methyl Pamplemousse", percentage: 4.8, category: AromaCategory.OTHERS, description: "A dry, sulfurous grapefruit isolate that blends with natural orange." },
+      { name: "Vetiver Isolate (Vetiveryl Acetate)", percentage: 8.5, category: AromaCategory.WOODY_BACKBONES, description: "Refined vetiver molecule providing clean, dry flint/dirt notes." },
+      { name: "Piperine/Pepper isolates", percentage: 3.5, category: AromaCategory.OTHERS, description: "Provides the sharp, spicy mineral buzz that defines the midnotes." },
+      { name: "Galaxolide", percentage: 4.0, category: AromaCategory.AMBERS_MUSKS, description: "Provides basic persistence and drydown comfort." }
     ],
     naturalToSyntheticRatio: {
       natural: 15,
